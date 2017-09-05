@@ -6,6 +6,7 @@
 #include <vector>
 #include "GridManager.h"
 #include "ListManager.h"
+#include "Environment.h"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
@@ -17,6 +18,7 @@ protected:
 	boost::property_tree::ptree json;
 	GridManager* grid;
 	ListManager* list;
+	Environmental env;
 
 public:
 	JSONManager();
