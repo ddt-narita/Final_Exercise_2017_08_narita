@@ -3,7 +3,8 @@
 #include "GridInfo.h"
 #include "GridRowInfo.h"
 #include "Constants.h"
-
+#include "EnvForm.h"
+#include "JsonLoader.h"
 
 namespace JSONMaker {
 
@@ -226,6 +227,7 @@ namespace JSONMaker {
 			this->buttonEnv->TabIndex = 1;
 			this->buttonEnv->Text = L"基本";
 			this->buttonEnv->UseVisualStyleBackColor = true;
+			this->buttonEnv->Click += gcnew System::EventHandler(this, &GuiMain::buttonEnv_Click);
 			// 
 			// GuiMain
 			// 
@@ -245,39 +247,72 @@ namespace JSONMaker {
 		}
 #pragma endregion
 		GridJSONCreator* gridJsonCreator;
-
+		JsonLoader* jsonLoader;
 
 	//OKボタン押下時のイベント
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-		
+		gridJsonCreator = new GridJSONCreator();
+
 		//レイアウトの作成をやめる（描画がおもいため）
 		this->SuspendLayout();
 		
-		gridJsonCreator = new GridJSONCreator();
+		if (jsonLoader->isJSONFilePathSet()) {
 
-		//入力されているタテの長さを取得
-		int rowN = Convert::ToInt32(textBoxRowN->Text);
-		//入力されているヨコの長さを取得
-		int colN = Convert::ToInt32(textBoxColN->Text);
-		
-		gridJsonCreator->init(rowN, colN);
+			jsonLoader->run();
+
+			int rowN = jsonLoader->getGridRowLength();
+			int colN = jsonLoader->getGridColLength();
+
+			//まだ表を作成していなかったなら
+			if (dataGridViewJSON->RowCount < 1) {
+				//結合ボタン
+				DataGridViewButtonColumn^ button = gcnew DataGridViewButtonColumn();
+				button->Name = "bind";
+				button->UseColumnTextForButtonValue = true;
+				button->Text = "結合";
+
+				//結合ボタン列を追加
+				dataGridViewJSON->Columns->Add(button);
+			}
 
 
-		//まだ表を作成していなかったなら
-		if (dataGridViewJSON->RowCount < 1) {
-			//結合ボタン
-			DataGridViewButtonColumn^ button = gcnew DataGridViewButtonColumn();
-			button->Name = "bind";
-			button->UseColumnTextForButtonValue = true;
-			button->Text = "結合";
+			dataGridViewJSON->RowCount = rowN;
+			dataGridViewJSON->ColumnCount = colN + 1;
+			
+			for (int i = 0; i < rowN; i++) {
+				for (int j = 0; j < colN; j++) {
+					(dataGridViewJSON->Rows[i]->Cells[j + 1]->Value) = gcnew String(jsonLoader->getGrid(i, j).c_str());
+				}
+			}
 
-			//結合ボタン列を追加
-			dataGridViewJSON->Columns->Add(button);
 		}
+		else {
+			//gridJsonCreator = new GridJSONCreator();
 
-		//tablelayoutpanelの縦横の長さを取得した値に設定
-		dataGridViewJSON->RowCount = rowN;
-		dataGridViewJSON->ColumnCount = colN + 1;
+			//入力されているタテの長さを取得
+			int rowN = Convert::ToInt32(textBoxRowN->Text);
+			//入力されているヨコの長さを取得
+			int colN = Convert::ToInt32(textBoxColN->Text);
+
+			gridJsonCreator->init(rowN, colN);
+
+
+			//まだ表を作成していなかったなら
+			if (dataGridViewJSON->RowCount < 1) {
+				//結合ボタン
+				DataGridViewButtonColumn^ button = gcnew DataGridViewButtonColumn();
+				button->Name = "bind";
+				button->UseColumnTextForButtonValue = true;
+				button->Text = "結合";
+
+				//結合ボタン列を追加
+				dataGridViewJSON->Columns->Add(button);
+			}
+
+			//tablelayoutpanelの縦横の長さを取得した値に設定
+			dataGridViewJSON->RowCount = rowN;
+			dataGridViewJSON->ColumnCount = colN + 1;
+		}
 
 		//レイアウトの表示を開始する
 		this->ResumeLayout(false);
@@ -388,11 +423,11 @@ private: System::Void dataGridViewJSON_RowHeaderMouseDoubleClick(System::Object^
 	//その行の情報を取得する
 	std::vector<std::string> tempvec = gridJsonCreator->getGridRowData(rowN);
 
-	//行ごとの情報を入力するフォームインスタンスを生成
+	//行ごとの情報を入力するフォームのインスタンスを生成
 	GridRowInfo^ rowInfo = gcnew GridRowInfo();
 
 	//行ごとの情報の要素数分の配列を確保（vector→arrayへの変換手続き）
-	//(size() - constan)…はこれがないと行の情報を表示させるたびに行が増えていってしまうため
+	//(size() - constan)…はこれがないと行の情報を表示させるたびに行が増えていってしまうため(DataGridViewの仕様)
 	array<String^>^ temparray = gcnew array<String^>(tempvec.size() - constants.ROW_INFO_ADJUSTER);
 	//取得した情報の数だけ繰り返してコピー
 	for (int i = 0; i < tempvec.size() - 1; i++) {
@@ -452,6 +487,28 @@ private: System::Void dataGridViewJSON_CellPainting(System::Object^  sender, Sys
 		TextRenderer::DrawText(e->Graphics, e->FormattedValue->ToString(), e->CellStyle->Font, *rect, e->CellStyle->ForeColor, TextFormatFlags::HorizontalCenter | TextFormatFlags::VerticalCenter);
 		e->Handled = true;
 	}
+}
+
+
+//環境ボタンが押されたときのイベント
+private: System::Void buttonEnv_Click(System::Object^  sender, System::EventArgs^  e) {
+	//JSONを読み込むクラスのインスタンス生成
+	jsonLoader = new JsonLoader();
+	//環境設定入力フォームのインスタンスを生成
+	EnvForm^ envform = gcnew EnvForm();
+
+	//現在の情報を渡す
+	envform->JSONFilePath = gcnew String(jsonLoader->getJsonFilePath().c_str());
+	//envform->DBName		  = gcnew String(jsonLoader->getDBName().c_str());
+	//envform->Query		  = gcnew String(jsonLoader->getQuery().c_str());
+	//モーダル表示する
+	envform->ShowDialog();
+
+	std::string filepath = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(envform->JSONFilePath).ToPointer();
+
+	//パスを取得してセットする
+	jsonLoader->setJsonFilePath(filepath);
+
 }
 };
 }

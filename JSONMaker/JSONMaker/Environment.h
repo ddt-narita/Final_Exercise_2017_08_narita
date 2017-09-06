@@ -7,25 +7,36 @@
 
 class Environmental
 {
-private:
-	std::string rowN;
-	std::string colN;
-	std::string JSONName;
-	std::string a;
+public:
+	
+	std::string Query = "";
+	std::string JSONFilePath = "";
 
 public:
-	std::string getRowN() {
-		return rowN;
-	}
-	
-	std::string getColN() {
-		return colN;
-	}
-
-	std::string getJSONName() {
+	/*std::string getJSONName() {
 		return JSONName;
 	}
 
+	void setJSONName(std::string jsonname) {
+		JSONName = jsonname;
+	}*/
+
+	std::string getJSONFilePath() {
+		return JSONFilePath;
+	}
+
+	void setJSONFilePath(std::string path) {
+		std::string pa = path;
+		JSONFilePath = pa;
+	}
+
+	std::string getQuery() {
+		return Query;
+	}
+
+	void setQuery(std::string query) {
+		Query = query;
+	}
 
 };
 

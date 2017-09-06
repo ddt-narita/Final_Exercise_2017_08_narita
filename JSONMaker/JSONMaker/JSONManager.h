@@ -49,9 +49,12 @@ public:
 	//環境設定に関するメソッド
 	std::string getJSONName();
 	std::string getJSONSavePath();
+	void setJSONSavePath(std::string path);
 	std::string getQuery();
 	std::string getJsonFilePath();
+	void setJsonFilePath(std::string path);
 	std::string getDBName();
+	bool isJSONFilePathSet();
 
 	//メンバのjsonをクリア
 	void jsonClear();

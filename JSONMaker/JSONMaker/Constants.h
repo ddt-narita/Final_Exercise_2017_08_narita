@@ -14,6 +14,7 @@ public:
 	const int ROWSPAN_INDEX = 2;
 	const int ROW_INFO_ADJUSTER = 1;
 	const int CELL_INFO_NUMBER = 2;
+	const std::string KEY_IS_ARRAY = "";
 };
 
 static Constants constants;

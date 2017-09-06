@@ -65,6 +65,12 @@ std::string JSONManager::getJSONSavePath()
 	return std::string();
 }
 
+void JSONManager::setJSONSavePath(std::string path)
+{
+	
+}
+
+
 std::string JSONManager::getQuery()
 {
 	return std::string();
@@ -72,9 +78,21 @@ std::string JSONManager::getQuery()
 
 std::string JSONManager::getJsonFilePath()
 {
-	return std::string();
+	return env.getJSONFilePath();
 }
 
+void JSONManager::setJsonFilePath(std::string path)
+{
+	env.setJSONFilePath(path);
+}
+
+bool JSONManager::isJSONFilePathSet()
+{
+	//環境クラスからJSONのパスを取得して、空でないかの真理値を返す
+	return (env.getJSONFilePath() != "");
+}
+
+//JSONの初期化を行う
 void JSONManager::jsonClear()
 {
 	json.clear();

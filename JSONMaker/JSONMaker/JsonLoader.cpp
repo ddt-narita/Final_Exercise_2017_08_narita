@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include <iostream>
 #include "Constants.h"
+#include <sstream>
 
 using namespace std;
 using namespace boost::property_tree;
@@ -28,7 +29,9 @@ JsonLoader::~JsonLoader()
 */
 void JsonLoader::run()
 {
+	//初期化関数を実行
 	this->JsonLoader::init();
+	//読み込みを行う関数を実行
 	this->JsonLoader::job();
 }
 
@@ -42,13 +45,21 @@ void JsonLoader::run()
 */
 void JsonLoader::init()
 {
+	//セットされたファイルパスを取得
 	string path = this->getJsonFilePath();
+	//そのパスでjson読み込み
 	read_json(path, json);
-
+	//何階層目かの数値を0でリセット
 	jsonLevel = 0;
-
+	//読みこめていなかったら
 	if (json.empty()) {
+		//読みこめていなかったことを表示
 		cout << "json couldn't read";
+	}
+	else {
+		stringstream ss;
+		write_json(ss, json);
+		cout << ss.str();
 	}
 }
 
@@ -62,6 +73,7 @@ void JsonLoader::init()
 */
 void JsonLoader::job()
 {
+	//実際にjsonを読み込む
 	this->loadJson(json);
 }
 
@@ -73,10 +85,8 @@ void JsonLoader::job()
 作成者:成田修之
 作成日:9月5日
 */
-std::string JsonLoader::getJsonFilePath()
-{
-	return std::string();
-}
+
+
 
 
 /*
@@ -87,8 +97,8 @@ std::string JsonLoader::getJsonFilePath()
 作成者:成田修之
 作成日:9月5日
 */
-int isSameParentNumber(const vector<string> &previous, const vector<string>& thistime) {
-
+int isSameParentNumber(const vector<string> &previous, const vector<string>& thistime) 
+{
 	//返却する何個同じかを格納する変数
 	int retSameCount;
 
@@ -100,7 +110,7 @@ int isSameParentNumber(const vector<string> &previous, const vector<string>& thi
 			break;
 		}
 	}
-
+	//何個同じだったかを返却する
 	return retSameCount;
 }
 
@@ -118,22 +128,10 @@ void JsonLoader::loadJson(ptree json)
 	//受け取ったjsonについて第一階層全走査
 	BOOST_FOREACH(const ptree::value_type& child, json) {
 		//キー名をその階層のキーとして格納
-		hierarchy.push_back(child.first);
+		keyHierarchyArray.push_back(child.first);
 
-		//valueがオブジェクト
-		if (!child.second.empty() && child.second.data().empty()) {
-
-			//階層を表す変数を+1
-			this->jsonLevel += 1;
-			//このオブジェクトについて再帰処理
-			loadJson(child.second);
-			//抜け出したら変数を-1して
-			this->jsonLevel -= 1;
-			//一番後ろの階層のキーを取り除く
-			hierarchy.pop_back();
-		}
 		//配列の時
-		else if (child.first == "") {
+		if (child.first == "") {
 			//配列を取得
 			ptree arraytree = child.second;
 			//配列の要素オブジェクトを全走査
@@ -149,28 +147,37 @@ void JsonLoader::loadJson(ptree json)
 						//要素のvalueを取得
 						boost::optional<std::string> value = arrayObject.second.get_optional<std::string>(arrayObject.first);
 						//取得した値をセットする
-						setGrid(setGridRowN,setGridColN, value.get());
-
+						setGrid(setGridRowN, setGridColN, value.get());
 						//次、となりの列に行くために列の値をインクリメント
 						setGridColN++;
 
 					}	//オブジェクト内終了
-//行の情報を格納する(引数要修正)
-					this->setGridRowData(setGridRowN,hierarchy);
+						//配列であることを示すキーを階層のキー配列に追加
+					keyHierarchyArray.push_back(constants.KEY_IS_ARRAY);
+					//行の情報を格納する(配列なのでこのまま)
+					JSONManager::setGridRowData(setGridRowN, keyHierarchyArray);
+					//配列であることを示すキーを取り除く(階層のキーとは関係がないため)
+					keyHierarchyArray.pop_back();
 					//次の行に行くためにインクリメント
 					setGridRowN++;
 					//改行するので列の値は0に
 					setGridColN = 0;
-					
+
 				}
-				//要素がオブジェクトではなく、通常の要素
+				//配列の要素がオブジェクトではなく、通常の要素
 				else {
 					//valueを取得する
-					boost::optional<std::string> value = arrayNode.second.get_optional<std::string>(arrayNode.first);
+					//boost::optional<std::string> value = arrayNode.second.get_optional<std::string>(arrayNode.first);
+					string value = arrayNode.second.data();
+					
 					//取得した値を表にセット
-					setGrid(setGridRowN, setGridColN, value.get());
+					setGrid(setGridRowN, setGridColN, value);
+					//配列であることを示すキーを追加
+					keyHierarchyArray.push_back(constants.KEY_IS_ARRAY);
 					//行の情報を格納する
-					setGridRowData(setGridRowN, hierarchy);
+					setGridRowData(setGridRowN, keyHierarchyArray);
+					//配列であることを示すキーを取り除く(階層のキーとは無関係なため)
+					keyHierarchyArray.pop_back();
 					//改行処理
 					setGridRowN++;
 					setGridColN = 0;
@@ -178,39 +185,46 @@ void JsonLoader::loadJson(ptree json)
 				}
 			}	//配列の要素終了
 		}//子でも配列でもないとき(最下層でvalueが取り出せるとき)
+		//valueがオブジェクト
+		else if (!child.second.empty() && child.second.data().empty()) {
+
+			//階層を表す変数を+1
+			this->jsonLevel += 1;
+			//このオブジェクトについて再帰処理
+			loadJson(child.second);
+			//抜け出したら変数を-1して
+			this->jsonLevel -= 1;
+			//一番後ろの階層のキーを取り除く
+			keyHierarchyArray.pop_back();
+		}
+
 		else {
 			//valueを取得
-			boost::optional<std::string> value = child.second.get_optional<std::string>(child.first);
+			string gridvalue = child.second.data();
 
 			//今回の階層のキーと前回のキー情報で同じものが階層の数-1より大きい(違う部分が一つのみ)
-			if (isSameParentNumber(previousRowData, hierarchy) > jsonLevel - 1) {
-				setGridRowData(setGridRowN, hierarchy);
+			int sameParentNumber = isSameParentNumber(previousRowData, keyHierarchyArray);
+			//前回と今回で同じキーの数が階層の数との差が1(前回と今回で異なるキーが1つのみ)
+			if (sameParentNumber >= jsonLevel - 1) {
+				//階層のキーから最新2つを除いた配列を行のデータとしてセット
+				setGridRowData(setGridRowN, vector<string>(keyHierarchyArray.begin(), keyHierarchyArray.end() - 2));
 				//改行して次の行へ格納するように
 				setGridRowN++;
 				//改行なので列の値は0に
 				setGridColN = 0;
 			}
+
+
+
 			//取得したvalueをセット
-			setGrid(setGridRowN,setGridColN, value.get());
-			setGridData(setGridRowN,setGridColN, hierarchy);
+			setGrid(setGridRowN, setGridColN, gridvalue);
+			//階層のキーの後ろから2番目から最後まで（最新のキー2つ）のキー群をそのvalueの情報として格納
+			setGridData(setGridRowN, setGridColN, vector<string>(keyHierarchyArray.end() - 2, keyHierarchyArray.end()));
+
 			//次の列へ
 			setGridColN++;
 			//今回の情報を保存して次のノードへ
-			previousRowData = hierarchy;
+			previousRowData = keyHierarchyArray;
 		}
-	}
-}
-
-vector<string> hierarToRowData(const vector<string>& hier) {
-	vector<string> rowdata(hier.size() - 2);
-	for (int i = 0; i < rowdata.size(); i++) {
-
-	}
-}
-
-vector<string> hierarToGridData(const vector<string>& hier) {
-	vector<string> gridData(2);
-	for (int i = 0; i < 2; i++) {
-
 	}
 }

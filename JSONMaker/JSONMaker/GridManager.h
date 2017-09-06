@@ -1,15 +1,15 @@
 #pragma once
 
-#include <vector>
+#include <map>
 
 
 
 class GridManager
 {
 public:
-	std::vector<std::vector<std::string>> grid;						//•\¦‚·‚éî•ñ‚ğŠi”[
-	std::vector<std::vector<std::vector<std::string>>> gridData;	//ƒZƒ‹‚²‚Æ‚Ìî•ñ‚ğŠi”[
-	std::vector<std::vector<std::string>> gridRowData;				//s‚²‚Æ‚Ìî•ñ‚ğŠi”[
+	std::map <std::string, std::string> grid;						//•\¦‚·‚éî•ñ‚ğŠi”[
+	std::map <std::string, std::vector<std::string>> gridData;		//ƒZƒ‹‚²‚Æ‚Ìî•ñ‚ğŠi”[
+	std::map <std::string, std::vector<std::string>> gridRowData;	//s‚²‚Æ‚Ìî•ñ‚ğŠi”[
 
 public:
 	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^

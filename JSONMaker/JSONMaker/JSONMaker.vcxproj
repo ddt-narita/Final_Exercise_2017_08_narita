@@ -121,9 +121,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\lenovo\Downloads\boost_1_64_0\boost_1_64_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>main</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -134,6 +137,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EnvForm.cpp" />
     <ClCompile Include="GridInfo.cpp" />
     <ClCompile Include="GridJSONCreator.cpp" />
     <ClCompile Include="GridManager.cpp" />
@@ -146,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="EnvForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Environment.h" />
     <ClInclude Include="GridInfo.h">
       <FileType>CppForm</FileType>
@@ -164,6 +171,9 @@
     <ClInclude Include="ListManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EnvForm.resx">
+      <DependentUpon>EnvForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GridInfo.resx">
       <DependentUpon>GridInfo.h</DependentUpon>
     </EmbeddedResource>

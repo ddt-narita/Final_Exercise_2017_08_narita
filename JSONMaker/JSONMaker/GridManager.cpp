@@ -12,17 +12,11 @@ GridManager::GridManager()
 //デストラクタ
 GridManager::~GridManager()
 {
-	for (int i = 0; i < getGridRowLength(); i++) {
-		for (int j = 0; j < getGridColLength(); j++) {
-			gridData[i][j].clear();
-		}
-		grid[i].clear();
-		gridData[i].clear();
-		gridRowData[i].clear();
-	}
-	grid.clear();
-	gridData.clear();
-	gridRowData.clear();
+}
+
+string coordinateToStr(int rowN, int colN) {
+	string retStr = to_string(rowN) + ":" + to_string(colN);
+	return retStr;
 }
 
 
@@ -36,28 +30,6 @@ GridManager::~GridManager()
 */
 void GridManager::init(int rowN, int colN)
 {
-	vector<string> temp(colN);
-	for (int i = 0; i <= rowN; i++) {
-		grid.push_back(temp);
-	}
-
-	//セルごとの情報について初期化
-	vector<vector<string>> tempdata(colN);
-	for (int i = 0; i < colN; i++) {
-		
-		vector<string> temp(2);
-		tempdata[i] = temp;
-	}
-	for (int j = 0; j < rowN; j++) {
-		gridData.push_back(tempdata);
-	}
-
-	//行ごとの情報について初期化
-	vector<string> tempRowData(2);
-	for (int i = 0; i < rowN; i++) {
-		gridRowData.push_back(tempRowData);
-	}
-
 }
 
 /*
@@ -83,11 +55,11 @@ std::string GridManager::getGrid(int rowN, int colN)
 */
 void GridManager::setGrid(int rowN, int colN, std::string value)
 {
-	if  (grid.size() < rowN) {
+	if  (grid.size() <= rowN) {
 		vector<string> tempRowVec(colN);
 		grid.push_back(tempRowVec);
 	}
-	if (grid[rowN].size() < colN) {
+	if (grid[rowN].size() <= colN) {
 		grid[rowN].push_back(value);
 	}
 	else {
@@ -121,11 +93,11 @@ std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 */
 void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 {
-	if (gridData.size() < rowN) {
+	if (gridData.size() <= rowN) {
 		vector<vector<string>> tempRowVec(colN);
 		gridData.push_back(tempRowVec);
 	}
-	if (gridData[rowN].size() < colN) {
+	if (gridData[rowN].size() <= colN) {
 		gridData[rowN].push_back(data);
 	}
 	else {
@@ -156,7 +128,7 @@ std::vector<std::string> GridManager::getGridRowData(int rowN)
 */
 void GridManager::setGridRowData(int rowN, std::vector<std::string> data)
 {
-	if (gridRowData.size() < rowN) {
+	if (gridRowData.size() <= rowN) {
 		gridRowData.push_back(data);
 	}
 	else {
