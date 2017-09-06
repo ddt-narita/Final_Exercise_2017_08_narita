@@ -2,14 +2,15 @@
 
 #include <map>
 
-
-
 class GridManager
 {
-public:
+private:
 	std::map <std::string, std::string> grid;						//表示する情報を格納
 	std::map <std::string, std::vector<std::string>> gridData;		//セルごとの情報を格納
 	std::map <std::string, std::vector<std::string>> gridRowData;	//行ごとの情報を格納
+	
+	int rowNum;		//行数
+	int colMaxNum;		//最大列数
 
 public:
 	//コンストラクタ
@@ -35,7 +36,7 @@ public:
 	//表の縦横の長さ
 	int getGridRowLength();
 	int getGridColLength(int rowN = 0);
-
-
+	void setRowLen(int rowN);
+	void setColMaxLen(int colN);
 };
 

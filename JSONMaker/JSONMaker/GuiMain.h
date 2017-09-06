@@ -238,6 +238,7 @@ namespace JSONMaker {
 			this->Controls->Add(this->tabControl1);
 			this->Name = L"GuiMain";
 			this->Text = L"GuiMain";
+			this->Load += gcnew System::EventHandler(this, &GuiMain::GuiMain_Load);
 			this->tabControl1->ResumeLayout(false);
 			this->GridtabPage->ResumeLayout(false);
 			this->GridtabPage->PerformLayout();
@@ -246,16 +247,17 @@ namespace JSONMaker {
 
 		}
 #pragma endregion
-		GridJSONCreator* gridJsonCreator;
 		JsonLoader* jsonLoader;
+		GridJSONCreator* gridJsonCreator;
 
 	//OKボタン押下時のイベント
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-		gridJsonCreator = new GridJSONCreator();
+		jsonLoader = new JsonLoader();
 
 		//レイアウトの作成をやめる（描画がおもいため）
 		this->SuspendLayout();
 		
+		//JSON読み込みの時
 		if (jsonLoader->isJSONFilePathSet()) {
 
 			jsonLoader->run();
@@ -293,6 +295,8 @@ namespace JSONMaker {
 			int rowN = Convert::ToInt32(textBoxRowN->Text);
 			//入力されているヨコの長さを取得
 			int colN = Convert::ToInt32(textBoxColN->Text);
+			gridJsonCreator->setGridRowLen(rowN);
+			gridJsonCreator->setGridMaxColLen(colN);
 
 			gridJsonCreator->init(rowN, colN);
 
@@ -509,6 +513,10 @@ private: System::Void buttonEnv_Click(System::Object^  sender, System::EventArgs
 	//パスを取得してセットする
 	jsonLoader->setJsonFilePath(filepath);
 
+}
+
+//
+private: System::Void GuiMain_Load(System::Object^  sender, System::EventArgs^  e) {
 }
 };
 }

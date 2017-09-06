@@ -55,6 +55,18 @@ int JSONManager::getGridColLength()
 	return grid->getGridColLength();
 }
 
+void JSONManager::setGridRowLen(int rown)
+{
+	grid->setRowLen(rown);
+}
+
+void JSONManager::setGridMaxColLen(int coln)
+{
+	grid->setColMaxLen(coln);
+}
+
+
+
 std::string JSONManager::getJSONName()
 {
 	return "json";

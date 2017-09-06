@@ -39,6 +39,8 @@ public:
 	//グリッドの長さ
 	int getGridRowLength();
 	int getGridColLength();
+	void setGridRowLen(int rown);
+	void setGridMaxColLen(int coln);
 
 	//リストに関するもの
 	int getListNumber();

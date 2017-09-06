@@ -14,6 +14,14 @@ GridManager::~GridManager()
 {
 }
 
+/*
+関数名:coordinateToStr
+概要:引数の座標値をマップのキーにアクセスするための文字列に変換する
+引数:int rowN, colN　座標値
+返却値:	string str 返還後の文字列
+作成者:成田修之
+作成日:9月6日
+*/
 string coordinateToStr(int rowN, int colN) {
 	string retStr = to_string(rowN) + ":" + to_string(colN);
 	return retStr;
@@ -42,7 +50,7 @@ void GridManager::init(int rowN, int colN)
 */
 std::string GridManager::getGrid(int rowN, int colN)
 {
-	return grid[rowN][colN];
+	return grid[coordinateToStr(rowN, colN)];
 }
 
 /*
@@ -55,16 +63,7 @@ std::string GridManager::getGrid(int rowN, int colN)
 */
 void GridManager::setGrid(int rowN, int colN, std::string value)
 {
-	if  (grid.size() <= rowN) {
-		vector<string> tempRowVec(colN);
-		grid.push_back(tempRowVec);
-	}
-	if (grid[rowN].size() <= colN) {
-		grid[rowN].push_back(value);
-	}
-	else {
-		grid[rowN][colN] = value;
-	}
+	grid[coordinateToStr(rowN, colN)] = value;
 }
 
 
@@ -78,8 +77,7 @@ void GridManager::setGrid(int rowN, int colN, std::string value)
 */
 std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 {
-	vector<string>temp = gridData[rowN][colN];
-	return temp;
+	return gridData[coordinateToStr(rowN, colN)];
 }
 
 
@@ -93,16 +91,7 @@ std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 */
 void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 {
-	if (gridData.size() <= rowN) {
-		vector<vector<string>> tempRowVec(colN);
-		gridData.push_back(tempRowVec);
-	}
-	if (gridData[rowN].size() <= colN) {
-		gridData[rowN].push_back(data);
-	}
-	else {
-		gridData[rowN][colN] = data;
-	}
+	gridData[coordinateToStr(rowN, colN)] = data;
 }
 
 /*
@@ -115,7 +104,7 @@ void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 */
 std::vector<std::string> GridManager::getGridRowData(int rowN)
 {
-	return gridRowData[rowN];
+	return gridRowData[to_string(rowN)];
 }
 
 /*
@@ -128,12 +117,7 @@ std::vector<std::string> GridManager::getGridRowData(int rowN)
 */
 void GridManager::setGridRowData(int rowN, std::vector<std::string> data)
 {
-	if (gridRowData.size() <= rowN) {
-		gridRowData.push_back(data);
-	}
-	else {
-		gridRowData[rowN] = data;
-	}
+	gridRowData[to_string(rowN)] = data;
 }
 
 /*
@@ -146,8 +130,7 @@ void GridManager::setGridRowData(int rowN, std::vector<std::string> data)
 */
 int GridManager::getGridRowLength()
 {
-	int rowLen = grid.size() - 1;
-	return rowLen;
+	return rowNum;
 }
 
 /*
@@ -160,6 +143,15 @@ int GridManager::getGridRowLength()
 */
 int GridManager::getGridColLength(int rowN)
 {
-	int colLen = grid[rowN].size();
-	return colLen;
+	return colMaxNum;
+}
+
+void GridManager::setRowLen(int rowN)
+{
+	rowNum = rowN;
+}
+
+void GridManager::setColMaxLen(int coln)
+{
+	colMaxNum = coln;
 }

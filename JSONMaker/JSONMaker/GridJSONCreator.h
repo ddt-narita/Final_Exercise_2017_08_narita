@@ -7,6 +7,7 @@
 class GridJSONCreator: public JSONManager
 {
 private:
+
 public:
 	GridJSONCreator();
 	~GridJSONCreator();

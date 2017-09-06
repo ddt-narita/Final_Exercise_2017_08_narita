@@ -180,7 +180,11 @@ void JsonLoader::loadJson(ptree json)
 					keyHierarchyArray.pop_back();
 					//改行処理
 					setGridRowN++;
+					if (getGridColLength() < setGridColN) {
+						setGridMaxColLen(setGridColN);
+					}
 					setGridColN = 0;
+					setGridRowLen(setGridRowN);
 
 				}
 			}	//配列の要素終了
@@ -213,9 +217,7 @@ void JsonLoader::loadJson(ptree json)
 				//改行なので列の値は0に
 				setGridColN = 0;
 			}
-
-
-
+			
 			//取得したvalueをセット
 			setGrid(setGridRowN, setGridColN, gridvalue);
 			//階層のキーの後ろから2番目から最後まで（最新のキー2つ）のキー群をそのvalueの情報として格納

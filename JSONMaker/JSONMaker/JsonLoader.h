@@ -3,9 +3,10 @@
 #define __JSON_LOADER
 
 #include "JSONManager.h"
+#include "GridJSONCreator.h"
 
 class JsonLoader :
-	public JSONManager
+	public GridJSONCreator
 {
 private:
 	//Ä‹A’†‚É‰½ŠK‘w–Ú‚©‚ğ•\‚·•Ï”
