@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "EnvForm.h"
 #include "JsonLoader.h"
+#include <windows.h>
 
 namespace JSONMaker {
 
@@ -142,7 +143,6 @@ namespace JSONMaker {
 			this->dataGridViewJSON->Size = System::Drawing::Size(624, 320);
 			this->dataGridViewJSON->TabIndex = 8;
 			this->dataGridViewJSON->CellDoubleClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &GuiMain::dataGridViewJSON_CellDoubleClick);
-			this->dataGridViewJSON->CellPainting += gcnew System::Windows::Forms::DataGridViewCellPaintingEventHandler(this, &GuiMain::dataGridViewJSON_CellPainting);
 			this->dataGridViewJSON->RowHeaderMouseDoubleClick += gcnew System::Windows::Forms::DataGridViewCellMouseEventHandler(this, &GuiMain::dataGridViewJSON_RowHeaderMouseDoubleClick);
 			// 
 			// buttonJsonCreate
@@ -250,20 +250,74 @@ namespace JSONMaker {
 		JsonLoader* jsonLoader;
 		GridJSONCreator* gridJsonCreator;
 
+
+std::string UTF8toSjis(std::string srcUTF8) {
+	//Unicodeへ変換後の文字列長を得る
+	int lenghtUnicode = MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, NULL, 0);
+
+	//必要な分だけUnicode文字列のバッファを確保
+	wchar_t* bufUnicode = new wchar_t[lenghtUnicode];
+
+	//UTF8からUnicodeへ変換
+	MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, bufUnicode, lenghtUnicode);
+
+	//ShiftJISへ変換後の文字列長を得る
+	int lengthSJis = WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, -1, NULL, 0, NULL, NULL);
+	//必要な分だけShiftJIS文字列のバッファを確保
+	char* bufShiftJis = new char[lengthSJis];
+
+	//UnicodeからShiftJISへ変換
+	WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, lenghtUnicode + 1, bufShiftJis, lengthSJis, NULL, NULL);
+
+	std::string strSJis(bufShiftJis);
+	
+	delete bufUnicode;
+	delete bufShiftJis;
+
+	return strSJis;
+}
+
+std::string SjistoUTF8(std::string srcSjis) {
+	//Unicodeへ変換後の文字列長を得る
+	int lenghtUnicode = MultiByteToWideChar(CP_THREAD_ACP, 0, srcSjis.c_str(), srcSjis.size() + 1, NULL, 0);
+
+	//必要な分だけUnicode文字列のバッファを確保
+	wchar_t* bufUnicode = new wchar_t[lenghtUnicode];
+
+	//ShiftJISからUnicodeへ変換
+	MultiByteToWideChar(CP_THREAD_ACP, 0, srcSjis.c_str(), srcSjis.size() + 1, bufUnicode, lenghtUnicode);
+
+
+	//UTF8へ変換後の文字列長を得る
+	int lengthUTF8 = WideCharToMultiByte(CP_UTF8, 0, bufUnicode, -1, NULL, 0, NULL, NULL);
+
+	//必要な分だけUTF8文字列のバッファを確保
+	char* bufUTF8 = new char[lengthUTF8];
+
+	//UnicodeからUTF8へ変換
+	WideCharToMultiByte(CP_UTF8, 0, bufUnicode, lenghtUnicode + 1, bufUTF8, lengthUTF8, NULL, NULL);
+
+	std::string strUTF8(bufUTF8);
+
+	delete bufUnicode;
+	delete bufUTF8;
+
+	return strUTF8;
+}
+
+
 	//OKボタン押下時のイベント
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-		jsonLoader = new JsonLoader();
-
 		//レイアウトの作成をやめる（描画がおもいため）
 		this->SuspendLayout();
 		
 		//JSON読み込みの時
-		if (jsonLoader->isJSONFilePathSet()) {
+		if (jsonLoader->jsonmanager->isJSONFilePathSet()) {
 
 			jsonLoader->run();
 
-			int rowN = jsonLoader->getGridRowLength();
-			int colN = jsonLoader->getGridColLength();
+			int rowN = jsonLoader->jsonmanager->getGridRowLength();
+			int colN = jsonLoader->jsonmanager->getGridColLength();
 
 			//まだ表を作成していなかったなら
 			if (dataGridViewJSON->RowCount < 1) {
@@ -283,20 +337,18 @@ namespace JSONMaker {
 			
 			for (int i = 0; i < rowN; i++) {
 				for (int j = 0; j < colN; j++) {
-					(dataGridViewJSON->Rows[i]->Cells[j + 1]->Value) = gcnew String(jsonLoader->getGrid(i, j).c_str());
+					(dataGridViewJSON->Rows[i]->Cells[j + 1]->Value) = gcnew String(UTF8toSjis(jsonLoader->jsonmanager->getGrid(i, j)).c_str());
 				}
 			}
 
 		}
 		else {
-			//gridJsonCreator = new GridJSONCreator();
-
 			//入力されているタテの長さを取得
 			int rowN = Convert::ToInt32(textBoxRowN->Text);
 			//入力されているヨコの長さを取得
 			int colN = Convert::ToInt32(textBoxColN->Text);
-			gridJsonCreator->setGridRowLen(rowN);
-			gridJsonCreator->setGridMaxColLen(colN);
+			gridJsonCreator->jsonmanager->setGridRowLen(rowN);
+			gridJsonCreator->jsonmanager->setGridMaxColLen(colN);
 
 			gridJsonCreator->init(rowN, colN);
 
@@ -347,8 +399,8 @@ private: System::Void buttonCancel_Click(System::Object^  sender, System::EventA
 //作成ボタン押下時のイベント
 private: System::Void buttonJsonCreate_Click(System::Object^  sender, System::EventArgs^  e) {
 	//入力された表の大きさを取得する
-	int rowN = gridJsonCreator->getGridRowLength();
-	int colN = gridJsonCreator->getGridColLength();
+	int rowN = gridJsonCreator->jsonmanager->getGridRowLength();
+	int colN = gridJsonCreator->jsonmanager->getGridColLength();
 
 	//表の行数分繰り返す
 	for (int i = 0; i < rowN; i++) {
@@ -362,14 +414,14 @@ private: System::Void buttonJsonCreate_Click(System::Object^  sender, System::Ev
 			//String型からstring型へ変換する
 			std::string str = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(temp).ToPointer();
 			//変換したグリッドの値をセット
-			gridJsonCreator->setGrid(i, j, str);
+			gridJsonCreator->jsonmanager->setGrid(i, j, str);
 		}
 	}
 	//セットされた値でJSONを作成する
 	gridJsonCreator->job();
 
 	//作成し終えたらメンバのJSONをクリアする
-	gridJsonCreator->jsonClear();
+	gridJsonCreator->jsonmanager->jsonClear();
 
 	MessageBox::Show("JSON作成完了！！", "通知");
 
@@ -385,7 +437,7 @@ private: System::Void dataGridViewJSON_CellDoubleClick(System::Object^  sender, 
 	//結合ボタンでなければ
 	if (coln >= 0) {
 		//セルの情報取得
-		std::vector<std::string>tempt(gridJsonCreator->getGridData(rown, coln));
+		std::vector<std::string>tempt(gridJsonCreator->jsonmanager->getGridData(rown, coln));
 		//セルの情報として
 		array<String^>^ cellinfo_CLI = gcnew array<String^>(constants.CELL_INFO_NUMBER);
 		//セルの情報の数だけ繰り返す(2回)
@@ -415,7 +467,7 @@ private: System::Void dataGridViewJSON_CellDoubleClick(System::Object^  sender, 
 		}
 
 		//入力されたデータをグリッド管理クラスにセット
-		gridJsonCreator->setGridData(rown, coln, tempt);
+		gridJsonCreator->jsonmanager->setGridData(rown, coln, tempt);
 	}
 }
 
@@ -425,7 +477,7 @@ private: System::Void dataGridViewJSON_RowHeaderMouseDoubleClick(System::Object^
 	//選択されている行が何行目か取得
 	int rowN = dataGridViewJSON->CurrentRow->Index;
 	//その行の情報を取得する
-	std::vector<std::string> tempvec = gridJsonCreator->getGridRowData(rowN);
+	std::vector<std::string> tempvec = gridJsonCreator->jsonmanager->getGridRowData(rowN);
 
 	//行ごとの情報を入力するフォームのインスタンスを生成
 	GridRowInfo^ rowInfo = gcnew GridRowInfo();
@@ -457,7 +509,7 @@ private: System::Void dataGridViewJSON_RowHeaderMouseDoubleClick(System::Object^
 		tempvec.push_back(temp);
 	}
 	//格納したデータをその行のデータとしてセット
-	gridJsonCreator->setGridRowData(rowN, tempvec);
+	gridJsonCreator->jsonmanager->setGridRowData(rowN, tempvec);
 }
 
 
@@ -475,34 +527,32 @@ private: System::Void dataGridViewJSON_CellContentClick(System::Object^  sender,
 //セルの結合
 private: System::Void dataGridViewJSON_CellPainting(System::Object^  sender, System::Windows::Forms::DataGridViewCellPaintingEventArgs^  e) {
 	
-	if (dataGridViewJSON->CurrentCell->ColumnIndex < 0) {
-		DataGridView^ dv = (DataGridView^)(sender);
-		Rectangle^ rect;
-		DataGridViewCell^ cell;
+	//if (dataGridViewJSON->CurrentCell->ColumnIndex < 0) {
+	//	DataGridView^ dv = (DataGridView^)(sender);
+	//	//Rectangle^ rect;
+	//	DataGridViewCell^ cell;
 
-		rect = e->CellBounds;
-		cell = dataGridViewJSON[e->ColumnIndex + 1, e->RowIndex];
-		// 一つ右のセルの幅を足す
-		rect->Width += cell->Size.Width;
-		rect->X -= 1;
-		rect->Y -= 1;
-		e->Graphics->FillRectangle(gcnew SolidBrush(e->CellStyle->BackColor), *rect);
-		e->Graphics->DrawRectangle(gcnew Pen(dv->GridColor), *rect);
-		TextRenderer::DrawText(e->Graphics, e->FormattedValue->ToString(), e->CellStyle->Font, *rect, e->CellStyle->ForeColor, TextFormatFlags::HorizontalCenter | TextFormatFlags::VerticalCenter);
-		e->Handled = true;
-	}
+	//	rect = e->CellBounds;
+	//	cell = dataGridViewJSON[e->ColumnIndex + 1, e->RowIndex];
+	//	// 一つ右のセルの幅を足す
+	//	rect->Width += cell->Size.Width;
+	//	rect->X -= 1;
+	//	rect->Y -= 1;
+	//	e->Graphics->FillRectangle(gcnew SolidBrush(e->CellStyle->BackColor), *rect);
+	//	e->Graphics->DrawRectangle(gcnew Pen(dv->GridColor), *rect);
+	//	TextRenderer::DrawText(e->Graphics, e->FormattedValue->ToString(), e->CellStyle->Font, *rect, e->CellStyle->ForeColor, TextFormatFlags::HorizontalCenter | TextFormatFlags::VerticalCenter);
+	//	e->Handled = true;
+	//}
 }
 
 
 //環境ボタンが押されたときのイベント
 private: System::Void buttonEnv_Click(System::Object^  sender, System::EventArgs^  e) {
-	//JSONを読み込むクラスのインスタンス生成
-	jsonLoader = new JsonLoader();
 	//環境設定入力フォームのインスタンスを生成
 	EnvForm^ envform = gcnew EnvForm();
 
 	//現在の情報を渡す
-	envform->JSONFilePath = gcnew String(jsonLoader->getJsonFilePath().c_str());
+	envform->JSONFilePath = gcnew String(jsonLoader->jsonmanager->getJsonFilePath().c_str());
 	//envform->DBName		  = gcnew String(jsonLoader->getDBName().c_str());
 	//envform->Query		  = gcnew String(jsonLoader->getQuery().c_str());
 	//モーダル表示する
@@ -511,12 +561,16 @@ private: System::Void buttonEnv_Click(System::Object^  sender, System::EventArgs
 	std::string filepath = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(envform->JSONFilePath).ToPointer();
 
 	//パスを取得してセットする
-	jsonLoader->setJsonFilePath(filepath);
+	jsonLoader->jsonmanager->setJsonFilePath(filepath);
 
 }
 
 //
 private: System::Void GuiMain_Load(System::Object^  sender, System::EventArgs^  e) {
+	jsonLoader = new JsonLoader();
+	gridJsonCreator = new GridJSONCreator;
+
+	jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = new JSONManager();
 }
 };
 }

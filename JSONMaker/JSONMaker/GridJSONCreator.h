@@ -4,11 +4,12 @@
 
 #include "JSONManager.h"
 
-class GridJSONCreator: public JSONManager
+class GridJSONCreator
 {
 private:
-
+	
 public:
+	JSONManager* jsonmanager;
 	GridJSONCreator();
 	~GridJSONCreator();
 

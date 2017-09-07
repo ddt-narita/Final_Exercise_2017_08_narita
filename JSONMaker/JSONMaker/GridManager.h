@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 class GridManager
 {
@@ -9,8 +10,8 @@ private:
 	std::map <std::string, std::vector<std::string>> gridData;		//セルごとの情報を格納
 	std::map <std::string, std::vector<std::string>> gridRowData;	//行ごとの情報を格納
 	
-	int rowNum;		//行数
-	int colMaxNum;		//最大列数
+	int rowNum = 0;		//行数
+	int colMaxNum = 0;		//最大列数
 
 public:
 	//コンストラクタ

@@ -6,6 +6,10 @@
 #include <iostream>
 #include "Constants.h"
 #include <sstream>
+#include <codecvt>
+#include <locale>
+
+
 
 using namespace std;
 using namespace boost::property_tree;
@@ -45,20 +49,25 @@ void JsonLoader::run()
 */
 void JsonLoader::init()
 {
+	vector<string> temp(15);
+
+	keyHierarchyArray = temp;
+	previousRowData = temp;
+
 	//セットされたファイルパスを取得
-	string path = this->getJsonFilePath();
+	std::string path = this->jsonmanager->getJsonFilePath();
 	//そのパスでjson読み込み
-	read_json(path, json);
+	read_json(path, jsonmanager->json);
 	//何階層目かの数値を0でリセット
 	jsonLevel = 0;
 	//読みこめていなかったら
-	if (json.empty()) {
+	if (jsonmanager->json.empty()) {
 		//読みこめていなかったことを表示
 		cout << "json couldn't read";
 	}
 	else {
 		stringstream ss;
-		write_json(ss, json);
+		write_json(ss, jsonmanager->json);
 		cout << ss.str();
 	}
 }
@@ -74,7 +83,7 @@ void JsonLoader::init()
 void JsonLoader::job()
 {
 	//実際にjsonを読み込む
-	this->loadJson(json);
+	this->loadJson(jsonmanager->json);
 }
 
 /*
@@ -128,7 +137,7 @@ void JsonLoader::loadJson(ptree json)
 	//受け取ったjsonについて第一階層全走査
 	BOOST_FOREACH(const ptree::value_type& child, json) {
 		//キー名をその階層のキーとして格納
-		keyHierarchyArray.push_back(child.first);
+		keyHierarchyArray[jsonLevel] = child.first;
 
 		//配列の時
 		if (child.first == "") {
@@ -137,17 +146,17 @@ void JsonLoader::loadJson(ptree json)
 			//配列の要素オブジェクトを全走査
 			BOOST_FOREACH(const ptree::value_type& arrayNode, arraytree) {
 				//要素がオブジェクトの時
-				if (!arrayNode.second.empty() && arrayNode.second.data().empty()) {
+				if (arrayNode.first != "") {
 					//オブジェクト内をすべて走査
 					BOOST_FOREACH(const ptree::value_type& arrayObject, arrayNode.second) {
 						//セルのデータとしてセットするための配列
-						vector<string> gridDataForSet(2);
+						vector<std::string> gridDataForSet(2);
 						//コンテンツキーに現在のキー名をセット
 						gridDataForSet[constants.CONTENT_KEY_INDEX] = arrayObject.first;
 						//要素のvalueを取得
 						boost::optional<std::string> value = arrayObject.second.get_optional<std::string>(arrayObject.first);
 						//取得した値をセットする
-						setGrid(setGridRowN, setGridColN, value.get());
+						jsonmanager->setGrid(setGridRowN, setGridColN, value.get());
 						//次、となりの列に行くために列の値をインクリメント
 						setGridColN++;
 
@@ -155,40 +164,44 @@ void JsonLoader::loadJson(ptree json)
 						//配列であることを示すキーを階層のキー配列に追加
 					keyHierarchyArray.push_back(constants.KEY_IS_ARRAY);
 					//行の情報を格納する(配列なのでこのまま)
-					JSONManager::setGridRowData(setGridRowN, keyHierarchyArray);
+					jsonmanager->setGridRowData(setGridRowN, vector<string>(keyHierarchyArray.begin(),keyHierarchyArray.begin() + jsonLevel + 1));
 					//配列であることを示すキーを取り除く(階層のキーとは関係がないため)
 					keyHierarchyArray.pop_back();
 					//次の行に行くためにインクリメント
 					setGridRowN++;
+					jsonmanager->setGridRowLen(setGridRowN);
+					if (jsonmanager->getGridColLength() < setGridColN) {
+						jsonmanager->setGridMaxColLen(setGridColN);
+					}
 					//改行するので列の値は0に
 					setGridColN = 0;
-
+					previousRowData = keyHierarchyArray;
 				}
 				//配列の要素がオブジェクトではなく、通常の要素
 				else {
 					//valueを取得する
 					//boost::optional<std::string> value = arrayNode.second.get_optional<std::string>(arrayNode.first);
-					string value = arrayNode.second.data();
+					std::string value = arrayNode.second.data();
 					
 					//取得した値を表にセット
-					setGrid(setGridRowN, setGridColN, value);
+					jsonmanager->setGrid(setGridRowN, setGridColN, value);
 					//配列であることを示すキーを追加
 					keyHierarchyArray.push_back(constants.KEY_IS_ARRAY);
 					//行の情報を格納する
-					setGridRowData(setGridRowN, keyHierarchyArray);
+					jsonmanager->setGridRowData(setGridRowN, keyHierarchyArray);
 					//配列であることを示すキーを取り除く(階層のキーとは無関係なため)
 					keyHierarchyArray.pop_back();
 					//改行処理
 					setGridRowN++;
-					if (getGridColLength() < setGridColN) {
-						setGridMaxColLen(setGridColN);
+					if (jsonmanager->getGridColLength() < setGridColN) {
+						jsonmanager->setGridMaxColLen(setGridColN);
 					}
 					setGridColN = 0;
-					setGridRowLen(setGridRowN);
-
+					jsonmanager->setGridRowLen(setGridRowN);
+					previousRowData = keyHierarchyArray;
 				}
 			}	//配列の要素終了
-		}//子でも配列でもないとき(最下層でvalueが取り出せるとき)
+		}
 		//valueがオブジェクト
 		else if (!child.second.empty() && child.second.data().empty()) {
 
@@ -198,35 +211,39 @@ void JsonLoader::loadJson(ptree json)
 			loadJson(child.second);
 			//抜け出したら変数を-1して
 			this->jsonLevel -= 1;
-			//一番後ろの階層のキーを取り除く
-			keyHierarchyArray.pop_back();
+			
 		}
-
+		//子でも配列でもないとき(最下層でvalueが取り出せるとき)
 		else {
 			//valueを取得
-			string gridvalue = child.second.data();
+			std::string gridvalue = child.second.data();
 
 			//今回の階層のキーと前回のキー情報で同じものが階層の数-1より大きい(違う部分が一つのみ)
 			int sameParentNumber = isSameParentNumber(previousRowData, keyHierarchyArray);
 			//前回と今回で同じキーの数が階層の数との差が1(前回と今回で異なるキーが1つのみ)
-			if (sameParentNumber >= jsonLevel - 1) {
+			if (sameParentNumber != 0 && sameParentNumber >= jsonLevel - 1) {
 				//階層のキーから最新2つを除いた配列を行のデータとしてセット
-				setGridRowData(setGridRowN, vector<string>(keyHierarchyArray.begin(), keyHierarchyArray.end() - 2));
+				jsonmanager->setGridRowData(setGridRowN, vector<std::string>(keyHierarchyArray.begin(), keyHierarchyArray.end() - 2));
 				//改行して次の行へ格納するように
 				setGridRowN++;
+				jsonmanager->setGridRowLen(setGridRowN);
+				if (jsonmanager->getGridColLength() < setGridColN) {
+					jsonmanager->setGridMaxColLen(setGridColN);
+				}
 				//改行なので列の値は0に
 				setGridColN = 0;
 			}
 			
 			//取得したvalueをセット
-			setGrid(setGridRowN, setGridColN, gridvalue);
+			jsonmanager->setGrid(setGridRowN, setGridColN, gridvalue);
 			//階層のキーの後ろから2番目から最後まで（最新のキー2つ）のキー群をそのvalueの情報として格納
-			setGridData(setGridRowN, setGridColN, vector<string>(keyHierarchyArray.end() - 2, keyHierarchyArray.end()));
+			jsonmanager->setGridData(setGridRowN, setGridColN, vector<std::string>(keyHierarchyArray.end() - 2, keyHierarchyArray.end()));
 
 			//次の列へ
 			setGridColN++;
 			//今回の情報を保存して次のノードへ
 			previousRowData = keyHierarchyArray;
 		}
+		
 	}
 }

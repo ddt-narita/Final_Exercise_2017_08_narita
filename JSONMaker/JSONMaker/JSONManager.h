@@ -14,7 +14,7 @@
 
 class JSONManager
 {
-protected:
+public:
 	boost::property_tree::ptree json;
 	GridManager* grid;
 	ListManager* list;

@@ -3,12 +3,13 @@
 #define __JSON_LOADER
 
 #include "JSONManager.h"
-#include "GridJSONCreator.h"
+#include <vector>
 
-class JsonLoader :
-	public GridJSONCreator
+class JsonLoader
 {
 private:
+
+	
 	//再帰中に何階層目かを表す変数
 	int jsonLevel = 0;
 	//階層ごとのキーを入力するためのキー
@@ -23,6 +24,8 @@ private:
 	int setGridColN = 0;
 
 public:
+	JSONManager* jsonmanager;
+
 	JsonLoader();
 	~JsonLoader();
 
