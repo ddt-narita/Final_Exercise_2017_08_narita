@@ -39,5 +39,7 @@ public:
 	int getGridColLength(int rowN = 0);
 	void setRowLen(int rowN);
 	void setColMaxLen(int colN);
+
+	void adjustGridSize();
 };
 

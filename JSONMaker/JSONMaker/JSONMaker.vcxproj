@@ -137,6 +137,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="DataGridSelfMade.cpp" />
     <ClCompile Include="EnvForm.cpp" />
     <ClCompile Include="GridInfo.cpp" />
     <ClCompile Include="GridJSONCreator.cpp" />
@@ -149,7 +151,9 @@
     <ClCompile Include="ListManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cell.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="DataGridSelfMade.h" />
     <ClInclude Include="EnvForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>

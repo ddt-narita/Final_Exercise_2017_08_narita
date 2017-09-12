@@ -38,6 +38,16 @@ string coordinateToStr(int rowN, int colN) {
 */
 void GridManager::init(int rowN, int colN)
 {
+	vector<string> data(2);
+	vector<string> rowData(2);
+	for (int i = 0; i < rowN; i++) {
+		for (int j = 0; j < colN; j++) {
+			grid[coordinateToStr(i, j)] = "";
+			gridData[coordinateToStr(i, j)] = data;
+		}
+		gridRowData[to_string(i)] = rowData;
+	}
+
 }
 
 /*
@@ -154,4 +164,27 @@ void GridManager::setRowLen(int rowN)
 void GridManager::setColMaxLen(int coln)
 {
 	colMaxNum = coln;
+}
+
+void GridManager::adjustGridSize()
+{
+	//表のタテヨコの最大値を取得
+	int rowMax = this->getGridRowLength();
+	int colMax = this->getGridColLength();
+
+	//最大の行数、列数分すべて繰り返す
+	for (int i = 0; i < rowMax; i++) {
+		for (int j = 0; j < colMax; j++) {
+			//その行、列のキーがない
+			if (gridData.count(coordinateToStr(i, j)) != 1) {
+				//初期値を入力
+				gridData[coordinateToStr(i, j)] = vector<string>(2);
+			}
+		}
+		//その行についてのデータがない
+		if (gridRowData.count(to_string(i)) != 1) {
+			//初期値を入力しておく
+			gridRowData[to_string(i)] = vector<string>(2);
+		}
+	}
 }

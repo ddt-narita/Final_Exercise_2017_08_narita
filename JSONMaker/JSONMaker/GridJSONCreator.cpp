@@ -89,11 +89,12 @@ void GridJSONCreator::job()
 				
 		//今回が配列ではない且つ前回が配列の時
 		if (rowdata[rowdata.size() - 2] != "" && previousIsArray == 1) {
-			string s = "json";
+			string s = "";
 			//親のキー情報群文字列が空でなければピリオドで区切って付け足す
-			s += (parentkeys == "" ? "" : "." + parentkeys);
+			s += (parentkeys == "" ? "" : "" + parentkeys);
 			//配列の最後としてできた配列をメンバのjsonに格納
 			jsonmanager->json.add_child(s, arrayptree);
+			arrayptree.clear();
 		}
 		//情報配列からアクセス可能な文字列に変換する
 		parentkeys = jsonRowDataStr(rowdata);
@@ -139,9 +140,9 @@ void GridJSONCreator::job()
 					parentkeys = jsonRowDataStr(rowdata);
 
 					//文字列にキーとコンテンツキーの情報を加える
-					parentkeys += "." + jsonRowDataStr(celldata);
+					parentkeys += "" + jsonRowDataStr(celldata);
 					//jsonにアクセスしてセルの値を格納
-					jsonmanager->json.add("json." + parentkeys, value);
+					jsonmanager->json.add("" + parentkeys, value);
 				}
 			}
 			//今回が配列ではないことを保存
@@ -151,10 +152,11 @@ void GridJSONCreator::job()
 
 	//前回が配列のまま最後まで来たとき
 	if (previousIsArray == 1) {
-		string s  = "json";
-		s += (parentkeys == "" ? "" : "." + parentkeys);
+		string s  = "";
+		s += (parentkeys == "" ? "" : "" + parentkeys);
 		//配列の最後としてできた配列をメンバのjsonに格納
 		jsonmanager->json.add_child(s, arrayptree);
+		arrayptree.clear();
 	}
 
 

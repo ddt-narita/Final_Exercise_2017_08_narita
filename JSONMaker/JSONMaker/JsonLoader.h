@@ -35,6 +35,7 @@ public:
 
 	//
 	void loadJson(boost::property_tree::ptree json);
+	bool isSameRow(const std::vector<std::string>& previaous, const std::vector<std::string>& thistime);
 };
 
 #endif // !__JSON_LOADER

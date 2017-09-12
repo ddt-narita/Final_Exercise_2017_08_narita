@@ -109,3 +109,8 @@ void JSONManager::jsonClear()
 {
 	json.clear();
 }
+
+void JSONManager::adjustGridDataSize()
+{
+	grid->adjustGridSize();
+}

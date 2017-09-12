@@ -60,6 +60,7 @@ public:
 
 	//ƒƒ“ƒo‚Ìjson‚ğƒNƒŠƒA
 	void jsonClear();
+	void adjustGridDataSize();
 	
 };
 
