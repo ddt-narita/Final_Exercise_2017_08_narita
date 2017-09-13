@@ -32,10 +32,6 @@ public:
 	std::vector<std::string> getGridData(int rowN, int colN);
 	void setGridData(int rowN, int colN, std::vector<std::string> data);
 
-	//行ごとの情報
-	std::vector<std::string> getGridRowData(int rowN);
-	void setGridRowData(int rowN, std::vector<std::string> data);
-
 	//グリッドの長さ
 	int getGridRowLength();
 	int getGridColLength();

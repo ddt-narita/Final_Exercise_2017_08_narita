@@ -63,6 +63,37 @@ string jsonRowDataStr(vector<string> rowData) {
 	return retStr;
 }
 
+bool GridJSONCreator::isRowArray(int row) {
+	vector<string> temp =  this->jsonmanager->getGridData(row, 0);
+	int len = temp.size();
+	for (int i = 0; i < len; i++) {
+		if (temp[i] == "" && i != len) {
+			return true;
+		}
+	}
+	return false;
+}
+
+vector<string> GridJSONCreator::getRowDataVer(int row)
+{
+	//
+	vector<string> row1 = jsonmanager->getGridData(row, 0);
+	vector<string> row2 = jsonmanager->getGridData(row, 1);
+	int n = row1.size() < row2.size() ? row1.size() : row2.size();
+
+	//2列目が入力されていないとき
+	if (row2[0] == "") {
+		return vector<string>(row1.begin(), row1.end() - 1);
+	}
+	else {
+		for (int i = 0; i < n; i++) {
+			if (row1[i] != row2[i]) {
+				return vector<string>(row1.begin(), row1.begin() + i - 1);
+			}
+		}
+	}
+}
+
 //実際にJSONを作成するメソッド
 /*
 関数名:job
@@ -84,11 +115,9 @@ void GridJSONCreator::job()
 
 	//行数分繰り返す
 	for (int i = 0; i < jsonmanager->grid->getGridRowLength(); i++) {
-		//行の情報取得
-		vector<string> rowdata (jsonmanager->grid->getGridRowData(i));
 				
 		//今回が配列ではない且つ前回が配列の時
-		if (rowdata[rowdata.size() - 2] != "" && previousIsArray == 1) {
+		if (previousIsArray == 1 && !isRowArray(i)) {
 			string s = "";
 			//親のキー情報群文字列が空でなければピリオドで区切って付け足す
 			s += (parentkeys == "" ? "" : "" + parentkeys);
@@ -97,10 +126,10 @@ void GridJSONCreator::job()
 			arrayptree.clear();
 		}
 		//情報配列からアクセス可能な文字列に変換する
-		parentkeys = jsonRowDataStr(rowdata);
+		parentkeys = jsonRowDataStr(getRowDataVer(i));
 
 		//配列の時(行の一番最後が配列を示す)
-		if (rowdata[rowdata.size() - 2] == "") {
+		if (isRowArray(i)) {
 			//配列内のオブジェクト
 			ptree child;
 			//列数分繰り返す
@@ -114,11 +143,11 @@ void GridJSONCreator::job()
 					vector<string> celldata = jsonmanager->grid->getGridData(i, j);
 
 					//コンテントキーのオブジェクトを子のオブジェクトに追加
-					child.put(celldata[constants.CONTENT_KEY_INDEX], value);
+					child.put(celldata[celldata.size() - 1], value);
 				}
 			}
 			//子オブジェクトに何か入力されていれば
-			if (!child.empty() ||!child.data().empty()) {
+			if (!child.empty() || !child.data().empty()) {
 				//子オブジェクトを空のキー配下に格納して配列にする
 				arrayptree.push_back(std::make_pair("", child));
 			}
@@ -135,12 +164,8 @@ void GridJSONCreator::job()
 				if (value != "") {
 					//そのセルの情報配列を取得する
 					vector<string> celldata = jsonmanager->grid->getGridData(i, j);
-					
-					//前回の情報が残ってしまうためもう一度取得してリセット
-					parentkeys = jsonRowDataStr(rowdata);
-
 					//文字列にキーとコンテンツキーの情報を加える
-					parentkeys += "" + jsonRowDataStr(celldata);
+					parentkeys = jsonRowDataStr(celldata);
 					//jsonにアクセスしてセルの値を格納
 					jsonmanager->json.add("" + parentkeys, value);
 				}

@@ -38,16 +38,17 @@ string coordinateToStr(int rowN, int colN) {
 */
 void GridManager::init(int rowN, int colN)
 {
-	vector<string> data(2);
-	vector<string> rowData(2);
+	//セルごとのキーデータを格納させるのに使う一時オブジェクト
+	vector<string> data(1);
+	//全行列の要素分
 	for (int i = 0; i < rowN; i++) {
 		for (int j = 0; j < colN; j++) {
+			//空文字で初期化
 			grid[coordinateToStr(i, j)] = "";
+			//一時オブジェクトのコピーで初期化
 			gridData[coordinateToStr(i, j)] = data;
 		}
-		gridRowData[to_string(i)] = rowData;
 	}
-
 }
 
 /*
@@ -105,32 +106,6 @@ void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 }
 
 /*
-関数名:getGridRowData
-概要:行ごとの情報取得
-引数:int rowN 行数
-返却値:vector<string>data 情報配列
-作成者:成田修之
-作成日:9月4日(月)
-*/
-std::vector<std::string> GridManager::getGridRowData(int rowN)
-{
-	return gridRowData[to_string(rowN)];
-}
-
-/*
-関数名:setGridRowData
-概要:行ごとの情報配列を格納する
-引数:int rowN, vector<string>data
-返却値:なし
-作成者:成田修之
-作成日:9月4日(月)
-*/
-void GridManager::setGridRowData(int rowN, std::vector<std::string> data)
-{
-	gridRowData[to_string(rowN)] = data;
-}
-
-/*
 関数名:getGridRowLength
 概要:表の行の長さを取得する
 引数:なし
@@ -180,11 +155,6 @@ void GridManager::adjustGridSize()
 				//初期値を入力
 				gridData[coordinateToStr(i, j)] = vector<string>(2);
 			}
-		}
-		//その行についてのデータがない
-		if (gridRowData.count(to_string(i)) != 1) {
-			//初期値を入力しておく
-			gridRowData[to_string(i)] = vector<string>(2);
 		}
 	}
 }

@@ -17,6 +17,8 @@ public:
 
 	//ÀÛ‚ÉJSON‚ğì¬‚·‚éŠÖ”
 	void job();
+	bool isRowArray(int row);
+	std::vector<std::string> getRowDataVer(int row);
 };
 
 #endif // !__GRID_JSON_CREATOR

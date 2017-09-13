@@ -178,7 +178,7 @@ namespace JSONMaker {
 	//OKボタン押下時のイベント
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 		//入力された情報群の行数を取得
-		int rowN = dataGridViewRowInfo->Rows->Count;
+		int rowN = dataGridViewRowInfo->Rows->Count - 1;
 
 		//メンバにセットする用の行数の長さの一時配列を作成
 		array<String^>^ temp = gcnew array<String^>(rowN);

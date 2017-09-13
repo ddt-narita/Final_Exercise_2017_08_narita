@@ -323,7 +323,7 @@ namespace JSONMaker {
 			//読み込み開始
 			jsonLoader->run();
 			//行数取得
-			int rowN = jsonLoader->jsonmanager->getGridRowLength();
+			int rowN = jsonLoader->jsonmanager->getGridRowLength() + 1;
 			//最大の列数取得
 			int colN = jsonLoader->jsonmanager->getGridColLength();
 			//表の大きさを取得した列数行数に
@@ -362,16 +362,6 @@ namespace JSONMaker {
 			//tablelayoutpanelの縦横の長さを取得した値に設定
 			dataGridJson->rowCount = rowN;
 			dataGridJson->colCount = colN;
-		}
-		//パネルに行数をセット
-		PanelRowButton->RowCount = gridJsonCreator->jsonmanager->getGridRowLength();
-
-		//
-		for (int i = 0; i < PanelRowButton->RowCount; i++) {
-			Button^ button = gcnew Button();
-			button->Size = System::Drawing::Size(constants.ROW_BUTTON_WIDTH, constants.ROW_BUTTON_HEIGHT);
-			button->Click += gcnew EventHandler(this, &GuiMain::Row_Button_Click);
-			PanelRowButton->Controls->Add(button, 0, i);
 		}
 		//セルを表示
 		dataGridJson->Paint();
@@ -489,6 +479,7 @@ namespace JSONMaker {
 		//その位置についてクリック処理
 		dataGridJson->cell_click(row, col);
 	}
+
 			 //ダブルクリックされたときのイベント
 			 //セルの情報を表示する
 	private: System::Void pictureBox1_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
@@ -516,28 +507,25 @@ namespace JSONMaker {
 		//セルの情報取得
 		std::vector<std::string>cellData(gridJsonCreator->jsonmanager->getGridData(row, col));
 		//セルの情報として
-		array<String^>^ cellinfo_CLI = gcnew array<String^>(constants.CELL_INFO_NUMBER);
+		array<String^>^ cellinfo_CLI = gcnew array<String^>(cellData.size());
 		//セルの情報の数だけ繰り返す(2回)
-		for (int i = 0; i < constants.CELL_INFO_NUMBER; i++) {
+		for (int i = 0; i < cellData.size(); i++) {
 			cellinfo_CLI[i] = gcnew String(cellData[i].c_str());
 		}
 
 		//セルの情報を入力するフォームのインスタンスを生成
 		GridInfo^ gridinfo = gcnew GridInfo();
 		//各情報を渡す
-		gridinfo->key = cellinfo_CLI[constants.KEY_INDEX];
-		gridinfo->contentKey = cellinfo_CLI[constants.CONTENT_KEY_INDEX];
+		gridinfo->gridInfo = cellinfo_CLI;
 		gridinfo->rowN = row + 1;
 		gridinfo->colN = col + 1;
 		//セルの情報をモーダル表示
 		gridinfo->ShowDialog();
 
-		//入力された情報を取得
-		cellinfo_CLI[constants.KEY_INDEX] = gridinfo->key;
-		cellinfo_CLI[constants.CONTENT_KEY_INDEX] = gridinfo->contentKey;
-
+		cellinfo_CLI = gridinfo->gridInfo;
+		cellData = std::vector<std::string>(gridinfo->gridInfo->Length);
 		//コンテントキーと親のキーのみ取得
-		for (int i = 0; i < constants.CELL_INFO_NUMBER; i++) {
+		for (int i = 0; i < gridinfo->gridInfo->Length; i++) {
 			//文字列への変換
 			cellData[i] = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(cellinfo_CLI[i]).ToPointer();
 		}
@@ -548,7 +536,7 @@ namespace JSONMaker {
 		GridtabPage->AutoScrollPosition = Point(nowX, -nowY);
 	}
 
-	//セル以外の部分をクリックした際のイベント
+			 //セル以外の部分をクリックした際のイベント
 	private: System::Void GridtabPage_Click(System::Object^  sender, System::EventArgs^  e) {
 		//カレントのセルを表示しない部分にする
 		dataGridJson->drawCell(dataGridJson->currentCell, Brushes::White);
@@ -559,48 +547,5 @@ namespace JSONMaker {
 		pictureBox1->Invalidate();
 	}
 
-
-	private: System::Void Row_Button_Click(System::Object^  sender, System::EventArgs^  e) {
-		int nowX = GridtabPage->AutoScrollPosition.X;
-		int nowY = GridtabPage->AutoScrollPosition.Y;
-		Button^ button = (Button^)sender;
-		//選択されている行が何行目か取得
-		int rowN = button->Location.Y / dataGridJson->cellHeight;
-		//その行の情報を取得する
-		std::vector<std::string> tempvec = gridJsonCreator->jsonmanager->getGridRowData(rowN);
-
-		//行ごとの情報を入力するフォームのインスタンスを生成
-		GridRowInfo^ rowInfo = gcnew GridRowInfo();
-		//行ごとの情報の要素数分の配列を確保（vector→arrayへの変換手続き）
-		//(size() - constants.ROW_ADJUSTER)…はこれがないと行の情報を表示させるたびに行が増えていってしまうため(DataGridViewの仕様)
-		array<String^>^ temparray = gcnew array<String^>(tempvec.size() - constants.ROW_INFO_ADJUSTER);
-		//取得した情報の数だけ繰り返してコピー
-		for (int i = 0; i < tempvec.size() - 1; i++) {
-			//各要素を格納していく
-			temparray[i] = gcnew String(tempvec[i].c_str());
-		}
-
-		//行ごとの情報配列をフォームに渡す
-		rowInfo->gridRowInfo = temparray;
-		//何行目かの情報をフォームに渡す
-		rowInfo->rowNumber = rowN + 1;
-
-		//フォームをモーダル表示
-		rowInfo->ShowDialog();
-		//配列をクリア
-
-		tempvec.clear();
-		//行ごとの情報の数だけ繰り返す
-		for (int i = 0; i < rowInfo->gridRowInfo->Length; i++) {
-			//フォームの上から順にデータを格納
-			std::string temp = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(rowInfo->gridRowInfo[i]).ToPointer();
-			//配列に格納
-			tempvec.push_back(temp);
-		}
-		//格納したデータをその行のデータとしてセット
-		gridJsonCreator->jsonmanager->setGridRowData(rowN, tempvec);
-
-		GridtabPage->AutoScrollPosition = Point(nowX, -nowY);
-	}
 	};
-}
+};

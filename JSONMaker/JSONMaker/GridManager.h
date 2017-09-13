@@ -8,7 +8,7 @@ class GridManager
 private:
 	std::map <std::string, std::string> grid;						//•\¦‚·‚éî•ñ‚ğŠi”[
 	std::map <std::string, std::vector<std::string>> gridData;		//ƒZƒ‹‚²‚Æ‚Ìî•ñ‚ğŠi”[
-	std::map <std::string, std::vector<std::string>> gridRowData;	//s‚²‚Æ‚Ìî•ñ‚ğŠi”[
+	//std::map <std::string, std::vector<std::string>> gridRowData;	//s‚²‚Æ‚Ìî•ñ‚ğŠi”[
 	
 	int rowNum = 0;		//s”
 	int colMaxNum = 0;		//Å‘å—ñ”
@@ -29,10 +29,6 @@ public:
 	//ƒZƒ‹‚Ìî•ñ
 	std::vector<std::string> getGridData(int rowN, int colN);
 	void setGridData(int rowN, int colN, std::vector<std::string> data);
-	
-	//s‚²‚Æ‚Ìî•ñ
-	std::vector<std::string> getGridRowData(int rowN);
-	void setGridRowData(int rowN, std::vector<std::string> data);
 
 	//•\‚Ìc‰¡‚Ì’·‚³
 	int getGridRowLength();

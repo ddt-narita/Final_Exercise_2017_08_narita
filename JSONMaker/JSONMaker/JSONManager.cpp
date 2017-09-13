@@ -35,16 +35,6 @@ void JSONManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 	grid->setGridData(rowN, colN, data);
 }
 
-std::vector<std::string> JSONManager::getGridRowData(int rowN)
-{
-	return grid->getGridRowData(rowN);
-}
-
-void JSONManager::setGridRowData(int rowN, std::vector<std::string> data)
-{
-	grid->setGridRowData(rowN, data);
-}
-
 int JSONManager::getGridRowLength()
 {
 	return grid->getGridRowLength();

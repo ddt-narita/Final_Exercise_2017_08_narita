@@ -34,13 +34,17 @@ namespace JSONMaker {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::Label^  labelParentKey;
-	private: System::Windows::Forms::Label^  labelContentKey;
-	private: System::Windows::Forms::TextBox^  textBoxParentKey;
-	private: System::Windows::Forms::TextBox^  textBoxContentKey;
+
+
+
+
 	private: System::Windows::Forms::Button^  buttonOK;
 	private: System::Windows::Forms::Button^  buttonCancel;
-	private: System::Windows::Forms::Label^  labelMatrix;
+	private: System::Windows::Forms::DataGridView^  dataGridViewCellInfo;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^  columnKeys;
+	private: System::Windows::Forms::Label^  label1;
+
+
 
 	protected:
 
@@ -64,50 +68,17 @@ namespace JSONMaker {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->labelParentKey = (gcnew System::Windows::Forms::Label());
-			this->labelContentKey = (gcnew System::Windows::Forms::Label());
-			this->textBoxParentKey = (gcnew System::Windows::Forms::TextBox());
-			this->textBoxContentKey = (gcnew System::Windows::Forms::TextBox());
 			this->buttonOK = (gcnew System::Windows::Forms::Button());
 			this->buttonCancel = (gcnew System::Windows::Forms::Button());
-			this->labelMatrix = (gcnew System::Windows::Forms::Label());
+			this->dataGridViewCellInfo = (gcnew System::Windows::Forms::DataGridView());
+			this->columnKeys = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridViewCellInfo))->BeginInit();
 			this->SuspendLayout();
-			// 
-			// labelParentKey
-			// 
-			this->labelParentKey->AutoSize = true;
-			this->labelParentKey->Location = System::Drawing::Point(55, 50);
-			this->labelParentKey->Name = L"labelParentKey";
-			this->labelParentKey->Size = System::Drawing::Size(47, 12);
-			this->labelParentKey->TabIndex = 0;
-			this->labelParentKey->Text = L"親のキー";
-			// 
-			// labelContentKey
-			// 
-			this->labelContentKey->AutoSize = true;
-			this->labelContentKey->Location = System::Drawing::Point(41, 99);
-			this->labelContentKey->Name = L"labelContentKey";
-			this->labelContentKey->Size = System::Drawing::Size(69, 12);
-			this->labelContentKey->TabIndex = 1;
-			this->labelContentKey->Text = L"コンテンツキー";
-			// 
-			// textBoxParentKey
-			// 
-			this->textBoxParentKey->Location = System::Drawing::Point(116, 47);
-			this->textBoxParentKey->Name = L"textBoxParentKey";
-			this->textBoxParentKey->Size = System::Drawing::Size(122, 19);
-			this->textBoxParentKey->TabIndex = 2;
-			// 
-			// textBoxContentKey
-			// 
-			this->textBoxContentKey->Location = System::Drawing::Point(116, 96);
-			this->textBoxContentKey->Name = L"textBoxContentKey";
-			this->textBoxContentKey->Size = System::Drawing::Size(122, 19);
-			this->textBoxContentKey->TabIndex = 3;
 			// 
 			// buttonOK
 			// 
-			this->buttonOK->Location = System::Drawing::Point(35, 150);
+			this->buttonOK->Location = System::Drawing::Point(80, 20);
 			this->buttonOK->Name = L"buttonOK";
 			this->buttonOK->Size = System::Drawing::Size(75, 23);
 			this->buttonOK->TabIndex = 4;
@@ -118,20 +89,39 @@ namespace JSONMaker {
 			// buttonCancel
 			// 
 			this->buttonCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
-			this->buttonCancel->Location = System::Drawing::Point(198, 150);
+			this->buttonCancel->Location = System::Drawing::Point(161, 20);
 			this->buttonCancel->Name = L"buttonCancel";
 			this->buttonCancel->Size = System::Drawing::Size(75, 23);
 			this->buttonCancel->TabIndex = 5;
 			this->buttonCancel->Text = L"Cancel";
 			this->buttonCancel->UseVisualStyleBackColor = true;
 			// 
-			// labelMatrix
+			// dataGridViewCellInfo
 			// 
-			this->labelMatrix->AutoSize = true;
-			this->labelMatrix->Location = System::Drawing::Point(33, 19);
-			this->labelMatrix->Name = L"labelMatrix";
-			this->labelMatrix->Size = System::Drawing::Size(0, 12);
-			this->labelMatrix->TabIndex = 6;
+			this->dataGridViewCellInfo->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
+				| System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->dataGridViewCellInfo->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->dataGridViewCellInfo->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(1) { this->columnKeys });
+			this->dataGridViewCellInfo->Location = System::Drawing::Point(27, 49);
+			this->dataGridViewCellInfo->Name = L"dataGridViewCellInfo";
+			this->dataGridViewCellInfo->RowTemplate->Height = 21;
+			this->dataGridViewCellInfo->Size = System::Drawing::Size(187, 226);
+			this->dataGridViewCellInfo->TabIndex = 6;
+			// 
+			// columnKeys
+			// 
+			this->columnKeys->HeaderText = L"親キー";
+			this->columnKeys->Name = L"columnKeys";
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(12, 25);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(35, 12);
+			this->label1->TabIndex = 7;
+			this->label1->Text = L"label1";
 			// 
 			// GridInfo
 			// 
@@ -139,87 +129,86 @@ namespace JSONMaker {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->CancelButton = this->buttonCancel;
-			this->ClientSize = System::Drawing::Size(323, 198);
-			this->Controls->Add(this->labelMatrix);
+			this->ClientSize = System::Drawing::Size(248, 287);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->dataGridViewCellInfo);
 			this->Controls->Add(this->buttonCancel);
 			this->Controls->Add(this->buttonOK);
-			this->Controls->Add(this->textBoxContentKey);
-			this->Controls->Add(this->textBoxParentKey);
-			this->Controls->Add(this->labelContentKey);
-			this->Controls->Add(this->labelParentKey);
 			this->Name = L"GridInfo";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"GridInfo";
 			this->Load += gcnew System::EventHandler(this, &GridInfo::GridInfo_Load);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridViewCellInfo))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
 private:
-		String^ _key;
-		String^ _contentKey;
-		int _rowN;
-		int _colN;
-
 public:
-		property String^ key
-		{
-			String^ get()
-			{
-				return _key;
+	//行の情報を保管するメンバ
+	array<String^>^ _gridInfo;
+	//行数のメンバ
+	int _rowN;
+	public:
+		int rowN;
+		int colN;
+		//行の情報プロパティー
+		property array<String^>^ gridInfo {
+			array<String^>^ get() {
+				return _gridInfo;
 			}
 
-			void set(String^ temp)
-			{
-				_key = temp;
-			}
-		}
+			void set(array<String^>^ temp) {
+				int len = temp->Length;
+				_gridInfo = gcnew array<String^>(len);
 
-		property String^ contentKey
-		{
-			String^ get()
-			{
-				return _contentKey;
-			}
+				for (int i = 0; i < len; i++) {
+					_gridInfo[i] = temp[i];
+				}
 
-			void set(String^ temp)
-			{
-				_contentKey = temp;
 			}
 		}
-
-		property int rowN {
+		//行数のプロパティー
+		property int rowNumber {
 			int get() {
 				return _rowN;
 			}
-
-			void set(int rown) {
-				_rowN = rown;
+			void set(int n) {
+				_rowN = n;
 			}
 		}
 
-		property int colN {
-			int get() {
-				return _colN;
-			}
+//
+private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
+	//入力された情報群の行数を取得
+	int rowN = dataGridViewCellInfo->Rows->Count - 1;
 
-			void set(int coln) {
-				_colN = coln;
-			}
-		}
-
-	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-		this->contentKey = textBoxContentKey->Text;
-		this->key = textBoxParentKey->Text;
-		this->Close();
+	//メンバにセットする用の行数の長さの一時配列を作成
+	array<String^>^ temp = gcnew array<String^>(rowN);
+	//行の長さ分だけ繰り返す
+	for (int i = 0; i < rowN; i++) {
+		//入力されている情報を一時配列に格納
+		temp[i] = (String^)(dataGridViewCellInfo->Rows[i]->Cells[0]->Value) == nullptr ? "" : (String^)(dataGridViewCellInfo->Rows[i]->Cells[0]->Value);
 	}
+	//メンバに反映
+	gridInfo = temp;
+	//フォームを閉じる
+	this->Close();
+}
 
 //
 private: System::Void GridInfo_Load(System::Object^  sender, System::EventArgs^  e) {
-	this->textBoxContentKey->Text = this->contentKey;
-	this->textBoxParentKey->Text = this->key;
-	this->labelMatrix->Text = this->rowN.ToString() + "行、" + this->colN.ToString() + "列の情報";
+	//メンバに渡された情報の配列の長さを取得
+	int rowLen = gridInfo->Length;
+
+	//その数だけ繰り返す
+	for (int i = 0; i < rowLen; i++) {
+		//フォームの情報表示部に順に追加していく
+		this->dataGridViewCellInfo->Rows->Add(gridInfo[i]);
+	}
+
+	label1->Text = rowN.ToString() + "行" + colN.ToString() + "列";
 }
 };
 }
