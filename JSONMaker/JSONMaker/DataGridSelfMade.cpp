@@ -23,9 +23,9 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 	//初期行数
 	rowCount = 5;
 	//セルの幅
-	cellWidth = 70;
+	cellWidth = 120;
 	//セルの高さ
-	cellHeight = 25;
+	cellHeight = 80;
 	//カレントセルを作成
 	currentCell = gcnew narita::Cell();
 	
@@ -187,8 +187,6 @@ Void DataGridSelfMade::drawCell(Cell ^ cell, Brush ^ color)
 	drawCell(cell->row, cell->col, color);
 }
 
-
-
 /*
 関数名:checkBound
 概要:引数の行が結合されているかを判定
@@ -246,7 +244,7 @@ Void DataGridSelfMade::Paint()
 	//ピクチャーボックスの大きさを設定されている行数列数に合わせる
 	pictureBox->Size = System::Drawing::Size(colCount * cellWidth, rowCount * cellHeight);
 	//ピクチャーボックスの大きさに合わせて描画先のオブジェクトを生成しなおす
-	pictureBox->Image = gcnew Bitmap(pictureBox->Width - 1,pictureBox->Height - 1);
+	pictureBox->Image = gcnew Bitmap(pictureBox->Width,pictureBox->Height);
 	//その描画先に描画するオブジェクトを作成
 	graphic = Graphics::FromImage(pictureBox->Image);
 
@@ -330,4 +328,21 @@ Void DataGridSelfMade::textboxLostFocus(System::Object ^ sender, EventArgs ^ e)
 	drawCell(row, col, Brushes::White);
 	
 	return Void();
+}
+
+/*
+関数名:Clear
+概要:一から作れるようにクラスを初期化する関数
+引数:なし
+返却値:なし
+作成日:9月14日(木)
+作成者:成田修之
+*/
+Void DataGridSelfMade::Clear() {
+	this->BoundRow->Clear();
+	this->GridData->Clear();
+	this->rowCount = 0;
+	this->colCount = 0;
+	this->currentCell->col = 0;
+	this->currentCell->row = 0;
 }

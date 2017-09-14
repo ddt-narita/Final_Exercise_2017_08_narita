@@ -49,6 +49,8 @@ public:
 	std::string getJSONSavePath();
 	void setJSONSavePath(std::string path);
 	std::string getQuery();
+	bool isQuerySet();
+	void setQuery(std::string query);
 	std::string getJsonFilePath();
 	void setJsonFilePath(std::string path);
 	std::string getDBName();

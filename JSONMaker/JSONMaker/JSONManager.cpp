@@ -78,6 +78,16 @@ std::string JSONManager::getQuery()
 	return std::string();
 }
 
+bool JSONManager::isQuerySet()
+{
+	return env.Query != "";
+}
+
+void JSONManager::setQuery(std::string query)
+{
+	env.Query = query;
+}
+
 std::string JSONManager::getJsonFilePath()
 {
 	return env.getJSONFilePath();
@@ -97,7 +107,7 @@ bool JSONManager::isJSONFilePathSet()
 //JSON‚Ì‰Šú‰»‚ðs‚¤
 void JSONManager::jsonClear()
 {
-	json.clear();
+	grid->Clear();
 }
 
 void JSONManager::adjustGridDataSize()

@@ -31,11 +31,12 @@ public:
 
 	void run();
 	void init();
-	void job();
+	void job(std::string jsonnode);
 
 	//
 	void loadJson(boost::property_tree::ptree json);
-	bool isSameRow(const std::vector<std::string>& previaous, const std::vector<std::string>& thistime);
+	void returnRow();
+	std::vector<std::string> getNodes();
 };
 
 #endif // !__JSON_LOADER

@@ -63,24 +63,20 @@ string jsonRowDataStr(vector<string> rowData) {
 	return retStr;
 }
 
-bool GridJSONCreator::isRowArray(int row) {
-	vector<string> temp =  this->jsonmanager->getGridData(row, 0);
-	int len = temp.size();
-	for (int i = 0; i < len; i++) {
-		if (temp[i] == "" && i != len) {
-			return true;
-		}
-	}
-	return false;
-}
-
+/*
+関数名:getRowDataVer
+概要:同じ行の中で同じキー群までの値を抜き出して返却する
+引数:int row　行
+返却値:vector<string>retVec 抜き出したキー群
+作成日:9月14日(木)
+作成者:成田修之
+*/
 vector<string> GridJSONCreator::getRowDataVer(int row)
 {
-	//
+	//1列目と2列目の情報を取り出す
 	vector<string> row1 = jsonmanager->getGridData(row, 0);
 	vector<string> row2 = jsonmanager->getGridData(row, 1);
 	int n = row1.size() < row2.size() ? row1.size() : row2.size();
-
 	//2列目が入力されていないとき
 	if (row2[0] == "") {
 		return vector<string>(row1.begin(), row1.end() - 1);
@@ -156,7 +152,7 @@ void GridJSONCreator::job()
 		}
 		//普通のJSONの時
 		else {
-			//行数分繰り返す
+			//列数分繰り返す
 			for (int j = 0; j < jsonmanager->grid->getGridColLength(); j++) {
 				//その位置のセルの情報を取得する
 				string value = jsonmanager->grid->getGrid(i, j);

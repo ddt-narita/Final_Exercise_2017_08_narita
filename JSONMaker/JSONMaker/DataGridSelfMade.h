@@ -82,6 +82,7 @@ namespace narita {
 		Void BindRelease(int row, int col);
 		//全体を一から描画するメソッド
 		Void Paint();
+		Void Clear();
 
 		//このクラスに対する添字演算子の定義
 		property System::String^ default[System::String^]{

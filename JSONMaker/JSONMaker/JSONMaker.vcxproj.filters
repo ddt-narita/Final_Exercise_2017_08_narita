@@ -21,10 +21,10 @@
     <EmbeddedResource Include="GridInfo.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="GridRowInfo.resx">
+    <EmbeddedResource Include="EnvForm.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="EnvForm.resx">
+    <EmbeddedResource Include="NodeSelectForm.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
   </ItemGroup>
@@ -47,9 +47,6 @@
     <ClCompile Include="GridInfo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GridRowInfo.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ListJSONCreator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -63,6 +60,15 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="DataGridSelfMade.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeSelectForm.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="JSONDBManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnector.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -88,9 +94,6 @@
     <ClInclude Include="GridInfo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GridRowInfo.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -107,6 +110,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="DataGridSelfMade.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeSelectForm.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="JSONDBManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnector.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

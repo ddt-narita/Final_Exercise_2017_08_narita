@@ -158,3 +158,9 @@ void GridManager::adjustGridSize()
 		}
 	}
 }
+
+void GridManager::Clear()
+{
+	grid.clear();
+	gridData.clear();
+}

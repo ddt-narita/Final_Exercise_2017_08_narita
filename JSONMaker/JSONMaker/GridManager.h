@@ -37,5 +37,6 @@ public:
 	void setColMaxLen(int colN);
 
 	void adjustGridSize();
+	void Clear();
 };
 

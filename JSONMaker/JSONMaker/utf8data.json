@@ -1,0 +1,53 @@
+﻿{
+ "lessonSchedule": {
+        "class": "lessonSchedule guideTable",
+        "summary": {
+            "text": "レッスンスケジュール"
+        },
+        "week": {
+            "class": "guideHead",
+            "createLabelTextBox": {
+                "text": "月曜日～日曜日"
+            }
+        },
+        "firstPeriod": {
+            "period": {
+                "text": "1時限目"
+            },
+            "hour": {
+                "text": "11:00 ～ 13:00"
+            }
+        },
+        "secondPeriod": {
+            "period": {
+                "text": "2時限目"
+            },
+            "hour": {
+                "text": "14:00 ～ 16:00"
+            }
+        },
+        "thirdPeriod": {
+            "period": {
+                "text": "3時限目"
+            },
+            "hour": {
+                "text": "16:30 ～ 18:30"
+            }
+        },
+        "fourthPeriod": {
+            "period": {
+                "text": "4時限目"
+            },
+            "hour": {
+                "text": "19:00 ～ 21:00"
+            }
+        },
+        "fourthHalfPeriod": {
+            "period": {
+                "text": "4.5時限目"
+            },
+            "hour": {
+                "text": "19:30 ～ 21:30"
+            }
+        }
+    } }

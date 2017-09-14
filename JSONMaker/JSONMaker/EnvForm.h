@@ -45,6 +45,7 @@ namespace JSONMaker {
 
 	private: System::Windows::Forms::TextBox^  textBoxJSONName;
 	private: System::Windows::Forms::TextBox^  textBoxQuery;
+	private: System::Windows::Forms::Button^  buttonOK;
 
 
 
@@ -67,6 +68,7 @@ namespace JSONMaker {
 			this->textBoxDBName = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxJSONName = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxQuery = (gcnew System::Windows::Forms::TextBox());
+			this->buttonOK = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// labelDB
@@ -124,11 +126,22 @@ namespace JSONMaker {
 			this->textBoxQuery->Size = System::Drawing::Size(223, 19);
 			this->textBoxQuery->TabIndex = 5;
 			// 
+			// buttonOK
+			// 
+			this->buttonOK->Location = System::Drawing::Point(358, 154);
+			this->buttonOK->Name = L"buttonOK";
+			this->buttonOK->Size = System::Drawing::Size(75, 23);
+			this->buttonOK->TabIndex = 6;
+			this->buttonOK->Text = L"OK";
+			this->buttonOK->UseVisualStyleBackColor = true;
+			this->buttonOK->Click += gcnew System::EventHandler(this, &EnvForm::buttonOK_Click);
+			// 
 			// EnvForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(445, 204);
+			this->Controls->Add(this->buttonOK);
 			this->Controls->Add(this->textBoxQuery);
 			this->Controls->Add(this->textBoxJSONName);
 			this->Controls->Add(this->textBoxDBName);
@@ -207,5 +220,12 @@ private: System::Void textBoxJSONName_DoubleClick(System::Object^  sender, Syste
 	textBoxJSONName->Text = filepath;
 }
 		 
+private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
+	
+	JSONFilePath = textBoxJSONName->Text;
+	Query = textBoxQuery->Text;
+
+	this->Close();
+}
 };
 }
