@@ -15,7 +15,7 @@ public:
 	static const int ROWSPAN_INDEX = 2;
 	static const int ROW_INFO_ADJUSTER = 1;
 	static const int CELL_INFO_NUMBER = 2;
-	const std::string KEY_IS_ARRAY = "";
+	const std::string KEY_ISARRAY = "";
 	static const int ROW_BUTTON_WIDTH = 20;
 	static const int ROW_BUTTON_HEIGHT = 19;
 

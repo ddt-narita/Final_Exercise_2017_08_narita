@@ -60,65 +60,123 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 作成日:9月9日
 作成者:成田修之
 */
-Void DataGridSelfMade::cell_click(int row, int col)
+Void DataGridSelfMade::cell_click(System::EventArgs^ e)
+{
+	int row = ((MouseEventArgs^)e)->Y / this->cellHeight;
+	int col = ((MouseEventArgs^)e)->X / this->cellWidth;
+
+	this->cell_click(row, col);
+
+}
+
+/*
+関数名:selectedCell_click
+概要:選択済みのセルがクリックされたときの関数
+引数:int row　セルの行, int col　セルの列
+返却値:なし
+作成日:9月15日
+作成者:成田修之
+*/
+Void DataGridSelfMade::SelectedCell_click(int row, int col) {
+	//結合された行なら
+	if (checkBound(row)) {
+		//大きさ、位置を結合されたセルの大きさに合わせる
+		text->Size = System::Drawing::Size(cellWidth * colCount - 1, cellHeight - 1);
+		text->Location = Point(0, cellHeight * rowCount);
+	}
+	//結合された行でない
+	else {
+		//通常のセルの大きさ・位置に合わせる
+		text->Size = System::Drawing::Size(cellWidth - 1, cellHeight - 1);
+		text->Location = Point(col * cellWidth, row * cellHeight);
+	}
+
+	//その位置に値が存在していれば
+	if (GridData->ContainsKey(CreateGridMapKey(row, col))) {
+		//値を取得する
+		text->Text = this->GridData[CreateGridMapKey(row, col)];
+	}
+	//存在しなければ
+	else {
+		//空文字を表示させる
+		text->Text = "";
+	}
+	//テキストボックスを表示
+	text->Visible = true;
+	//すぐに入力できるようにフォーカスを置く
+	text->Focus();
+}
+
+/*
+関数名:notSelectedCell_click
+概要:初めて選択されたセルがクリックされたときの関数
+引数:int row　セルの行, int col　セルの列
+返却値:なし
+作成日:9月15日
+作成者:成田修之
+*/
+Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
+	//今表示されているテキストボックスを非表示にする
+	text->Visible = false;
+	//カレントのセルについて色をもとに戻す
+	drawCell(currentCell, Brushes::White);
+
+	//結合された行なら
+	if (checkBound(row)) {
+		//カレントのセルを今回の行にする
+		currentCell->row = row;
+		//結合されたときに選択された列にする
+		currentCell->col = Int32::Parse(BoundRow[row.ToString()]);
+	}
+	//通常のセルなら
+	else {
+		//行・列ともに取得した値に
+		currentCell->row = row;
+		currentCell->col = col;
+	}
+}
+
+/*
+関数名:selectedCell_click
+概要:選択済みのセルがクリックされたときの関数
+引数:int row　セルの行, int col　セルの列
+返却値:なし
+作成日:9月10日
+作成者:成田修之
+変更日:9月15日
+変更者:成田修之
+内容:選択済みの時と初めて選択された時のセルの動作をサブ関数化(ステップ数の関係)
+*/
+Void narita::DataGridSelfMade::cell_click(int row, int col)
 {
 	//すでに選択済みのセルをクリックしたとき
-	if (currentCell->col == col && currentCell->row == row && currentCell->row != -1) {		
-		//結合された行なら
-		if (checkBound(row)) {
-			//大きさ、位置を結合されたセルの大きさに合わせる
-			text->Size = System::Drawing::Size(cellWidth * colCount-1, cellHeight-1);
-			text->Location = Point(0, cellHeight * rowCount);
-		}
-		//結合された行でない
-		else {
-			//通常のセルの大きさ・位置に合わせる
-			text->Size = System::Drawing::Size(cellWidth - 1, cellHeight - 1);
-			text->Location = Point(col * cellWidth, row * cellHeight);
-		}
-		
-		//その位置に値が存在していれば
-		if (GridData->ContainsKey(CreateGridMapKey(row,col))) {
-			//値を取得する
-			text->Text = this->GridData[CreateGridMapKey(row, col)];
-		}
-		//存在しなければ
-		else {
-			//空文字を表示させる
-			text->Text = "";
-		}
-		//テキストボックスを表示
-		text->Visible = true;
-		//すぐに入力できるようにフォーカスを置く
-		text->Focus();
+	if (currentCell->col == col && currentCell->row == row && currentCell->row != -1) {
+		//選択済みのセルをクリックされたときの処理の関数を実行
+		this->SelectedCell_click(row, col);
 	}
 	//初めて選択されるなら
 	else {
-		//今表示されているテキストボックスを非表示にする
-		text->Visible = false;
-		//カレントのセルについて色をもとに戻す
-		drawCell(currentCell, Brushes::White);
-
-		//結合された行なら
-		if (checkBound(row)) {
-			//カレントのセルを今回の行にする
-			currentCell->row = row;
-			//結合されたときに選択された列にする
-			currentCell->col = Int32::Parse(BoundRow[row.ToString()]);
-		}
-		//通常のセルなら
-		else {
-			//行・列ともに取得した値に
-			currentCell->row = row;
-			currentCell->col = col;
-		}
+		//初めて選択されたときの処理の関数を実行
+		this->notSelectedCell_click(row, col);
 	}
-
 	//カレントのセルを水色で表示
 	drawCell(currentCell, Brushes::Aqua);
 	//描画を促して変更を反映
 	pictureBox->Invalidate();
+}
 
+/*
+関数名:
+概要:
+引数:
+返却値:
+作成者:成田修之
+作成日:9月15日(金)
+*/
+Void narita::DataGridSelfMade::cell_click(Cell ^ cell)
+{
+	//引数のセルの行数列数で同じ関数を呼び出す。
+	cell_click(cell->row, cell->col);
 }
 
 /*
@@ -202,6 +260,20 @@ Boolean DataGridSelfMade::checkBound(int row)
 }
 
 /*
+関数名:selectedColFromBoundRow
+概要:引数の結合された行の結合されたときに選択された列を返す関数
+引数:int row 結合された行
+返却値:int col　結合された時選択されていた列
+作成者:成田修之
+作成日:9月15日(金)
+*/
+int narita::DataGridSelfMade::selectedColFromBoundRow(int row)
+{
+	//結合された行を管理するメンバからその時選択された列を抽出して返却する。
+	return Int32::Parse(BoundRow[row.ToString()]);
+}
+
+/*
 関数名:BindRelease
 概要:結合／解除するメソッド
 引数:int row,int col 行と列
@@ -217,16 +289,18 @@ Void DataGridSelfMade::BindRelease(int row, int col)
 		BoundRow->Remove(row.ToString());
 		//列数分繰り返す
 		for (int i = 0; i < colCount; i++) {
+			graphic->DrawLine(cellFramePen, Point(i * cellWidth, row * cellHeight), Point(i * cellWidth, (row + 1) * cellHeight));
 			//その行のセルをすべて描画
 			drawCell(row, i, Brushes::White);
 		}
+		drawCell(currentCell, Brushes::Aqua);
 	}
 	//結合された行ではないなら
 	else {
 		//結合管理のメンバにその行をキー、選択された列を値として持たせる
 		BoundRow[row.ToString()] = col.ToString();
 		//その行を結合された行として描画
-		drawCell(row, col, Brushes::White);
+		drawCell(row, col, Brushes::Aqua);
 	}
 	return Void();
 }

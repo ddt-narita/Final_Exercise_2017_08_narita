@@ -15,10 +15,10 @@ public:
 
 	void init(int rowN, int colN);
 
+	std::string createAcsessKey(std::vector<std::string> eachCellKeys, int isArray);
 	//ÀÛ‚ÉJSON‚ğì¬‚·‚éŠÖ”
 	void job();
-	bool isRowArray(int row);
-	std::vector<std::string> getRowDataVer(int row);
+	void GridClear(int rowN, int colN);
 };
 
 #endif // !__GRID_JSON_CREATOR

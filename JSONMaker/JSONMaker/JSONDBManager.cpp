@@ -24,6 +24,7 @@
 //{
 //	//DBに接続する
 //	this->Connect();
+//	constants.fileout("初期化完了");
 //}
 //
 //void JSONDBManager::job()
@@ -52,10 +53,11 @@
 //	sql::Statement *stmt = con->createStatement();
 //	//結果を格納する変数を用意
 //	sql::ResultSet *result = nullptr;
-//
+//	constants.fileout("クエリ投げる前");
 //	//引数のクエリで結果を取得
 //	result = stmt->executeQuery(query);
-//	
+//	constants.fileout("クエリ投げられた");
+//
 //	//結果からメタデータを取得
 //	sql::ResultSetMetaData *metaData = result->getMetaData();
 //	

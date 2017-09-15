@@ -9,6 +9,9 @@ namespace narita {
 		System::String^ text;
 	public:
 		Cell();
+		Cell(int row, int col);
+
+		Cell^ operator=(const Cell^ e);
 	};
 
 }

@@ -63,13 +63,17 @@ namespace narita {
 			}
 		}
 		//現在選択中のセル
-		narita::Cell^ currentCell;
+		Cell^ currentCell;
 
 		//コンストラクタ
 		DataGridSelfMade(PictureBox^ pictureBox);
 
 		//クリックされたときの動作
+		Void cell_click(EventArgs^ e);
 		Void cell_click(int row, int col);
+		Void cell_click(Cell^ cell);
+		Void SelectedCell_click(int row, int col);
+		Void notSelectedCell_click(int row, int col);
 		//表示部の値を取得するためのキーを作成する関数
 		String^ CreateGridMapKey(int row, int col);
 		//指定の行、列に引数の色のセルを描画する関数
@@ -78,6 +82,7 @@ namespace narita {
 		Void drawCell(Cell^ cell, Brush ^ color);
 		//引数の行が結合された行なのかを判定する関数
 		Boolean checkBound(int row);
+		int selectedColFromBoundRow(int row);
 		//引数の位置のセルを結合／解除する関数
 		Void BindRelease(int row, int col);
 		//全体を一から描画するメソッド

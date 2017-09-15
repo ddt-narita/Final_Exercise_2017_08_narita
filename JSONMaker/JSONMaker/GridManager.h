@@ -38,5 +38,6 @@ public:
 
 	void adjustGridSize();
 	void Clear();
+	void GridClear(int rowN, int colN);
 };
 

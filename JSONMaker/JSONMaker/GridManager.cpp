@@ -164,3 +164,16 @@ void GridManager::Clear()
 	grid.clear();
 	gridData.clear();
 }
+
+void GridManager::GridClear(int rowN, int colN)
+{
+	//全行列の要素分
+	for (int i = 0; i < rowN; i++) {
+		for (int j = 0; j < colN; j++) {
+			//空文字で初期化
+			grid[coordinateToStr(i, j)] = "";
+			//一時オブジェクトのコピーで初期化
+		}
+	}
+}
+

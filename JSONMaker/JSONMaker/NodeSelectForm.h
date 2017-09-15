@@ -34,7 +34,7 @@ namespace JSONMaker {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::CheckedListBox^  checkedListBox1;
+
 	private: System::Windows::Forms::Button^  buttonOK;
 	protected:
 
@@ -51,20 +51,8 @@ namespace JSONMaker {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->checkedListBox1 = (gcnew System::Windows::Forms::CheckedListBox());
 			this->buttonOK = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
-			// 
-			// checkedListBox1
-			// 
-			this->checkedListBox1->Font = (gcnew System::Drawing::Font(L"ＭＳ Ｐゴシック", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->checkedListBox1->FormattingEnabled = true;
-			this->checkedListBox1->Location = System::Drawing::Point(12, 45);
-			this->checkedListBox1->Name = L"checkedListBox1";
-			this->checkedListBox1->Size = System::Drawing::Size(264, 214);
-			this->checkedListBox1->TabIndex = 0;
-			this->checkedListBox1->ItemCheck += gcnew System::Windows::Forms::ItemCheckEventHandler(this, &NodeSelectForm::checkedListBox1_ItemCheck);
 			// 
 			// buttonOK
 			// 
@@ -82,9 +70,10 @@ namespace JSONMaker {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(288, 271);
 			this->Controls->Add(this->buttonOK);
-			this->Controls->Add(this->checkedListBox1);
 			this->Name = L"NodeSelectForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"NodeSelectForm";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &NodeSelectForm::NodeSelectForm_FormClosing);
 			this->Load += gcnew System::EventHandler(this, &NodeSelectForm::NodeSelectForm_Load);
 			this->ResumeLayout(false);
 
@@ -92,23 +81,98 @@ namespace JSONMaker {
 #pragma endregion
 	public:array<String^>^ Items;
 	public:String^ Node;
+	public: array<RadioButton^>^ radiobuttons;
 
+			/*
+			関数名:NodeSelectForm_Load
+			概要:このフォームが立ち上がる時に行う処理
+			引数:イベントの引数
+			返却値:無し
+			作成日:9月15日(金)
+			作成者:成田修之
+			*/
 	private: System::Void NodeSelectForm_Load(System::Object^  sender, System::EventArgs^  e) {
-		checkedListBox1->Items->AddRange(Items);
+		//フォームに渡されたノード群の数を取得
+		int len = Items->Length;
+		//ラジオボタンの配列を生成
+		radiobuttons = gcnew array<RadioButton^>(len);
+
+		//ノードの数だけ繰り返す
+		for (int i = 0; i < len; i++) {
+			//ラジオボタンを生成して各種情報追加
+			radiobuttons[i] = gcnew RadioButton();
+			radiobuttons[i]->Text = Items[i];
+			radiobuttons[i]->Location = Point(25, buttonOK->Bottom + 10 + (i * 25));
+			radiobuttons[i]->BackColor = Color::White;
+			//フォームに加える
+			this->Controls->Add(radiobuttons[i]);
+
+		}
 	}
 
-
+			 /*
+			 関数名:buttonOK_Click
+			 概要:OKボタンがクリックされたときのイベント
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-		Node = checkedListBox1->CheckedItems[0]->ToString();
-		this->Close();
-	}
-	private: System::Void checkedListBox1_ItemCheck(System::Object^  sender, System::Windows::Forms::ItemCheckEventArgs^  e) {
-		for (int i = 0; i < checkedListBox1->CheckedItems->Count; i++) {
-			if (i != e->Index) {
-				checkedListBox1->SetItemChecked(i, false);
+		//選択されていないラジオボタンの数を取得するための変数
+		int i;
+		//ラジオボタンの数だけ繰り返す
+		for (i = 0; i < radiobuttons->Length; i++) {
+			//チェックされていたら
+			if (radiobuttons[i]->Checked) {
+				//選択されたノードをメンバに格納して
+				Node = radiobuttons[i]->Text;
+				//ループを抜ける
+				break;
 			}
 		}
-
+		//変数がラジオボタンの数と同じとき
+		if (i == radiobuttons->Length) {
+			//選択されていなかったことを警告
+			MessageBox::Show("ノードが選択されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		}
+		//ラジオボタンの数より小さければ
+		else {
+			//選択されたものとしてフォームを閉じる
+			this->Close();
+		}
 	}
-	};
+
+
+			 /*
+			 関数名:NodeSelectForm_FormClosing
+			 概要:フォームが閉じるときに行われる処理
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
+	private: System::Void NodeSelectForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+		//選択されていないラジオボタンの数を取得する変数
+		int i;
+		//ラジオボタンの数だけ繰り返す
+		for (i = 0; i < radiobuttons->Length; i++) {
+			//チェックされていたら
+			if (radiobuttons[i]->Checked) {
+				//そのノード名を取得
+				Node = radiobuttons[i]->Text;
+				//見受かったのでループを抜ける
+				break;
+			}
+		}
+		//きちんと選択されたノードがみつかっていなければ
+		if (i == radiobuttons->Length) {
+			//選択されていないことを警告
+			MessageBox::Show("ノードが選択されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			//フォームを閉じるのをやめる
+			e->Cancel = true;
+		}
+		
+	}
+};
 }

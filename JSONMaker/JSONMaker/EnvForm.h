@@ -149,6 +149,7 @@ namespace JSONMaker {
 			this->Controls->Add(this->labelJSONName);
 			this->Controls->Add(this->labelDB);
 			this->Name = L"EnvForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"EnvForm";
 			this->ResumeLayout(false);
 			this->PerformLayout();

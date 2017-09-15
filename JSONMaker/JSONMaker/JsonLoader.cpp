@@ -36,7 +36,7 @@ void JsonLoader::init()
 {
 	vector<string> temp(15);
 
-	keyHierarchyArray = temp;
+	hierarchyKeys = temp;
 
 	//セットされたファイルパスを取得
 	std::string path = this->jsonmanager->getJsonFilePath();
@@ -72,8 +72,12 @@ void JsonLoader::job(string jsonnode)
 	//そのノードに対して読み込み処理を行う
 	this->loadJson(node);
 	//読み込みが終わった後は現在の行数列数をリセット
+	this->jsonmanager->setGridRowLen(setGridRowN);
 	setGridColN = 0;
 	setGridRowN = 0;
+	this->hierarchyKeys.clear();
+	this->cellKeys.clear();
+	this->preCellKeys.clear();
 }
 
 /*
@@ -99,6 +103,7 @@ void JsonLoader::returnRow() {
 	//改行するので列の値は0に
 	setGridColN = 0;
 }
+
 
 /*
 関数名
@@ -132,31 +137,40 @@ void JsonLoader::loadJson(boost::property_tree::ptree json) {
 	//受け取ったJsonについて第一階層ループ
 	BOOST_FOREACH(const ptree::value_type& child, json) {
 		//キーを階層のキーに格納
-		keyHierarchyArray[jsonLevel] = child.first;
+		hierarchyKeys[jsonLevel] = child.first;
 		//配列の時
 		if (child.first == "") {
 			//要素がオブジェクトの時
 			if (child.second.data().empty()) {
 				BOOST_FOREACH(const ptree::value_type& arrayObject, child.second) {
 					//キーを階層のキー群に格納
-					keyHierarchyArray[jsonLevel + 1] = arrayObject.first;
+					hierarchyKeys[jsonLevel + 1] = arrayObject.first;
 					//値を表出力部として格納
 					jsonmanager->setGrid(setGridRowN, setGridColN, arrayObject.second.data());
 					//キー群をセルの情報として格納
-					jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(keyHierarchyArray, jsonLevel + 1));
+					jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(hierarchyKeys, jsonLevel + 1));
 					//次の列に移動
 					setGridColN++;
 				}
+
 				returnRow();
 			}
 			//要素がオブジェクトではなく通常の要素
 			else {
+				//その階層までのキー群を今回のキーとして保管
+				cellKeys = vector<string>(hierarchyKeys.begin(), hierarchyKeys.begin() + jsonLevel + 1);
+
 				//配列を示すキーを後ろに格納
-				keyHierarchyArray[jsonLevel + 1] = constants.KEY_IS_ARRAY;
+				hierarchyKeys[jsonLevel + 1] = constants.KEY_ISARRAY;
+				//前のセルと比べて同じ行かどうか判定する
+				if (!isSameRow(cellKeys, preCellKeys) || jsonLevel == 1 && preKey == "disp") {
+					returnRow();
+					preKey == "";
+				}
 				//値を表出力部として格納
 				jsonmanager->setGrid(setGridRowN, setGridColN, child.second.data());
 				//キー群をセルの情報として格納
-				jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(keyHierarchyArray, jsonLevel + 1));
+				jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(hierarchyKeys, jsonLevel + 1));
 				//次の列へ
 				setGridColN++;
 				preKey = "disp";
@@ -170,27 +184,66 @@ void JsonLoader::loadJson(boost::property_tree::ptree json) {
 			loadJson(child.second);
 			//抜け出したら階層の値をもとに戻す
 			jsonLevel--;
-			
 		}
 		//配列でも子でもないとき(最下層の値)
 		else {
-			if (child.first == "text") {
+			//表示させたいキーなら
+			if (child.first == "text" || child.first == "html") {
+				//今回が表示させるべきキーであったことを保管
 				preKey = "disp";
-				//
-				jsonmanager->setGrid(setGridRowN, setGridColN, child.second.data());
-				//
-				jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(keyHierarchyArray, jsonLevel));
-				//
-				setGridColN++;
-			}
-			else {
+				//その階層までのキー群を今回のキーとして保管
+				cellKeys = vector<string>(hierarchyKeys.begin(), hierarchyKeys.begin() + jsonLevel + 1);
 
 			}
+			else {
+				preKey == "noneDisp";
+			}
+			//前のセルと比べて同じ行かどうか判定する
+			if (!isSameRow(cellKeys, preCellKeys) && preKey == "disp") {
+				returnRow();
+				preKey == "";
+			}			
+			//表の値としてセット
+			jsonmanager->setGrid(setGridRowN, setGridColN, child.second.data());
+			//階層のキーからデータをセット
+			jsonmanager->setGridData(setGridRowN, setGridColN, keyRemvFromHierarchy(hierarchyKeys, jsonLevel));
+			//表に表示させるものとしてセットするための変数を次の列へ
+			setGridColN++;
+
 		}
-		//改行処理
-		if (jsonLevel == 0 && preKey == "disp") {
-			returnRow();
-			preKey = "";
-		}
+		//次に行く前に今回のキー群を前回のキーとして保管
+		preCellKeys = cellKeys;
 	} //受け取ったJSONの第一階層完了
+}
+
+
+bool JsonLoader::isSameRow(const vector<string> &thistime, const vector<string> &pre) {
+	int thisSize = thistime.size();
+	int preSize = pre.size();
+	//一番初めでまだ前のキーがないとき
+	if (preSize < 1) {
+		//同じ行で継続
+		return true;
+	}
+
+	//比較するキーのインデックスを取得（サイズの大きいほうの配列の後ろから3番目のキーについて比較）
+	int compNum = (thisSize > preSize ? thisSize : preSize) - 3;
+
+	//一番上のキーが違えば改行
+	if (thistime[0] != pre[0]) {
+		//改行です
+		return false;
+	}
+	if (compNum < 0) {
+		return true;
+	}
+	//前回か、今回の配列がインデックスより小さいとき同じ行で
+	if (preSize < compNum || thisSize < compNum) {
+		return true;
+	}
+	//比べるべきキーのところが違っていれば改行
+	else if (thistime[compNum] != pre[compNum]) {
+		return false;
+	}
+	return true;
 }

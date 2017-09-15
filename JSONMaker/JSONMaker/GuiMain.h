@@ -65,6 +65,9 @@ namespace JSONMaker {
 	private: System::Windows::Forms::Button^  buttonEnv;
 	private: System::Windows::Forms::PictureBox^  pictureBox1;
 	private: System::Windows::Forms::TableLayoutPanel^  PanelRowButton;
+	private: System::Windows::Forms::Button^  buttonBindRelease;
+	private: System::Windows::Forms::TextBox^  textBoxNodeName;
+	private: System::Windows::Forms::Label^  labelNodeName;
 
 
 
@@ -90,6 +93,7 @@ namespace JSONMaker {
 		{
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->GridtabPage = (gcnew System::Windows::Forms::TabPage());
+			this->buttonBindRelease = (gcnew System::Windows::Forms::Button());
 			this->PanelRowButton = (gcnew System::Windows::Forms::TableLayoutPanel());
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			this->buttonJsonCreate = (gcnew System::Windows::Forms::Button());
@@ -101,6 +105,8 @@ namespace JSONMaker {
 			this->GridColLabel = (gcnew System::Windows::Forms::Label());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
 			this->buttonEnv = (gcnew System::Windows::Forms::Button());
+			this->labelNodeName = (gcnew System::Windows::Forms::Label());
+			this->textBoxNodeName = (gcnew System::Windows::Forms::TextBox());
 			this->tabControl1->SuspendLayout();
 			this->GridtabPage->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
@@ -122,6 +128,9 @@ namespace JSONMaker {
 			// GridtabPage
 			// 
 			this->GridtabPage->AutoScroll = true;
+			this->GridtabPage->Controls->Add(this->textBoxNodeName);
+			this->GridtabPage->Controls->Add(this->labelNodeName);
+			this->GridtabPage->Controls->Add(this->buttonBindRelease);
 			this->GridtabPage->Controls->Add(this->PanelRowButton);
 			this->GridtabPage->Controls->Add(this->pictureBox1);
 			this->GridtabPage->Controls->Add(this->buttonJsonCreate);
@@ -139,6 +148,16 @@ namespace JSONMaker {
 			this->GridtabPage->Text = L"Grid";
 			this->GridtabPage->UseVisualStyleBackColor = true;
 			this->GridtabPage->Click += gcnew System::EventHandler(this, &GuiMain::GridtabPage_Click);
+			// 
+			// buttonBindRelease
+			// 
+			this->buttonBindRelease->Location = System::Drawing::Point(375, 44);
+			this->buttonBindRelease->Name = L"buttonBindRelease";
+			this->buttonBindRelease->Size = System::Drawing::Size(75, 23);
+			this->buttonBindRelease->TabIndex = 10;
+			this->buttonBindRelease->Text = L"結合／解除";
+			this->buttonBindRelease->UseVisualStyleBackColor = true;
+			this->buttonBindRelease->Click += gcnew System::EventHandler(this, &GuiMain::buttonBindRelease_Click);
 			// 
 			// PanelRowButton
 			// 
@@ -158,6 +177,7 @@ namespace JSONMaker {
 			// 
 			this->pictureBox1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 			this->pictureBox1->Location = System::Drawing::Point(52, 102);
+			this->pictureBox1->Margin = System::Windows::Forms::Padding(15, 3, 3, 15);
 			this->pictureBox1->Name = L"pictureBox1";
 			this->pictureBox1->Size = System::Drawing::Size(10, 10);
 			this->pictureBox1->TabIndex = 8;
@@ -167,7 +187,7 @@ namespace JSONMaker {
 			// 
 			// buttonJsonCreate
 			// 
-			this->buttonJsonCreate->Location = System::Drawing::Point(335, 38);
+			this->buttonJsonCreate->Location = System::Drawing::Point(272, 44);
 			this->buttonJsonCreate->Name = L"buttonJsonCreate";
 			this->buttonJsonCreate->Size = System::Drawing::Size(75, 23);
 			this->buttonJsonCreate->TabIndex = 7;
@@ -178,7 +198,7 @@ namespace JSONMaker {
 			// GridRowLabel
 			// 
 			this->GridRowLabel->AutoSize = true;
-			this->GridRowLabel->Location = System::Drawing::Point(30, 22);
+			this->GridRowLabel->Location = System::Drawing::Point(41, 16);
 			this->GridRowLabel->Name = L"GridRowLabel";
 			this->GridRowLabel->Size = System::Drawing::Size(22, 12);
 			this->GridRowLabel->TabIndex = 0;
@@ -206,14 +226,14 @@ namespace JSONMaker {
 			// 
 			// textBoxColN
 			// 
-			this->textBoxColN->Location = System::Drawing::Point(81, 46);
+			this->textBoxColN->Location = System::Drawing::Point(81, 38);
 			this->textBoxColN->Name = L"textBoxColN";
 			this->textBoxColN->Size = System::Drawing::Size(100, 19);
 			this->textBoxColN->TabIndex = 3;
 			// 
 			// textBoxRowN
 			// 
-			this->textBoxRowN->Location = System::Drawing::Point(81, 19);
+			this->textBoxRowN->Location = System::Drawing::Point(81, 13);
 			this->textBoxRowN->Name = L"textBoxRowN";
 			this->textBoxRowN->Size = System::Drawing::Size(100, 19);
 			this->textBoxRowN->TabIndex = 2;
@@ -221,7 +241,7 @@ namespace JSONMaker {
 			// GridColLabel
 			// 
 			this->GridColLabel->AutoSize = true;
-			this->GridColLabel->Location = System::Drawing::Point(30, 49);
+			this->GridColLabel->Location = System::Drawing::Point(41, 41);
 			this->GridColLabel->Name = L"GridColLabel";
 			this->GridColLabel->Size = System::Drawing::Size(21, 12);
 			this->GridColLabel->TabIndex = 1;
@@ -249,6 +269,22 @@ namespace JSONMaker {
 			this->buttonEnv->UseVisualStyleBackColor = true;
 			this->buttonEnv->Click += gcnew System::EventHandler(this, &GuiMain::buttonEnv_Click);
 			// 
+			// labelNodeName
+			// 
+			this->labelNodeName->AutoSize = true;
+			this->labelNodeName->Location = System::Drawing::Point(18, 65);
+			this->labelNodeName->Name = L"labelNodeName";
+			this->labelNodeName->Size = System::Drawing::Size(44, 12);
+			this->labelNodeName->TabIndex = 11;
+			this->labelNodeName->Text = L"ノード名";
+			// 
+			// textBoxNodeName
+			// 
+			this->textBoxNodeName->Location = System::Drawing::Point(81, 62);
+			this->textBoxNodeName->Name = L"textBoxNodeName";
+			this->textBoxNodeName->Size = System::Drawing::Size(100, 19);
+			this->textBoxNodeName->TabIndex = 12;
+			// 
 			// GuiMain
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
@@ -257,6 +293,7 @@ namespace JSONMaker {
 			this->Controls->Add(this->buttonEnv);
 			this->Controls->Add(this->tabControl1);
 			this->Name = L"GuiMain";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"GuiMain";
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GuiMain::GuiMain_FormClosed);
 			this->Load += gcnew System::EventHandler(this, &GuiMain::GuiMain_Load);
@@ -315,7 +352,14 @@ namespace JSONMaker {
 			return strUTF8;
 		}
 
-		//
+		/*
+		関数名:
+		概要:
+		引数:
+		返却値:
+		作成日:9月15日(金)
+		作成者:成田修之
+		*/
 		array<String^>^ getNodes(std::vector<std::string> node) {
 			array<String^>^ retArray = gcnew array<String^>(node.size());
 			for (int i = 0; i < node.size(); i++) {
@@ -324,96 +368,155 @@ namespace JSONMaker {
 			return retArray;
 		}
 
+		/*
+		関数名:
+		概要:
+		引数:
+		返却値:
+		作成日:9月15日(金)
+		作成者:成田修之
+		*/
 		std::string StrToc_str(String^ temp) {
 			return (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(temp).ToPointer();
 		}
 
-	//OKボタン押下時のイベント
+		/*
+		関数名:LoadJson
+		概要:JSONを読み込む処理を行う関数
+		引数:無し
+		返却値:無し
+		作成日:9月15日(金)
+		作成者:成田修之
+		*/
+	private:Void LoadJson() {
+		//読み込み開始
+		jsonLoader->init();
+
+		//読みこんだJSONから兄弟群を抜き出す
+		array<String^>^ Nodes = getNodes(jsonLoader->getNodes());
+		//ノードを選択するフォームのインスタンスを作成する
+		NodeSelectForm^ nodeForm = gcnew NodeSelectForm();
+
+		//
+		nodeForm->Items = Nodes;
+		//
+		nodeForm->ShowDialog();
+
+		//
+		jsonLoader->job(StrToc_str(nodeForm->Node));
+		//フォームのノード名に選択されたノードを表示
+		textBoxNodeName->Text = nodeForm->Node;
+
+		//行数取得
+		int rowN = jsonLoader->jsonmanager->getGridRowLength() + 1;
+		//最大の列数取得
+		int colN = jsonLoader->jsonmanager->getGridColLength();
+		//表の大きさを取得した列数行数に
+		dataGridJson->rowCount = rowN;
+		//行のキー列分
+		dataGridJson->colCount = colN;
+		//列数分繰り返す
+		for (int i = 0; i < rowN; i++) {
+			//行数分繰り返す (行のキーを除く
+			for (int j = 0; j < colN; j++) {
+				//行と列からキーを作成
+				String^ key = dataGridJson->CreateGridMapKey(i, j);
+				//その位置に配置
+				dataGridJson[key] = gcnew String(UTF8toSjis(jsonLoader->jsonmanager->getGrid(i, j)).c_str());
+			}
+		}
+		//初期化できていない部分の初期化を行う
+		gridJsonCreator->jsonmanager->adjustGridDataSize();
+	}
+
+			/*
+			関数名:JsonCreate
+			概要:新規にJSONを作成するための処理を行う関数
+			引数:無し
+			返却値:無し
+			作成日:9月15日(金)
+			作成者:成田修之
+			*/
+	private: Void JsonCreate() {
+		int rowN;
+		int colN;
+		try {
+			//入力されているタテの長さを取得
+			rowN = Convert::ToInt32(textBoxRowN->Text);
+			//入力されているヨコの長さを取得
+			colN = Convert::ToInt32(textBoxColN->Text);
+		}
+		catch (Exception^ e) {
+			MessageBox::Show("入力されている値が無効です", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		if (gridJsonCreator->jsonmanager->getGridRowLength() == 0) {
+			//初期化を行う
+			gridJsonCreator->init(rowN, colN);
+		}
+		//最大の大きさとして格納
+		gridJsonCreator->jsonmanager->setGridRowLen(rowN);
+		gridJsonCreator->jsonmanager->setGridMaxColLen(colN);
+		//入力されていない部分の初期化を行う
+		gridJsonCreator->jsonmanager->adjustGridDataSize();
+
+		//tablelayoutpanelの縦横の長さを取得した値に設定
+		dataGridJson->rowCount = rowN;
+		dataGridJson->colCount = colN;
+	}
+
+			 /*
+			 関数名:getJSONFromQuery
+			 概要:クエリの結果からJSONを作成する処理を行う関数
+			 引数:無し
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
+	//private:Void getJSONFromQuery() {
+	//	jsonDbLoader->run();
+
+	//	int row = jsonDbLoader->jsonmanager->getGridRowLength();
+	//	int col = jsonDbLoader->jsonmanager->getGridColLength();
+
+	//	dataGridJson->rowCount = row;
+	//	dataGridJson->colCount = col;
+
+	//	//行数、列数分繰り返す
+	//	for (int i = 0; i < row; i++) {
+	//		for (int j = 0; j < col; j++) {
+	//			//その位置に値を保管する
+	//			dataGridJson[dataGridJson->CreateGridMapKey(i, j)] = gcnew String(UTF8toSjis(jsonDbLoader->jsonmanager->getGrid(i, j)).c_str());
+	//		}
+	//	}
+	//	//セットした値を表に表示する
+	//	dataGridJson->Paint();
+	//}
+
+			/*
+			関数名:buttonOK_Click
+			概要:OKボタンが押されたときのイベント
+			引数:イベントの引数
+			返却値:無し
+			作成日:9月15日(金)
+			作成者:成田修之
+			*/
 	private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 		//レイアウトの作成をやめる（描画がおもいため）
 		this->SuspendLayout();
 
 		//JSON読み込みの時
 		if (jsonLoader->jsonmanager->isJSONFilePathSet()) {
-			//読み込み開始
-			jsonLoader->init();
-
-			array<String^>^ Nodes = getNodes(jsonLoader->getNodes());
-			NodeSelectForm^ nodeForm = gcnew NodeSelectForm();
-
-			nodeForm->Items = Nodes;
-			nodeForm->ShowDialog();
-
-			jsonLoader->job(StrToc_str(nodeForm->Node));
-
-			//行数取得
-			int rowN = jsonLoader->jsonmanager->getGridRowLength();
-			//最大の列数取得
-			int colN = jsonLoader->jsonmanager->getGridColLength();
-			//表の大きさを取得した列数行数に
-			dataGridJson->rowCount = rowN;
-			//行のキー列分
-			dataGridJson->colCount = colN;
-			//列数分繰り返す
-			for (int i = 0; i < rowN; i++) {
-				//行数分繰り返す (行のキーを除く
-				for (int j = 0; j < colN; j++) {
-					//行と列からキーを作成
-					String^ key = dataGridJson->CreateGridMapKey(i, j);
-					//その位置に配置
-					dataGridJson[key] = gcnew String(UTF8toSjis(jsonLoader->jsonmanager->getGrid(i, j)).c_str());
-				}
-			}
-			//初期化できていない部分の初期化を行う
-			gridJsonCreator->jsonmanager->adjustGridDataSize();
+			//JSON読み込み処理を実行する
+			LoadJson();
 		}
 		//else if (jsonDbLoader->isQuerySet()) {
-		//	
-		//	jsonDbLoader->run();
-		//	
-		//	int row = jsonDbLoader->jsonmanager->getGridRowLength();
-		//	int col = jsonDbLoader->jsonmanager->getGridColLength();
-
-		//	dataGridJson->rowCount = row;
-		//	dataGridJson->colCount = col;
-
-		//	//行数、列数分繰り返す
-		//	for (int i = 0; i < row; i++) {
-		//		for (int j = 0; j < col; j++) {
-		//			//その位置に値を保管する
-		//			dataGridJson[dataGridJson->CreateGridMapKey(i, j)] = gcnew String(UTF8toSjis(jsonDbLoader->jsonmanager->getGrid(i, j)).c_str());
-		//		}
-		//	}
-		//	//セットした値を表に表示する
-		//	dataGridJson->Paint();
+		//	getJsonFromQuery();
 		//}
 		else {
-			int rowN;
-			int colN;
-			try {
-				//入力されているタテの長さを取得
-				rowN = Convert::ToInt32(textBoxRowN->Text);
-				//入力されているヨコの長さを取得
-				colN = Convert::ToInt32(textBoxColN->Text);
-			}
-			catch (Exception^ e) {
-				MessageBox::Show("入力されている値が無効です", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-				return;
-			}
-
-			if (gridJsonCreator->jsonmanager->getGridRowLength() == 0) {
-				//初期化を行う
-				gridJsonCreator->init(rowN, colN);
-			}
-			//最大の大きさとして格納
-			gridJsonCreator->jsonmanager->setGridRowLen(rowN);
-			gridJsonCreator->jsonmanager->setGridMaxColLen(colN);
-			//入力されていない部分の初期化を行う
-			gridJsonCreator->jsonmanager->adjustGridDataSize();
-
-			//tablelayoutpanelの縦横の長さを取得した値に設定
-			dataGridJson->rowCount = rowN;
-			dataGridJson->colCount = colN;
+			//新規にJSONを作成するための表を表示する処理を実行
+			JsonCreate();
 		}
 		//セルを表示
 		dataGridJson->Paint();
@@ -425,14 +528,24 @@ namespace JSONMaker {
 	}
 
 
-			 //キャンセルボタンをクリックしたときのイベント
-			 //表のコントロールをすべて削除
+			 /*
+			 関数名:buttonCancel_Click
+			 概要:キャンセルボタンがクリックされたときのイベント
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void buttonCancel_Click(System::Object^  sender, System::EventArgs^  e) {
 		//描画処理を一旦停止
 		this->SuspendLayout();
-		
+
+		gridJsonCreator->jsonmanager->env.JSONFilePath = "";
+		gridJsonCreator->jsonmanager->env.Query = "";
 		dataGridJson->Clear();
 		jsonLoader->jsonmanager->jsonClear();
+		jsonLoader->jsonmanager->setGridMaxColLen(0);
+		jsonLoader->jsonmanager->setGridRowLen(0);
 		pictureBox1->Visible = false;
 		//描画処理をおこなう
 		this->ResumeLayout(false);
@@ -442,22 +555,36 @@ namespace JSONMaker {
 			 //作成ボタン押下時のイベント
 	private: System::Void buttonJsonCreate_Click(System::Object^  sender, System::EventArgs^  e) {
 		//入力された表の大きさを取得する
-		int rowN = gridJsonCreator->jsonmanager->getGridRowLength();
-		int colN = gridJsonCreator->jsonmanager->getGridColLength();
+		int rowN = dataGridJson->rowCount;
+		int colN = dataGridJson->colCount;
+		
+		if (textBoxNodeName->Text == "") {
+			MessageBox::Show("ノード名が入力されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+		gridJsonCreator->GridClear(rowN, colN);
+
+		gridJsonCreator->jsonmanager->env.setNodeName(StrToc_str(textBoxNodeName->Text));
 
 		//表の行数分繰り返す
 		for (int i = 0; i < rowN; i++) {
-			//表の列数分繰り返す
-			for (int j = 0; j < colN; j++) {
-				//その位置に入力されているセルの値を取得する(cellsが+1は結合ボタンのため)
-				String^ temp = (dataGridJson[dataGridJson->CreateGridMapKey(i, j)]);
-				//ナルあれば空文字、そうでなければそのまま
-				temp = temp == nullptr ? "" : temp;
+			
+			if (dataGridJson->checkBound(i)) {
+				int selectedCol = dataGridJson->selectedColFromBoundRow(i);
+				std::string str = SjistoUTF8(StrToc_str(dataGridJson[dataGridJson->CreateGridMapKey(i, selectedCol)]));
+				gridJsonCreator->jsonmanager->setGrid(i, selectedCol, str);
+			}
+			else {
+				//表の列数分繰り返す
+				for (int j = 0; j < colN; j++) {
+					//その位置に入力されているセルの値を取得する(cellsが+1は結合ボタンのため)
+					String^ temp = (dataGridJson[dataGridJson->CreateGridMapKey(i, j)]);
 
-				//String型からstring型へ変換する
-				std::string str = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(temp).ToPointer();
-				//変換したグリッドの値をセット
-				gridJsonCreator->jsonmanager->setGrid(i, j, str);
+					//String型からstring型へ変換し、SJISからUTF8に変換
+					std::string str = SjistoUTF8(StrToc_str(temp));
+					//変換したグリッドの値をセット
+					gridJsonCreator->jsonmanager->setGrid(i, j, str);
+				}
 			}
 		}
 		gridJsonCreator->jsonmanager->json.clear();
@@ -465,19 +592,26 @@ namespace JSONMaker {
 		gridJsonCreator->job();
 		//作成し終えたらメンバのJSONをクリアする
 		gridJsonCreator->jsonmanager->json.clear();
+		gridJsonCreator->GridClear(rowN, colN);
+
 		MessageBox::Show("JSON作成完了！！", "通知");
 
 	}
 
-			 //環境ボタンが押されたときのイベント
+			 /*
+			 関数名:buttonEnv_Click
+			 概要:環境(基本)ボタンがクリックされたときのイベント
+			 引数:イベントの引数
+			 返却値:なし
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void buttonEnv_Click(System::Object^  sender, System::EventArgs^  e) {
 		//環境設定入力フォームのインスタンスを生成
 		EnvForm^ envform = gcnew EnvForm();
-
 		//現在の情報を渡す
 		envform->JSONFilePath = gcnew String(jsonLoader->jsonmanager->getJsonFilePath().c_str());
-		//envform->DBName		  = gcnew String(jsonLoader->jsonmanager->getDBName().c_str());
-		envform->Query		  = gcnew String(jsonLoader->jsonmanager->getQuery().c_str());
+		envform->Query = gcnew String(jsonLoader->jsonmanager->getQuery().c_str());
 		//モーダル表示する
 		envform->ShowDialog();
 
@@ -490,18 +624,20 @@ namespace JSONMaker {
 		}
 		//取得したパスをセットする
 		jsonLoader->jsonmanager->setJsonFilePath(filepath);
-
-		std::string query;
-		if (envform->Query != nullptr) {
-			//クエリを取得する
-			query = StrToc_str(envform->Query);
-		}
-		constants.fileout(query);
+		//入力されたクエリを取得して
+		std::string query = envform->Query == nullptr ? "" : StrToc_str(envform->Query);
 		//セット
 		jsonLoader->jsonmanager->setQuery(query);
 	}
 
-			 //立ち上がった時に行う関数
+			 /*
+			 関数名:GuiMain_Load
+			 概要:このフォームが立ち上がった時に行うイベント
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void GuiMain_Load(System::Object^  sender, System::EventArgs^  e) {
 		//各種クラスのインスタンスの作成
 		jsonLoader = new JsonLoader();
@@ -516,27 +652,36 @@ namespace JSONMaker {
 		pictureBox1->Visible = false;
 	}
 
-
-			 //フォームが閉じるときの関数
+			 /*
+			 関数名:GuiMain_FormClosed
+			 概要:フォームが閉じるときのイベント
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void GuiMain_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
 
 		delete jsonLoader->jsonmanager;
 		delete jsonLoader;
 		delete gridJsonCreator;
+		//delete jsonDBLoader;
 	}
 
 			 //ピクチャーボックスがクリックされたときのイベント
 	private: System::Void pictureBox1_Click(System::Object^  sender, System::EventArgs^  e) {
-		//行と列を取得
-		int row = ((MouseEventArgs^)e)->Y / dataGridJson->cellHeight;
-		int col = ((MouseEventArgs^)e)->X / dataGridJson->cellWidth;
-
 		//その位置についてクリック処理
-		dataGridJson->cell_click(row, col);
+		dataGridJson->cell_click(e);
 	}
-
-			 //ダブルクリックされたときのイベント
-			 //セルの情報を表示する
+			 /*
+			 関数名:picture_Box1_DoubleClick
+			 概要:セルがダブルクリックされたときのイベント
+			 　　 セルの情報を表示する
+			 引数:イベントの引数
+			 返却値:無し
+			 作成日:9月15日(金)
+			 作成者:成田修之
+			 */
 	private: System::Void pictureBox1_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
 		int nowX = GridtabPage->AutoScrollPosition.X;
 		int nowY = GridtabPage->AutoScrollPosition.Y;
@@ -558,12 +703,18 @@ namespace JSONMaker {
 			row = ((MouseEventArgs^)e)->Y / dataGridJson->cellHeight;
 			col = ((MouseEventArgs^)e)->X / dataGridJson->cellWidth;
 		}
+		std::vector<std::string>cellData;
 
-		//セルの情報取得
-		std::vector<std::string>cellData(gridJsonCreator->jsonmanager->getGridData(row, col));
+		if (dataGridJson->checkBound(row)) {
+			col = dataGridJson->selectedColFromBoundRow(row);
+		}
+
+		//そのセルのデータを取得
+		cellData = jsonLoader->jsonmanager->getGridData(row, col);
+
 		//セルの情報として
 		array<String^>^ cellinfo_CLI = gcnew array<String^>(cellData.size());
-		//セルの情報の数だけ繰り返す(2回)
+		//セルの情報の数だけ繰り返す
 		for (int i = 0; i < cellData.size(); i++) {
 			cellinfo_CLI[i] = gcnew String(cellData[i].c_str());
 		}
@@ -572,6 +723,7 @@ namespace JSONMaker {
 		GridInfo^ gridinfo = gcnew GridInfo();
 		//各情報を渡す
 		gridinfo->gridInfo = cellinfo_CLI;
+		//+1は
 		gridinfo->rowN = row + 1;
 		gridinfo->colN = col + 1;
 		//セルの情報をモーダル表示
@@ -587,8 +739,8 @@ namespace JSONMaker {
 
 		//入力されたデータをグリッド管理クラスにセット
 		gridJsonCreator->jsonmanager->setGridData(row, col, cellData);
-
-		GridtabPage->AutoScrollPosition = Point(nowX, -nowY);
+		//スクロールのポジションをフォーム表示前と同じにする
+		GridtabPage->AutoScrollPosition = Point(-nowX, -nowY);
 	}
 
 			 //セル以外の部分をクリックした際のイベント
@@ -598,9 +750,14 @@ namespace JSONMaker {
 		dataGridJson->currentCell->col = -1;
 		dataGridJson->currentCell->row = -1;
 		//表示されているところ以外がクリックされたことにして
-		dataGridJson->cell_click(dataGridJson->currentCell->row, dataGridJson->currentCell->col);
+		dataGridJson->cell_click(dataGridJson->currentCell);
 		pictureBox1->Invalidate();
 	}
 
+	private: System::Void buttonBindRelease_Click(System::Object^  sender, System::EventArgs^  e) {
+		//選択されている行、列について結合処理を行う
+		dataGridJson->BindRelease(dataGridJson->currentCell->row, dataGridJson->currentCell->col);
+		pictureBox1->Invalidate();
+	}
 	};
 };
