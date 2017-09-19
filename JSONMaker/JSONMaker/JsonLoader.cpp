@@ -34,9 +34,8 @@ JsonLoader::~JsonLoader()
 */
 void JsonLoader::init()
 {
-	vector<string> temp(15);
-
-	hierarchyKeys = temp;
+	jsonmanager->grid->Clear();
+	hierarchyKeys = vector<string>(15);
 
 	//セットされたファイルパスを取得
 	std::string path = this->jsonmanager->getJsonFilePath();
@@ -44,16 +43,6 @@ void JsonLoader::init()
 	read_json(path, jsonmanager->json);
 	//何階層目かの数値を0でリセット
 	jsonLevel = 0;
-	//読みこめていなかったら
-	if (jsonmanager->json.empty()) {
-		//読みこめていなかったことを表示
-		cout << "json couldn't read";
-	}
-	else {
-		stringstream ss;
-		write_json(ss, jsonmanager->json);
-		cout << ss.str();
-	}
 }
 
 /*
@@ -97,7 +86,7 @@ void JsonLoader::returnRow() {
 	//
 	if (jsonmanager->getGridColLength() < setGridColN) {
 		//
-		this->jsonmanager->setGridMaxColLen(setGridColN);
+		this->jsonmanager->setGridColLen(setGridColN);
 
 	}
 	//改行するので列の値は0に
@@ -163,7 +152,7 @@ void JsonLoader::loadJson(boost::property_tree::ptree json) {
 				//配列を示すキーを後ろに格納
 				hierarchyKeys[jsonLevel + 1] = constants.KEY_ISARRAY;
 				//前のセルと比べて同じ行かどうか判定する
-				if (!isSameRow(cellKeys, preCellKeys) || jsonLevel == 1 && preKey == "disp") {
+				if (!isSameRow(cellKeys, preCellKeys) || jsonLevel == 1) {
 					returnRow();
 					preKey == "";
 				}
@@ -187,22 +176,13 @@ void JsonLoader::loadJson(boost::property_tree::ptree json) {
 		}
 		//配列でも子でもないとき(最下層の値)
 		else {
-			//表示させたいキーなら
-			if (child.first == "text" || child.first == "html") {
-				//今回が表示させるべきキーであったことを保管
-				preKey = "disp";
-				//その階層までのキー群を今回のキーとして保管
-				cellKeys = vector<string>(hierarchyKeys.begin(), hierarchyKeys.begin() + jsonLevel + 1);
-
-			}
-			else {
-				preKey == "noneDisp";
-			}
+			//その階層までのキー群を今回のキーとして保管
+			cellKeys = vector<string>(hierarchyKeys.begin(), hierarchyKeys.begin() + jsonLevel + 1);
 			//前のセルと比べて同じ行かどうか判定する
-			if (!isSameRow(cellKeys, preCellKeys) && preKey == "disp") {
+			if (!isSameRow(cellKeys, preCellKeys)) {
 				returnRow();
 				preKey == "";
-			}			
+			}
 			//表の値としてセット
 			jsonmanager->setGrid(setGridRowN, setGridColN, child.second.data());
 			//階層のキーからデータをセット

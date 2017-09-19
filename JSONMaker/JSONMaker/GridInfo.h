@@ -171,13 +171,12 @@ namespace JSONMaker {
 		}
 #pragma endregion
 private:
-	narita::DataGridSelfMade^ dataGridSelfMade;
-
-public:
+	narita::DataGridSelfMade^ DataGridCellInfo;
 	//行の情報を保管するメンバ
 	array<String^>^ _gridInfo;
-	//行数のメンバ
-	int _rowN;
+public:
+	
+	
 	public:
 		int rowN;
 		int colN;
@@ -197,15 +196,6 @@ public:
 
 			}
 		}
-		//行数のプロパティー
-		property int rowNumber {
-			int get() {
-				return _rowN;
-			}
-			void set(int n) {
-				_rowN = n;
-			}
-		}
 
 /*
 関数名:buttonOK_Click
@@ -217,14 +207,14 @@ public:
 */
 private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 	//入力された情報群の行数を取得
-	int rowN = dataGridSelfMade->rowCount;
+	int rowN = DataGridCellInfo->rowCount;
 
 	//メンバにセットする用の行数の長さの一時配列を作成
 	array<String^>^ temp = gcnew array<String^>(rowN);
 	//行の長さ分だけ繰り返す
 	for (int i = 0; i < rowN; i++) {
 		//入力されている情報を一時配列に格納
-		temp[i] = dataGridSelfMade[dataGridSelfMade->CreateGridMapKey(i,1)] == nullptr ? "" : dataGridSelfMade[dataGridSelfMade->CreateGridMapKey(i, 1)];
+		temp[i] = DataGridCellInfo[DataGridCellInfo->CreateGridMapKey(i,1)] == nullptr ? "" : DataGridCellInfo[DataGridCellInfo->CreateGridMapKey(i, 1)];
 	}
 	//メンバに反映
 	gridInfo = temp;
@@ -244,22 +234,22 @@ private: System::Void GridInfo_Load(System::Object^  sender, System::EventArgs^ 
 	//メンバに渡された情報の配列の長さを取得
 	int rowLen = gridInfo->Length;
 	//ピクチャボックスを渡してdataGridのインスタンスを生成
-	dataGridSelfMade = gcnew narita::DataGridSelfMade(pictureBox1);
+	DataGridCellInfo = gcnew narita::DataGridSelfMade(pictureBox1);
 	
 	//表の行数を取得した情報の数にする
-	dataGridSelfMade->rowCount = rowLen;
+	DataGridCellInfo->rowCount = rowLen;
 	//何番目かとキーを表示する列のみなので2列
-	dataGridSelfMade->colCount = 2;
+	DataGridCellInfo->colCount = 2;
 
 	//その数だけ繰り返す
 	for (int i = 0; i < rowLen; i++) {
 		//何番目のキー表す列
-		dataGridSelfMade[dataGridSelfMade->CreateGridMapKey(i, 0)] = "Key[" + i.ToString() + "]";
+		DataGridCellInfo[DataGridCellInfo->CreateGridMapKey(i, 0)] = "Key[" + i.ToString() + "]";
 		//キーを順番に配置
-		dataGridSelfMade[dataGridSelfMade->CreateGridMapKey(i, 1)] = gridInfo[i];
+		DataGridCellInfo[DataGridCellInfo->CreateGridMapKey(i, 1)] = gridInfo[i];
 	}
 	//表を描画
-	dataGridSelfMade->Paint();
+	DataGridCellInfo->Paint();
 
 	//ラベルに何行、何列目のセルの情報なのかを表示
 	label1->Text = rowN.ToString() + "行" + colN.ToString() + "列";
@@ -276,18 +266,18 @@ private: System::Void GridInfo_Load(System::Object^  sender, System::EventArgs^ 
 		 */
 private: System::Void Cell_Click(System::Object^  sender, System::EventArgs^  e) {
 	//クリックされた列を取得
-	int col = ((MouseEventArgs^)e)->X / dataGridSelfMade->cellWidth;
+	int col = ((MouseEventArgs^)e)->X / DataGridCellInfo->cellWidth;
 	//何番目かを表す編集不可の列でなければ
 	if (col != 0) {
 		//そのセルがクリックされたとしてメソッド呼び出し
-		dataGridSelfMade->cell_click(e);
+		DataGridCellInfo->cell_click(e);
 	}
 	//編集不可の列であれば
 	else {
 		//選択中のセルをもとに戻して
-		dataGridSelfMade->drawCell(dataGridSelfMade->currentCell, Brushes::White);
+		DataGridCellInfo->drawCell(DataGridCellInfo->currentCell, Brushes::White);
 		//カレントのセルを-1,-1に設定
-		dataGridSelfMade->currentCell = gcnew narita::Cell(-1, -1);
+		DataGridCellInfo->currentCell = gcnew narita::Cell(-1, -1);
 	}
 	//描画を促す
 	pictureBox1->Invalidate();
@@ -303,9 +293,9 @@ private: System::Void Cell_Click(System::Object^  sender, System::EventArgs^  e)
 		 */
 private: System::Void GridInfo_Click(System::Object^  sender, System::EventArgs^  e) {
 	//カレントのセルを-1,-1に設定
-	dataGridSelfMade->currentCell = gcnew narita::Cell(-1, -1);
+	DataGridCellInfo->currentCell = gcnew narita::Cell(-1, -1);
 	//そのセルがクリックされたことにしてメソッド呼び出し
-	dataGridSelfMade->cell_click(dataGridSelfMade->currentCell);
+	DataGridCellInfo->cell_click(DataGridCellInfo->currentCell);
 	//再描画を促す
 	pictureBox1->Invalidate();
 }
@@ -320,17 +310,17 @@ private: System::Void GridInfo_Click(System::Object^  sender, System::EventArgs^
 		 */
 private: System::Void buttonAdd_Click(System::Object^  sender, System::EventArgs^  e) {
 	//表の行数を1追加
-	dataGridSelfMade->rowCount += 1;
+	DataGridCellInfo->rowCount += 1;
 	//その追加された行の1列目に何個目のキーかを格納
-	dataGridSelfMade[dataGridSelfMade->CreateGridMapKey((dataGridSelfMade->rowCount - 1), 0)] = "Key[" + (dataGridSelfMade->rowCount - 1).ToString() + "]";
+	DataGridCellInfo[DataGridCellInfo->CreateGridMapKey((DataGridCellInfo->rowCount - 1), 0)] = "Key[" + (DataGridCellInfo->rowCount - 1).ToString() + "]";
 	//2列目には空文字を
-	dataGridSelfMade[dataGridSelfMade->CreateGridMapKey((dataGridSelfMade->rowCount - 1), 1)] = "";
+	DataGridCellInfo[DataGridCellInfo->CreateGridMapKey((DataGridCellInfo->rowCount - 1), 1)] = "";
 	//メンバの配列の大きさを更新
-	Array::Resize(_gridInfo, dataGridSelfMade->rowCount);
+	Array::Resize(_gridInfo, DataGridCellInfo->rowCount);
 	//そのメンバの配列の新しく作成した部分に空文字配置
-	gridInfo[dataGridSelfMade->rowCount - 1] = "";
+	gridInfo[DataGridCellInfo->rowCount - 1] = "";
 	//表を描画
-	dataGridSelfMade->Paint();
+	DataGridCellInfo->Paint();
 }
 
 		 /*
@@ -343,16 +333,16 @@ private: System::Void buttonAdd_Click(System::Object^  sender, System::EventArgs
 		 */
 private: System::Void buttonPopBack_Click(System::Object^  sender, System::EventArgs^  e) {
 	//行数が0なら
-	if (dataGridSelfMade->rowCount == 0) {
+	if (DataGridCellInfo->rowCount == 0) {
 		//もう減らす行がないことを表示
 		MessageBox::Show("これ以上減らせません","警告",MessageBoxButtons::OK, MessageBoxIcon::Warning);
 	}
 	//1以上なら
 	else {
 		//表を1行減らす
-		dataGridSelfMade->rowCount -= 1;
+		DataGridCellInfo->rowCount -= 1;
 		//再描画
-		dataGridSelfMade->Paint();
+		DataGridCellInfo->Paint();
 	}
 }
 };

@@ -79,9 +79,9 @@ namespace JSONMaker {
 
 		}
 #pragma endregion
-	public:array<String^>^ Items;
-	public:String^ Node;
-	public: array<RadioButton^>^ radiobuttons;
+	public:array<String^>^ Nodes;
+	public:String^ selectedNode;
+	public: array<RadioButton^>^ buttonNodes;
 
 			/*
 			関数名:NodeSelectForm_Load
@@ -93,19 +93,19 @@ namespace JSONMaker {
 			*/
 	private: System::Void NodeSelectForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		//フォームに渡されたノード群の数を取得
-		int len = Items->Length;
+		int len = Nodes->Length;
 		//ラジオボタンの配列を生成
-		radiobuttons = gcnew array<RadioButton^>(len);
+		buttonNodes = gcnew array<RadioButton^>(len);
 
 		//ノードの数だけ繰り返す
 		for (int i = 0; i < len; i++) {
 			//ラジオボタンを生成して各種情報追加
-			radiobuttons[i] = gcnew RadioButton();
-			radiobuttons[i]->Text = Items[i];
-			radiobuttons[i]->Location = Point(25, buttonOK->Bottom + 10 + (i * 25));
-			radiobuttons[i]->BackColor = Color::White;
+			buttonNodes[i] = gcnew RadioButton();
+			buttonNodes[i]->Text = Nodes[i];
+			buttonNodes[i]->Location = Point(25, buttonOK->Bottom + 10 + (i * 25));
+			buttonNodes[i]->BackColor = Color::White;
 			//フォームに加える
-			this->Controls->Add(radiobuttons[i]);
+			this->Controls->Add(buttonNodes[i]);
 
 		}
 	}
@@ -122,17 +122,17 @@ namespace JSONMaker {
 		//選択されていないラジオボタンの数を取得するための変数
 		int i;
 		//ラジオボタンの数だけ繰り返す
-		for (i = 0; i < radiobuttons->Length; i++) {
+		for (i = 0; i < buttonNodes->Length; i++) {
 			//チェックされていたら
-			if (radiobuttons[i]->Checked) {
+			if (buttonNodes[i]->Checked) {
 				//選択されたノードをメンバに格納して
-				Node = radiobuttons[i]->Text;
+				selectedNode = buttonNodes[i]->Text;
 				//ループを抜ける
 				break;
 			}
 		}
 		//変数がラジオボタンの数と同じとき
-		if (i == radiobuttons->Length) {
+		if (i == buttonNodes->Length) {
 			//選択されていなかったことを警告
 			MessageBox::Show("ノードが選択されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 		}
@@ -156,17 +156,17 @@ namespace JSONMaker {
 		//選択されていないラジオボタンの数を取得する変数
 		int i;
 		//ラジオボタンの数だけ繰り返す
-		for (i = 0; i < radiobuttons->Length; i++) {
+		for (i = 0; i < buttonNodes->Length; i++) {
 			//チェックされていたら
-			if (radiobuttons[i]->Checked) {
+			if (buttonNodes[i]->Checked) {
 				//そのノード名を取得
-				Node = radiobuttons[i]->Text;
+				selectedNode = buttonNodes[i]->Text;
 				//見受かったのでループを抜ける
 				break;
 			}
 		}
 		//きちんと選択されたノードがみつかっていなければ
-		if (i == radiobuttons->Length) {
+		if (i == buttonNodes->Length) {
 			//選択されていないことを警告
 			MessageBox::Show("ノードが選択されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 			//フォームを閉じるのをやめる

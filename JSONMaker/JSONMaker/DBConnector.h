@@ -15,11 +15,10 @@
 //
 //class DBConnector
 //{
-//private:
-//	
+//protected:
+//	sql::Connection *con;
 //
 //public:
-//	sql::Connection *con;
 //
 //	DBConnector();
 //	~DBConnector();

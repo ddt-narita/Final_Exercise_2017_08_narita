@@ -17,8 +17,7 @@ public:
 
 	std::string createAcsessKey(std::vector<std::string> eachCellKeys, int isArray);
 	//ÀÛ‚ÉJSON‚ğì¬‚·‚éŠÖ”
-	void job();
-	void GridClear(int rowN, int colN);
+	void CreateJSON();
 };
 
 #endif // !__GRID_JSON_CREATOR

@@ -21,7 +21,8 @@ public:
 
 	//初期化関数
 	void init(int rowN, int colN);
-
+	//座標からキーへの変換
+	std::string CreateMapKey(int rowN, int colN);
 	//表示するもの
 	std::string getGrid(int rowN, int colN);
 	void setGrid(int rowN, int colN, std::string value);
@@ -34,10 +35,11 @@ public:
 	int getGridRowLength();
 	int getGridColLength(int rowN = 0);
 	void setRowLen(int rowN);
-	void setColMaxLen(int colN);
+	void setColLen(int colN);
 
 	void adjustGridSize();
 	void Clear();
-	void GridClear(int rowN, int colN);
+	void GridClear();
+	void GridDataClear();
 };
 

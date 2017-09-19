@@ -99,7 +99,7 @@ bool isArray(vector<string> eachCellKey) {
 作成者:成田修之
 作成日:9月4日(月)
 */
-void GridJSONCreator::job()
+void GridJSONCreator::CreateJSON()
 {
 	//行数と列数を取得
 	int row = this->jsonmanager->getGridRowLength() + 1;
@@ -118,29 +118,29 @@ void GridJSONCreator::job()
 			vector<string> cellData = this->jsonmanager->getGridData(i, j);
 			//値を取得
 			string value = this->jsonmanager->getGrid(i, j);
-			
-			if (value != "") {
-				//そのセルが配列を示しているとき
-				if (isArray(cellData)) {
-					arrayType = 0;
+
+
+			//そのセルが配列を示しているとき
+			if (isArray(cellData)) {
+				arrayType = 0;
+				//
+				arrayObject.put(*(cellData.end() - 1), value);
+				//要素がオブジェクトではないなら
+				if (*(cellData.end() - 1) == "") {
 					//
-					arrayObject.put(*(cellData.end() - 1), value);
-					//要素がオブジェクトではないなら
-					if (*(cellData.end() - 1) == "") {
-						//
-						arraytree.push_back(make_pair("", arrayObject));
-						arrayType = 1;
-					}
-					preArrayData = cellData;
-					//
-					rowContainsArray = 1;
+					arraytree.push_back(make_pair("", arrayObject));
+					arrayType = 1;
 				}
-				//配列ではなく、通常の要素の時
-				else {
-					//
-					jsonmanager->json.add(createAcsessKey(cellData, 0), value);
-				}
+				preArrayData = cellData;
+				//
+				rowContainsArray = 1;
 			}
+			//配列ではなく、通常の要素の時
+			else {
+				//
+				jsonmanager->json.add(createAcsessKey(cellData, 0), value);
+			}
+
 		}
 		//その行内に一つでも配列の要素があれば
 		if (rowContainsArray == 1) {
@@ -157,12 +157,13 @@ void GridJSONCreator::job()
 		arrayObject.clear();
 	}
 	if (!arraytree.empty() && arrayType == 0) {
-		jsonmanager->json.add_child(createAcsessKey(preArrayData, 1), arraytree);
+
+		try {
+			jsonmanager->json.add_child(createAcsessKey(preArrayData, 1), arraytree);
+		}
+		catch (exception &e) {
+
+		}
 	}
 	write_json("data.json", jsonmanager->json);
-}
-
-void GridJSONCreator::GridClear(int rowN, int colN)
-{
-	this->jsonmanager->grid->GridClear(rowN, colN);
 }

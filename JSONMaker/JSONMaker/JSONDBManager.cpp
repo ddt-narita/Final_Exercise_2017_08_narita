@@ -53,11 +53,9 @@
 //	sql::Statement *stmt = con->createStatement();
 //	//結果を格納する変数を用意
 //	sql::ResultSet *result = nullptr;
-//	constants.fileout("クエリ投げる前");
 //	//引数のクエリで結果を取得
 //	result = stmt->executeQuery(query);
-//	constants.fileout("クエリ投げられた");
-//
+//	
 //	//結果からメタデータを取得
 //	sql::ResultSetMetaData *metaData = result->getMetaData();
 //	
@@ -83,13 +81,11 @@
 //			//取得した値をセットする
 //			jsonmanager->setGrid(i, j, value);
 //		}
-//		constants.fileout(to_string(i));
 //		//何行目かを表す値を増加
 //		i++;
 //	}
-//	constants.fileout("セット完了");
 //
 //	//行数列数を格納する
-//	jsonmanager->setGridMaxColLen(colN);
+//	jsonmanager->setGridColLen(colN);
 //	jsonmanager->setGridRowLen(i);
 //}

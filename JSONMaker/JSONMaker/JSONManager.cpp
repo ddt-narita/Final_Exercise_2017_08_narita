@@ -5,14 +5,12 @@
 JSONManager::JSONManager()
 {
 	grid = new GridManager();
-	list = new ListManager();
 }
 
 
 JSONManager::~JSONManager()
 {
 	delete grid;
-	delete list;
 }
 
 std::string JSONManager::getGrid(int rowN, int colN)
@@ -50,27 +48,11 @@ void JSONManager::setGridRowLen(int rown)
 	grid->setRowLen(rown);
 }
 
-void JSONManager::setGridMaxColLen(int coln)
+void JSONManager::setGridColLen(int coln)
 {
-	grid->setColMaxLen(coln);
+	grid->setColLen(coln);
 }
 
-
-
-std::string JSONManager::getJSONName()
-{
-	return "json";
-}
-
-std::string JSONManager::getJSONSavePath()
-{
-	return std::string();
-}
-
-void JSONManager::setJSONSavePath(std::string path)
-{
-	
-}
 
 
 std::string JSONManager::getQuery()
@@ -108,6 +90,9 @@ bool JSONManager::isJSONFilePathSet()
 void JSONManager::jsonClear()
 {
 	grid->Clear();
+	setGridColLen(0);
+	setGridRowLen(0);
+
 }
 
 void JSONManager::adjustGridDataSize()

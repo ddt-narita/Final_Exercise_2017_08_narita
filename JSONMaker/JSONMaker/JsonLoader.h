@@ -18,13 +18,14 @@ private:
 	int setGridRowN = 0;
 	//セットする際にどの列にセットするかを指す変数
 	int setGridColN = 0;
-
-public:
-	JSONManager* jsonmanager;
 	//階層ごとのキーを入力するためのキー
 	std::vector<std::string> hierarchyKeys;
 	std::vector<std::string> cellKeys;
 	std::vector<std::string> preCellKeys;
+
+public:
+	JSONManager* jsonmanager;
+
 
 	JsonLoader();
 	~JsonLoader();

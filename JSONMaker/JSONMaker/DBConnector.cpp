@@ -26,13 +26,8 @@
 //
 //	//DBに接続
 //	con = driver->connect("tcp://127.0.0.1:3306", "root", "");
-//
-//	//ステートメントを作成
-//	sql::Statement *stmt = con->createStatement();
 //	//DBを指定
 //	con->setSchema(dbname);
-//	//ステートメントをクローズ
-//	stmt->close();
 //
 //}
 //

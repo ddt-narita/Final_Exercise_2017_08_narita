@@ -151,6 +151,7 @@ namespace JSONMaker {
 			this->Name = L"EnvForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"EnvForm";
+			this->Load += gcnew System::EventHandler(this, &EnvForm::EnvForm_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -227,6 +228,11 @@ private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^
 	Query = textBoxQuery->Text;
 
 	this->Close();
+}
+private: System::Void EnvForm_Load(System::Object^  sender, System::EventArgs^  e) {
+	textBoxJSONName->Text = JSONFilePath;
+	textBoxDBName->Text = DBName;
+	textBoxQuery->Text = Query;
 }
 };
 }

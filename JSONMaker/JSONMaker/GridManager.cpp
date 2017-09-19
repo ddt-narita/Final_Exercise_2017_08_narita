@@ -15,16 +15,17 @@ GridManager::~GridManager()
 }
 
 /*
-関数名:coordinateToStr
+関数名:CreateMapKey
 概要:引数の座標値をマップのキーにアクセスするための文字列に変換する
 引数:int rowN, colN　座標値
 返却値:	string str 返還後の文字列
 作成者:成田修之
 作成日:9月6日
 */
-string coordinateToStr(int rowN, int colN) {
-	string retStr = to_string(rowN) + ":" + to_string(colN);
-	return retStr;
+string GridManager::CreateMapKey(int rowN, int colN)
+{
+	//"行：列"のキーを作って返却
+	return to_string(rowN) + ":" + to_string(colN);
 }
 
 
@@ -44,11 +45,14 @@ void GridManager::init(int rowN, int colN)
 	for (int i = 0; i < rowN; i++) {
 		for (int j = 0; j < colN; j++) {
 			//空文字で初期化
-			grid[coordinateToStr(i, j)] = "";
+			grid[CreateMapKey(i, j)] = "";
 			//一時オブジェクトのコピーで初期化
-			gridData[coordinateToStr(i, j)] = data;
+			gridData[CreateMapKey(i, j)] = data;
 		}
 	}
+	//行数列数を設定
+	this->setRowLen(rowN);
+	this->setColLen(colN);
 }
 
 /*
@@ -61,7 +65,8 @@ void GridManager::init(int rowN, int colN)
 */
 std::string GridManager::getGrid(int rowN, int colN)
 {
-	return grid[coordinateToStr(rowN, colN)];
+	//引数の位置の値を返却する
+	return grid[CreateMapKey(rowN, colN)];
 }
 
 /*
@@ -74,7 +79,8 @@ std::string GridManager::getGrid(int rowN, int colN)
 */
 void GridManager::setGrid(int rowN, int colN, std::string value)
 {
-	grid[coordinateToStr(rowN, colN)] = value;
+	//引数の位置に値をセット
+	grid[CreateMapKey(rowN, colN)] = value;
 }
 
 
@@ -88,7 +94,8 @@ void GridManager::setGrid(int rowN, int colN, std::string value)
 */
 std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 {
-	return gridData[coordinateToStr(rowN, colN)];
+	//引数の位置のセルの情報配列を返却
+	return gridData[CreateMapKey(rowN, colN)];
 }
 
 
@@ -102,7 +109,8 @@ std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 */
 void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 {
-	gridData[coordinateToStr(rowN, colN)] = data;
+	//引数の位置にその位置のセルの情報配列をセット
+	gridData[CreateMapKey(rowN, colN)] = data;
 }
 
 /*
@@ -115,6 +123,7 @@ void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
 */
 int GridManager::getGridRowLength()
 {
+	//行数を返却
 	return rowNum;
 }
 
@@ -128,32 +137,35 @@ int GridManager::getGridRowLength()
 */
 int GridManager::getGridColLength(int rowN)
 {
+	//列数を返却
 	return colMaxNum;
 }
 
 void GridManager::setRowLen(int rowN)
 {
+	//行数をセット
 	rowNum = rowN;
 }
 
-void GridManager::setColMaxLen(int coln)
+void GridManager::setColLen(int coln)
 {
+	//列数をセット
 	colMaxNum = coln;
 }
 
 void GridManager::adjustGridSize()
 {
 	//表のタテヨコの最大値を取得
-	int rowMax = this->getGridRowLength();
-	int colMax = this->getGridColLength();
+	int rowMax = this->getGridRowLength()+1;
+	int colMax = this->getGridColLength()+1;
 
 	//最大の行数、列数分すべて繰り返す
 	for (int i = 0; i < rowMax; i++) {
 		for (int j = 0; j < colMax; j++) {
 			//その行、列のキーがない
-			if (gridData.count(coordinateToStr(i, j)) != 1) {
+			if (gridData.count(CreateMapKey(i, j)) != 1) {
 				//初期値を入力
-				gridData[coordinateToStr(i, j)] = vector<string>(2);
+				gridData[CreateMapKey(i, j)] = vector<string>(2);
 			}
 		}
 	}
@@ -161,19 +173,19 @@ void GridManager::adjustGridSize()
 
 void GridManager::Clear()
 {
+	//セルの値のマップをクリア
+	GridClear();
+	//セルの情報配列を格納するマップをクリア
+	GridDataClear();
+}
+
+void GridManager::GridClear()
+{
+	//セルのマップをクリア
 	grid.clear();
+}
+
+void GridManager::GridDataClear() {
+	//セルの情報配列のマップをクリア
 	gridData.clear();
 }
-
-void GridManager::GridClear(int rowN, int colN)
-{
-	//全行列の要素分
-	for (int i = 0; i < rowN; i++) {
-		for (int j = 0; j < colN; j++) {
-			//空文字で初期化
-			grid[coordinateToStr(i, j)] = "";
-			//一時オブジェクトのコピーで初期化
-		}
-	}
-}
-

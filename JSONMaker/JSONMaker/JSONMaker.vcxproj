@@ -156,10 +156,6 @@
     <ClCompile Include="JSONDBManager.cpp" />
     <ClCompile Include="JsonLoader.cpp" />
     <ClCompile Include="JSONManager.cpp" />
-    <ClCompile Include="ListJSONCreator.cpp" />
-    <ClCompile Include="ListManager.cpp">
-      <FileType>CppForm</FileType>
-    </ClCompile>
     <ClCompile Include="NodeSelectForm.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,11 +175,10 @@
     <ClInclude Include="GuiMain.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="JsonBadAcsessException.h" />
     <ClInclude Include="JSONDBManager.h" />
     <ClInclude Include="JsonLoader.h" />
     <ClInclude Include="JSONManager.h" />
-    <ClInclude Include="ListJSONCreator.h" />
-    <ClInclude Include="ListManager.h" />
     <ClInclude Include="NodeSelectForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>

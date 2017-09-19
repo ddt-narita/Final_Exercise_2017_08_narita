@@ -19,9 +19,9 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 	//結合されている行とその時選択されていた列
 	BoundRow = gcnew Dictionary<String^, String^>();
 	//初期列数
-	colCount = 5;
+	colCount = 1;
 	//初期行数
-	rowCount = 5;
+	rowCount = 1;
 	//セルの幅
 	cellWidth = 120;
 	//セルの高さ
@@ -32,7 +32,7 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 	//セルの枠を描くペンオブジェクトを作成
 	cellFramePen = gcnew Pen(Color::Black, 3);
 	//文字列を書くときのフォント
-	font = gcnew Font("ＭＳ ゴシック", 9);
+	font = gcnew Font("ＭＳ ゴシック", 8);
 	
 	//描画対象のイメージオブジェクト
 	this->canvas = gcnew Bitmap(this->pictureBox->Width - 1, this->pictureBox->Height - 1);
@@ -137,8 +137,8 @@ Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
 }
 
 /*
-関数名:selectedCell_click
-概要:選択済みのセルがクリックされたときの関数
+関数名:Cell_click
+概要:セルがクリックされたときの関数
 引数:int row　セルの行, int col　セルの列
 返却値:なし
 作成日:9月10日
@@ -166,10 +166,10 @@ Void narita::DataGridSelfMade::cell_click(int row, int col)
 }
 
 /*
-関数名:
-概要:
-引数:
-返却値:
+関数名:cell_click
+概要:セルがクリックされたときの関数(オーバーロード)
+引数:Cell^ cell セル
+返却値:なし
 作成者:成田修之
 作成日:9月15日(金)
 */
@@ -417,6 +417,6 @@ Void DataGridSelfMade::Clear() {
 	this->GridData->Clear();
 	this->rowCount = 0;
 	this->colCount = 0;
-	this->currentCell->col = 0;
-	this->currentCell->row = 0;
+	this->currentCell->col = -1;
+	this->currentCell->row = -1;
 }
