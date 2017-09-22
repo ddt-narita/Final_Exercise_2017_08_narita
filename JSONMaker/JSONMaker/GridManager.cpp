@@ -163,7 +163,7 @@ void GridManager::adjustGridSize()
 	for (int i = 0; i < rowMax; i++) {
 		for (int j = 0; j < colMax; j++) {
 			//その行、列のキーがない
-			if (gridData.count(CreateMapKey(i, j)) != 1) {
+			if (gridData.count(CreateMapKey(i, j)) != 1 || gridData[CreateMapKey(i, j)].size() == 0) {
 				//初期値を入力
 				gridData[CreateMapKey(i, j)] = vector<string>(2);
 			}

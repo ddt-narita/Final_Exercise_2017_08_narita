@@ -1,5 +1,6 @@
 #pragma once
 #include "Cell.h"
+#include "CellChain.h"
 
 namespace narita {
 
@@ -24,14 +25,13 @@ namespace narita {
 		int _colCount;	//列数
 		int _rowCount;	//行数
 
-		//表示する値を格納する行：列と値の連想配列
-		Dictionary<String^, String^>^ GridData;
-		//結合されている行とその時選択されていた列のペアの連想配列
-		Dictionary<String^, String^>^ BoundRow;
+		
 
 	public:
 		int cellWidth;	//セルの幅
 		int cellHeight;	//セルの高さ
+		//表を表示するのに使うセルごとのクラス
+		CellChain^ cell;
 		TextBox^ text;	//テキストボックス
 		//列数のプロパティー
 		property int colCount {
@@ -39,11 +39,6 @@ namespace narita {
 				return _colCount;
 			}
 			void set(int col) {
-				for (int i = 0; i < rowCount; i++) {
-					for (int j = _colCount; j < col; j++) {
-						GridData[CreateGridMapKey(i,j)] = "";
-					}
-				}
 				_colCount = col;
 			}
 		}
@@ -53,12 +48,6 @@ namespace narita {
 				return _rowCount;
 			}
 			void set(int row) {
-				
-				for (int i = _rowCount; i < row; i++) {
-					for (int j = 0; j < colCount; j++) {
-						GridData[CreateGridMapKey(i,j)] = "";
-					}
-				}
 				_rowCount = row;
 			}
 		}
@@ -87,17 +76,8 @@ namespace narita {
 		Void BindRelease(int row, int col);
 		//全体を一から描画するメソッド
 		Void Paint();
+		//表部分のデータをクリアする関数
 		Void Clear();
-
-		//このクラスに対する添字演算子の定義
-		property System::String^ default[System::String^]{
-			System::String^ get(System::String^ index) {
-				return this->GridData[index];
-			}
-			void set(System::String^ index, System::String^ value) {
-				this->GridData[index] = value;
-			}
-		}
 
 	private:Void textboxEnter(System::Object^  sender, Windows::Forms::KeyEventArgs^  e);
 	Void textboxLostFocus(System::Object ^ sender, EventArgs ^ e);

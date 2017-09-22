@@ -14,10 +14,8 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 {
 	//受け取った描画したものを配置するオブジェクトをメンバに共有
 	(this->pictureBox) = pictureBox;
-	//表の値
-	GridData = gcnew Dictionary<String^, String^>();
-	//結合されている行とその時選択されていた列
-	BoundRow = gcnew Dictionary<String^, String^>();
+	//セルごとのクラス初期化
+	cell = gcnew CellChain();
 	//初期列数
 	colCount = 1;
 	//初期行数
@@ -32,7 +30,7 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 	//セルの枠を描くペンオブジェクトを作成
 	cellFramePen = gcnew Pen(Color::Black, 3);
 	//文字列を書くときのフォント
-	font = gcnew Font("ＭＳ ゴシック", 8);
+	font = gcnew Font("ＭＳ ゴシック", 9);
 	
 	//描画対象のイメージオブジェクト
 	this->canvas = gcnew Bitmap(this->pictureBox->Width - 1, this->pictureBox->Height - 1);
@@ -47,7 +45,7 @@ DataGridSelfMade::DataGridSelfMade(PictureBox^ pictureBox)
 	text->ImeMode = ImeMode::Off;
 	pictureBox->Controls->Add(text);
 	text->KeyDown += gcnew KeyEventHandler(this, &DataGridSelfMade::textboxEnter);
-	text->LostFocus += gcnew EventHandler(this, &DataGridSelfMade::textboxLostFocus);
+	//text->LostFocus += gcnew EventHandler(this, &DataGridSelfMade::textboxLostFocus);
 	text->BackColor = Color::Aqua;
 	text->Visible = false;
 }
@@ -76,6 +74,9 @@ Void DataGridSelfMade::cell_click(System::EventArgs^ e)
 返却値:なし
 作成日:9月15日
 作成者:成田修之
+変更日:9月20日(水)
+変更者:成田修之
+内容:セルごとのデータのcellへの変更
 */
 Void DataGridSelfMade::SelectedCell_click(int row, int col) {
 	//結合された行なら
@@ -91,16 +92,11 @@ Void DataGridSelfMade::SelectedCell_click(int row, int col) {
 		text->Location = Point(col * cellWidth, row * cellHeight);
 	}
 
-	//その位置に値が存在していれば
-	if (GridData->ContainsKey(CreateGridMapKey(row, col))) {
-		//値を取得する
-		text->Text = this->GridData[CreateGridMapKey(row, col)];
-	}
-	//存在しなければ
-	else {
-		//空文字を表示させる
-		text->Text = "";
-	}
+	//値を取得する @mod 値の取得をセルクラスのメソッドから取得する
+	text->Text = cell->getValue(row, col);
+	//ナルの時は空文字を代入
+	text->Text = (text->Text == nullptr ? "" : text->Text);
+	
 	//テキストボックスを表示
 	text->Visible = true;
 	//すぐに入力できるようにフォーカスを置く
@@ -114,6 +110,9 @@ Void DataGridSelfMade::SelectedCell_click(int row, int col) {
 返却値:なし
 作成日:9月15日
 作成者:成田修之
+変更日:9月20日(水)
+変更者:成田修之
+内容:結合されている行についてその時選択されていた列の取得をセルクラスから取得に
 */
 Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
 	//今表示されているテキストボックスを非表示にする
@@ -125,8 +124,8 @@ Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
 	if (checkBound(row)) {
 		//カレントのセルを今回の行にする
 		currentCell->row = row;
-		//結合されたときに選択された列にする
-		currentCell->col = Int32::Parse(BoundRow[row.ToString()]);
+		//結合されたときに選択された列にする @mod9月20日(水)　列の取得をセルクラスからに
+		currentCell->col = cell->getSelectedColFromRow(row);
 	}
 	//通常のセルなら
 	else {
@@ -208,8 +207,8 @@ Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 	String^ value;
 	String^ key = CreateGridMapKey(row, col);
 	//引数の位置の表示部の情報を取得　なければ空文字
-	if (GridData->ContainsKey(key)) {
-		value = this->GridData[key];
+	if (cell->getCell(row, col) != nullptr) {
+		value = cell->getValue(row, col);
 	}
 	else {
 		value = "";
@@ -255,8 +254,12 @@ Void DataGridSelfMade::drawCell(Cell ^ cell, Brush ^ color)
 */
 Boolean DataGridSelfMade::checkBound(int row)
 {
+	CellChain^ temp = cell;
 	//結合された行を管理するメンバから引数の行をキーとするものがあるかどうかで結合しているかを判定
-	return BoundRow->ContainsKey(row.ToString());
+	for (int i = 0; i < row; i++) {
+		temp = temp->under;
+	}
+	return temp->isBound;
 }
 
 /*
@@ -264,13 +267,37 @@ Boolean DataGridSelfMade::checkBound(int row)
 概要:引数の結合された行の結合されたときに選択された列を返す関数
 引数:int row 結合された行
 返却値:int col　結合された時選択されていた列
-作成者:成田修之
 作成日:9月15日(金)
+作成者:成田修之
+変更日:9月20日(水)
+変更者:成田修之
+内容:表を管理するクラスの変更によりすべて変更
 */
 int narita::DataGridSelfMade::selectedColFromBoundRow(int row)
 {
+	//セルを取得
+	CellChain^ temp = cell;
+	//引数の行数分繰り返す
+	for (int i = 0; i < row; i++) {
+		//下のセルに更新
+		temp = temp->under;
+	}
+	//返却する選択されたセルの列数
+	int col = 0;
+
+	//列数分繰り返す
+	for (; col < this->colCount; col++) {
+		//選択されたセルが見つかったら
+		if (temp->isSelectedCol) {
+			//ループを抜ける
+			break;
+		}
+		//右のセルに移動
+		temp = temp->right;
+	}
+
 	//結合された行を管理するメンバからその時選択された列を抽出して返却する。
-	return Int32::Parse(BoundRow[row.ToString()]);
+	return col + 1;
 }
 
 /*
@@ -280,13 +307,19 @@ int narita::DataGridSelfMade::selectedColFromBoundRow(int row)
 返却値:なし
 作成日:9月9日
 作成者:成田修之
+作成日:9月15日(金)
 */
 Void DataGridSelfMade::BindRelease(int row, int col)
 {
+	CellChain^ cell = this->cell;
 	//結合された行か
 	if (checkBound(row)) {
-		//その行をキーとするものを取り除いて結合された行ではないとする
-		BoundRow->Remove(row.ToString());
+		//その行の先頭のセルにその行が結合されてるかどうかの値を無効に
+		cell->getCell(row, 0)->isBound = false;
+		//その行の選択されていた列の値を取得
+		int selectedCol = cell->getSelectedColFromRow(row);
+		//そのセルが選択されていたことを無効にする
+		cell->getCell(row, selectedCol)->isSelectedCol = false;
 		//列数分繰り返す
 		for (int i = 0; i < colCount; i++) {
 			graphic->DrawLine(cellFramePen, Point(i * cellWidth, row * cellHeight), Point(i * cellWidth, (row + 1) * cellHeight));
@@ -297,8 +330,11 @@ Void DataGridSelfMade::BindRelease(int row, int col)
 	}
 	//結合された行ではないなら
 	else {
-		//結合管理のメンバにその行をキー、選択された列を値として持たせる
-		BoundRow[row.ToString()] = col.ToString();
+		//その行の先頭のセルに結合された行であるとさせる
+		cell->getCell(row, 0)->isBound = true;
+		//指定のセルを結合されたとき選択された列だとさせる
+		cell->getCell(row, col)->isSelectedCol = true;
+		
 		//その行を結合された行として描画
 		drawCell(row, col, Brushes::Aqua);
 	}
@@ -326,8 +362,8 @@ Void DataGridSelfMade::Paint()
 	for (int i = 0; i < rowCount; i++) {
 		//結合された行なら
 		if (checkBound(i)) {
-			//結合されたときに選択された列を取得
-			int selectedColFromBoundRow = Int32::Parse(BoundRow[i.ToString()]);
+			//結合されたときに選択された列を取得 @mod セルクラスから取得するように変更
+			int selectedColFromBoundRow = cell->getSelectedColFromRow(i);
 			//結合された行について描画
 			drawCell(i, selectedColFromBoundRow + 1, Brushes::White);
 		}
@@ -367,8 +403,8 @@ Void DataGridSelfMade::textboxEnter(System::Object ^ sender, KeyEventArgs ^ e)
 
 	//エンターキーが押されていたら
 	if (e->KeyValue == (int)Keys::Return) {
-		//入力されていた値をその座標の値として保管
-		GridData[this->CreateGridMapKey(row, col)] = tempBox->Text;
+		//入力されていた値をその座標の値として保管 @modセルクラスのその位置のセルに格納するように変更
+		cell->getCell(row, col)->Value = tempBox->Text;
 		//テキストボックスを非表示にする
 		tempBox->Visible = false;
 		//カレントのセルを水色に
@@ -394,8 +430,8 @@ Void DataGridSelfMade::textboxLostFocus(System::Object ^ sender, EventArgs ^ e)
 	int col = tempBox->Location.X / cellWidth;
 	int row = tempBox->Location.Y / cellHeight;
 
-	//テキストボックスに入力された値をその座標の値として保管
-	GridData[this->CreateGridMapKey(row, col)] = tempBox->Text;
+	//テキストボックスに入力された値をその座標の値として保管 @mod保管対象をセルクラスに変更
+	cell->setValue(row, col, text->Text);
 	//非表示にする
 	tempBox->Visible = false;
 	//フォーカスが離れたので白色に
@@ -413,10 +449,11 @@ Void DataGridSelfMade::textboxLostFocus(System::Object ^ sender, EventArgs ^ e)
 作成者:成田修之
 */
 Void DataGridSelfMade::Clear() {
-	this->BoundRow->Clear();
-	this->GridData->Clear();
+
 	this->rowCount = 0;
 	this->colCount = 0;
 	this->currentCell->col = -1;
 	this->currentCell->row = -1;
+	//セルクラスでもクリア処理
+	cell->Clear();
 }

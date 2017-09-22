@@ -7,21 +7,16 @@
 #include "Constants.h"
 #include <iostream>
 
-
 using namespace std;
 using namespace boost::property_tree;
-
-
 
 GridJSONCreator::GridJSONCreator()
 {
 }
 
-
 GridJSONCreator::~GridJSONCreator()
 {
 }
-
 
 /*
 関数名:init
@@ -37,7 +32,6 @@ void GridJSONCreator::init(int rowN, int colN)
 	jsonmanager->grid->init(rowN, colN);
 
 }
-
 
 /*
 関数名:createAcsessKey
@@ -91,8 +85,19 @@ bool isArray(vector<string> eachCellKey) {
 }
 
 
+bool emptyData(vector<string> data) {
+	int i = 0;
+	for (i = 0; i < data.size(); i++) {
+		if (data[i] != "") {
+			break;
+		}
+	}
+	return i == data.size();
+}
+
+
 /*
-関数名:job
+関数名:CreateJSON
 概要:GridManagerに格納された情報から実際にJSONを作成する
 引数:なし
 返却値:なし
@@ -109,61 +114,72 @@ void GridJSONCreator::CreateJSON()
 	int rowContainsArray = 0;
 	int arrayType = 0;
 	vector<string>preArrayData;
+	int i = 0;
+	int j = 0;
+	
+	try {
+		//行数分繰り返す
+		for ( i = 0; i < row; i++) {
+			//列数分繰り返す
+			for (j = 0; j < col; j++) {
 
-	//行数分繰り返す
-	for (int i = 0; i < row; i++) {
-		//列数分繰り返す
-		for (int j = 0; j < col; j++) {
-			//セルの情報を取得
-			vector<string> cellData = this->jsonmanager->getGridData(i, j);
-			//値を取得
-			string value = this->jsonmanager->getGrid(i, j);
+				//セルの情報を取得
+				vector<string> cellData = this->jsonmanager->getGridData(i, j);
+				//値を取得
+				string value = this->jsonmanager->getGrid(i, j);
+				if (value != "" || !emptyData(cellData)) {
 
-
-			//そのセルが配列を示しているとき
-			if (isArray(cellData)) {
-				arrayType = 0;
-				//
-				arrayObject.put(*(cellData.end() - 1), value);
-				//要素がオブジェクトではないなら
-				if (*(cellData.end() - 1) == "") {
-					//
-					arraytree.push_back(make_pair("", arrayObject));
-					arrayType = 1;
+					//そのセルが配列を示しているとき
+					if (isArray(cellData)) {
+						arrayType = 0;
+						//
+						arrayObject.put(*(cellData.end() - 1), value);
+						//要素がオブジェクトではないなら
+						if (*(cellData.end() - 1) == "") {
+							//
+							arraytree.push_back(make_pair("", arrayObject));
+							arrayType = 1;
+						}
+						preArrayData = cellData;
+						//
+						rowContainsArray = 1;
+					}
+					//配列ではなく、通常の要素の時
+					else {
+						//
+						jsonmanager->json.put(createAcsessKey(cellData, 0), value);
+					}
 				}
-				preArrayData = cellData;
-				//
-				rowContainsArray = 1;
-			}
-			//配列ではなく、通常の要素の時
-			else {
-				//
-				jsonmanager->json.add(createAcsessKey(cellData, 0), value);
-			}
 
-		}
-		//その行内に一つでも配列の要素があれば
-		if (rowContainsArray == 1) {
-			//オブジェクトの時
-			if (arrayType == 0) {
-				arraytree.push_back(make_pair("", arrayObject));
 			}
-			else {
-				jsonmanager->json.add_child(createAcsessKey(preArrayData, 1), arraytree);
-				arraytree.clear();
+			//その行内に一つでも配列の要素があれば
+			if (rowContainsArray == 1) {
+				//オブジェクトの時
+				if (arrayType == 0) {
+					//一つごとの出来上がった配列のオブジェクト要素を追加する
+					arraytree.push_back(make_pair("", arrayObject));
+				}
+				//通常要素の時
+				else {
+					//できた配列の要素ごとのオブジェクトをいままでのキー配下に格納
+					jsonmanager->json.add_child(createAcsessKey(preArrayData, 1), arraytree);
+					//次に使うためにクリア
+					arraytree.clear();
+				}
+				//行に配列があったことを示す値をクリア
+				rowContainsArray = 0;
 			}
-			rowContainsArray = 0;
+			//一行ごとに配列のオブジェクト要素をクリアする
+			arrayObject.clear();
 		}
-		arrayObject.clear();
-	}
-	if (!arraytree.empty() && arrayType == 0) {
-
-		try {
+		//最後に配列であるものが残っているなら(0)
+		if (!arraytree.empty() && arrayType == 0) {
+			//その配列を格納する
 			jsonmanager->json.add_child(createAcsessKey(preArrayData, 1), arraytree);
 		}
-		catch (exception &e) {
-
-		}
+	}
+	catch (...) {
+		throw exception(("列: " + to_string(i) + " 行:" + to_string(j)).c_str());
 	}
 	write_json("data.json", jsonmanager->json);
 }
