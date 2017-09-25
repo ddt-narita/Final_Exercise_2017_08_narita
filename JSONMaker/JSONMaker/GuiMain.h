@@ -472,9 +472,9 @@ namespace JSONMaker {
 			MessageBox::Show("入力されている値が無効です", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 			throw gcnew Exception("タテヨコに無効な値が入力されています。");
 		}
-		gridJsonCreator->jsonmanager->grid->init(rowN, colN);
+		jsonmanager->grid->init(rowN, colN);
 		//入力されていない部分の初期化を行う
-		gridJsonCreator->jsonmanager->adjustGridDataSize();
+		jsonmanager->adjustGridDataSize();
 		dataGridJson->cell->init(rowN, colN);
 		//表の縦横の長さを取得した値に設定
 		dataGridJson->rowCount = rowN;
@@ -508,24 +508,24 @@ namespace JSONMaker {
 			 */
 	private:void passDataToGrid() {
 
-		int row = jsonLoader->jsonmanager->getGridRowLength() + 1;
-		int col = jsonLoader->jsonmanager->getGridColLength();
+		int row = jsonmanager->getGridRowLength() + 1;
+		int col = jsonmanager->getGridColLength();
 
 		dataGridJson->rowCount = row;
 		dataGridJson->colCount = col;
 		dataGridJson->cell->init(row, col);
 		textBoxRowN->Text = row.ToString();
 		textBoxColN->Text = col.ToString();
-		gridJsonCreator->jsonmanager->adjustGridDataSize();
+		jsonmanager->adjustGridDataSize();
 		
 		//行数分繰り返す
 		for (int i = 0; i < row; i++) {
 			//列数分繰り返す
 			for (int j = 0; j < col; j++) {
 				//その位置に値を保管する
-				dataGridJson->cell->setValue(i, j, gcnew String(UTF8toSjis(jsonLoader->jsonmanager->getGrid(i, j)).c_str()));
+				dataGridJson->cell->setValue(i, j, gcnew String(UTF8toSjis(jsonmanager->getGrid(i, j)).c_str()));
 				//キー群も取得して格納する
-				dataGridJson->cell->setCellKey(i, j, vectorToArray(jsonLoader->jsonmanager->getGridData(i, j)));
+				dataGridJson->cell->setCellKey(i, j, vectorToArray(jsonmanager->getGridData(i, j)));
 			}
 		}
 		//セットした値を表に表示する
@@ -547,7 +547,7 @@ namespace JSONMaker {
 		this->SuspendLayout();
 		try {
 			//JSON読み込みの時
-			if (jsonLoader->jsonmanager->isJSONFilePathSet()) {
+			if (jsonmanager->isJSONFilePathSet()) {
 				//JSON読み込み処理を実行する
 				LoadJson();
 			}
@@ -588,9 +588,9 @@ namespace JSONMaker {
 		this->SuspendLayout();
 
 		//ファイルパスをクリア
-		gridJsonCreator->jsonmanager->env.JSONFilePath = "";
+		jsonmanager->env.JSONFilePath = "";
 		//クエリをクリア
-		gridJsonCreator->jsonmanager->env.Query = "";
+		jsonmanager->env.Query = "";
 		//テキストボックスをクリア
 		textBoxNodeName->Text = "";
 		textBoxColN->Text = "";
@@ -599,7 +599,7 @@ namespace JSONMaker {
 		//表の値をクリア
 		dataGridJson->Clear();
 		//処理部のデータをクリア
-		jsonLoader->jsonmanager->jsonClear();
+		jsonmanager->jsonClear();
 		pictureBox1->Visible = false;
 		//描画処理をおこなう
 		this->ResumeLayout(false);
@@ -615,8 +615,8 @@ namespace JSONMaker {
 			MessageBox::Show("ノード名が入力されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 			return;
 		}
-		gridJsonCreator->jsonmanager->grid->GridClear();
-		gridJsonCreator->jsonmanager->env.setNodeName(StrToc_str(textBoxNodeName->Text));
+		jsonmanager->grid->Clear();
+		jsonmanager->env.setNodeName(StrToc_str(textBoxNodeName->Text));
 		//表の行数分繰り返す
 		for (int i = 0; i < rowN; i++) {
 			//結合された行なら
@@ -624,24 +624,24 @@ namespace JSONMaker {
 				//その時選択されていた列取得
 				int selectedColFromRow = dataGridJson->cell->getSelectedColFromRow(i);
 				//その位置のデータを取得してUTF8に変換して格納
-				gridJsonCreator->jsonmanager->setGrid(i, selectedColFromRow, SjistoUTF8(StrToc_str(dataGridJson->cell->getValue(i, selectedColFromRow))));
+				jsonmanager->setGrid(i, selectedColFromRow, SjistoUTF8(StrToc_str(dataGridJson->cell->getValue(i, selectedColFromRow))));
 				//キーも取得して配置
-				gridJsonCreator->jsonmanager->setGridData(i, selectedColFromRow, ArrayToVector(dataGridJson->cell->getCellKey(i, selectedColFromRow)));
+				jsonmanager->setGridData(i, selectedColFromRow, ArrayToVector(dataGridJson->cell->getCellData(i, selectedColFromRow)));
 			}
 			//通常の行
 			else {
 				//表の列数分繰り返す
 				for (int j = 0; j < colN; j++) {
 					//その位置の値取得してセット
-					gridJsonCreator->jsonmanager->setGrid(i, j, SjistoUTF8(StrToc_str(dataGridJson->cell->getValue(i, j))));
+					jsonmanager->setGrid(i, j, SjistoUTF8(StrToc_str(dataGridJson->cell->getValue(i, j))));
 					//その位置のキー群を取得してセットする
-					gridJsonCreator->jsonmanager->setGridData(i, j, ArrayToVector(dataGridJson->cell->getCellKey(i, j)));
+					jsonmanager->setGridData(i, j, ArrayToVector(dataGridJson->cell->getCellData(i, j)));
 					//変換したグリッドの値をセット
 				}
 			}
 		}
 		//JSONをクリアする
-		gridJsonCreator->jsonmanager->json.clear();
+		jsonmanager->json.clear();
 		try {
 			//セットされた値でJSONを作成する
 			gridJsonCreator->CreateJSON();
@@ -651,7 +651,7 @@ namespace JSONMaker {
 			System::Diagnostics::Debug::WriteLine(errorMessage);
 		}
 		//作成し終えたらメンバのJSONをクリアする
-		gridJsonCreator->jsonmanager->json.clear();
+		jsonmanager->json.clear();
 		//作成が完了したことを通知
 		MessageBox::Show("JSON作成完了！！", "通知");
 
@@ -669,8 +669,8 @@ namespace JSONMaker {
 		//環境設定入力フォームのインスタンスを生成
 		EnvForm^ envform = gcnew EnvForm();
 		//現在の情報を渡す
-		envform->JSONFilePath = gcnew String(jsonLoader->jsonmanager->getJsonFilePath().c_str());
-		envform->Query = gcnew String(jsonLoader->jsonmanager->getQuery().c_str());
+		envform->JSONFilePath = gcnew String(jsonmanager->getJsonFilePath().c_str());
+		envform->Query = gcnew String(jsonmanager->getQuery().c_str());
 		//モーダル表示する
 		envform->ShowDialog();
 
@@ -682,11 +682,11 @@ namespace JSONMaker {
 			filepath = (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(envform->JSONFilePath).ToPointer();
 		}
 		//取得したパスをセットする
-		jsonLoader->jsonmanager->setJsonFilePath(filepath);
+		jsonmanager->setJsonFilePath(filepath);
 		//入力されたクエリを取得して
 		std::string query = envform->Query == nullptr ? "" : StrToc_str(envform->Query);
 		//セット
-		jsonLoader->jsonmanager->setQuery(query);
+		jsonmanager->setQuery(query);
 	}
 
 			 /*
@@ -738,8 +738,14 @@ std::string filePath = "C:\\Users\\lenovo\\Documents\\flower\\flower\\WebContent
 
 			 //ピクチャーボックスがクリックされたときのイベント
 	private: System::Void pictureBox1_Click(System::Object^  sender, System::EventArgs^  e) {
+		int row = ((MouseEventArgs^)e)->Y / dataGridJson->cellHeight;
+		int col = ((MouseEventArgs^)e)->X / dataGridJson->cellWidth;
+		if (dataGridJson->checkBound(row)) {
+			col = dataGridJson->selectedColFromBoundRow(row);
+		}
+
 		//その位置についてクリック処理
-		dataGridJson->cell_click(e);
+		dataGridJson->cell_click(row, col);
 	}
 			 /*
 			 関数名:picture_Box1_DoubleClick
@@ -751,8 +757,8 @@ std::string filePath = "C:\\Users\\lenovo\\Documents\\flower\\flower\\WebContent
 			 作成者:成田修之
 			 */
 	private: System::Void pictureBox1_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
-		int nowX = GridtabPage->AutoScrollPosition.X;
-		int nowY = GridtabPage->AutoScrollPosition.Y;
+		int nowX = panel1->AutoScrollPosition.X;
+		int nowY = panel1->AutoScrollPosition.Y;
 
 		int row;
 		int col;
@@ -772,18 +778,13 @@ std::string filePath = "C:\\Users\\lenovo\\Documents\\flower\\flower\\WebContent
 			col = ((MouseEventArgs^)e)->X / dataGridJson->cellWidth;
 		}
 		std::vector<std::string>cellData;
-
 		if (dataGridJson->checkBound(row)) {
 			col = dataGridJson->selectedColFromBoundRow(row);
 		}
-
-		//セルごとのデータをCLIの配列に
-		array<String^>^ cellinfo_CLI = dataGridJson->cell->getCellKey(row, col);
-
 		//セルの情報を入力するフォームのインスタンスを生成
 		CellEditForm^ cellEdit = gcnew CellEditForm();
 		//各情報を渡す
-		cellEdit->keyArray = cellinfo_CLI;
+		cellEdit->keyArray = dataGridJson->cell->getCellData(row, col);;
 		cellEdit->Value = dataGridJson->cell->getValue(row, col);
 		//+1は
 		cellEdit->row = row + 1;
@@ -791,15 +792,15 @@ std::string filePath = "C:\\Users\\lenovo\\Documents\\flower\\flower\\WebContent
 		cellEdit->cell = dataGridJson->cell;
 		//セルの情報をモーダル表示
 		cellEdit->ShowDialog();
-
-		cellinfo_CLI = cellEdit->keyArray;
-		
-		dataGridJson->cell->setCellKey(row, col, cellinfo_CLI);
+		//
+		dataGridJson->cell->setCellKey(row, col, cellEdit->keyArray);
 		dataGridJson->cell->setValue(row, col, cellEdit->Value);
-
+		dataGridJson->rowCount = dataGridJson->cell->rowCount;
+		dataGridJson->colCount = dataGridJson->cell->colCount;
+		//
 		dataGridJson->drawCell(row, col, Brushes::White);
+		dataGridJson->Paint();
 		//入力されたデータをグリッド管理クラスにセット
-		
 		pictureBox1->Invalidate();
 		//スクロールのポジションをフォーム表示前と同じにする
 		GridtabPage->AutoScrollPosition = Point(-nowX, -nowY);

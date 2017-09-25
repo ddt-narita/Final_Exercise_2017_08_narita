@@ -303,17 +303,17 @@ namespace JSONMaker {
 				//一番目でなければ
 				if (i != 0) {
 					//キー間のハイフンのラベルを削除した
-					this->Controls->Remove(this->GetChildAtPoint(Point((i * 80)+ 5, 35)));
+					this->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 5, 35)));
 				}
 				//キーのラベルを削除する
-				this->Controls->Remove(this->GetChildAtPoint(Point(20 + (i * 80),35)));
+				this->Controls->Remove(this->GetChildAtPoint(Point(20 + (i * 80), 35)));
 			}
 		}
 
 		//立ち上げ時のイベント
 	private: System::Void KeyEditForm_Load(System::Object^  sender, System::EventArgs^  e) {
 		//値へのパスとなるラベル群を作成する
-		CreateKeyLabels(keyLevel);
+		CreateKeyLabels(keyLevel + 1);
 		//一番下の編集対象の値をテキストボックスに表示
 		textBoxKeyName->Text = keyArray[keyLevel];
 	}
@@ -332,12 +332,17 @@ namespace JSONMaker {
 		keyEditform->keyArray = keyArray;
 		//親ボタンからであることを渡す
 		keyEditform->FormFrom = constants.FROM_PARENT_BUTTON;
+		keyEditform->row = row;
+		keyEditform->col = col;
+		keyEditform->keyLevel = keyLevel;
+		keyEditform->gridCell = gridCell;
 		//フォームをモーダル表示する
 		keyEditform->ShowDialog();
 		//現在出ているラベルを削除する
 		ClearLabels(keyArray->Length);
 		//キーの配列を受け取る
 		keyArray = keyEditform->keyArray;
+		keyLevel += 1;
 		//うけとったキーの配列でラベルを作成する
 		CreateKeyLabels(keyArray->Length);
 	}
@@ -352,6 +357,9 @@ namespace JSONMaker {
 		keyEditform->keyLevel = keyLevel;
 		//子ボタンからであることを渡す
 		keyEditform->FormFrom = constants.FROM_CHILD_BUTTON;
+		keyEditform->row = row;
+		keyEditform->col = col;
+		keyEditform->gridCell = gridCell;
 		//フォームをモーダル表示する
 		keyEditform->ShowDialog();
 		//現在出ているラベルを削除する
@@ -359,54 +367,54 @@ namespace JSONMaker {
 		//キーの配列を受け取る
 		keyArray = keyEditform->keyArray;
 		//うけとったキーの配列でラベルを作成する
-		CreateKeyLabels(keyArray->Length);
+		CreateKeyLabels(keyArray->Length - 1);
 	}
 
 
 
-			 //兄ボタンが押されたときのイベント
+			 //兄弟ボタンどちらかが押されたときのイベント
 	private: System::Void buttonBigBro_Click(System::Object^  sender, System::EventArgs^  e) {
-		//兄からか、弟からかを示す値
-		int formFrom = 0;
+		//キー編集フォームを作製
+		KeyEditForm^ keyEdit = gcnew KeyEditForm();
 		//兄ボタンから
 		if (sender->Equals(buttonBigBro)) {
 			//兄であることを占めす値を取得
-			formFrom = constants.FROM_BIGBRO_BUTTON;
+			keyEdit->FormFrom = constants.FROM_BIGBRO_BUTTON;
 		}
 		//弟ボタンから
 		else {
 			//弟であることを示す値を格納
-			formFrom = constants.FROM_BRO_BUTTON;
+			keyEdit->FormFrom = constants.FROM_BRO_BUTTON;
 		}
-		//キー編集フォームを作製
-		KeyEditForm^ keyEdit = gcnew KeyEditForm();
-		//どこから来たかを格納
-		keyEdit->FormFrom = formFrom;
 		//フォームにキーの配列を渡す
 		keyEdit->keyArray = keyArray;
+		keyEdit->row = row;
+		keyEdit->col = col;
+		keyEdit->keyLevel = keyLevel;
+		keyEdit->gridCell = gridCell;
 		//モーダル表示
 		keyEdit->ShowDialog();
 	}
 
 	private:
-
-		System::Void insertKeyArray(array<String^>^ arr, String^  value, int index) {
-			//配列を要素数の＋1にしたものでとる
+		array<String^>^ insertKeyArray(array<String^>^ arr, String^  value, int index) {
+			//配列を要素数の挿入する要素分の＋1にしたものでとる
 			array<String^>^ retArr = gcnew array<String^>(arr->Length + 1);
 			//要素を数える変数
 			int j = 0;
+			int i = 0;
 			//配列の長さ分だけ繰り返す
-			for (int i = 0; i < retArr->Length; i++, j++) {
+			for (; i < retArr->Length; ) {
 				//引数で指定されたインデックスなら
-				if (i = index) {
+				if (index == i) {
 					//その位置に引数の値を格納して次へ
 					retArr[i++] = value;
 				}
 				//作成した配列に移す
-				retArr[i] = arr[j];
+				retArr[i++] = arr[j++];
 			}
 			//作成した配列をメンバに保存する
-			arr = retArr;
+			return retArr;
 		}
 
 
@@ -420,7 +428,7 @@ namespace JSONMaker {
 		*/
 		System::Void createParent() {
 			//メンバの配列の階層の位置にテキストボックスに入力されている値を格納する
-			insertKeyArray(keyArray, textBoxKeyName->Text, keyLevel);
+			keyArray = insertKeyArray(keyArray, textBoxKeyName->Text, keyLevel);
 		}
 
 		/*
@@ -437,18 +445,16 @@ namespace JSONMaker {
 				//編集中のセルの先頭のセルを取得
 				CellChain^ rowCell = this->gridCell->getCell(row, 0);
 				//列数分繰り返す
-				while (rowCell == nullptr) {
+				while (rowCell != nullptr) {
 					//そのセルのキーの配列に入力されている値を格納していく
-					insertKeyArray(rowCell->CellKey, textBoxKeyName->Text, keyLevel);
+					rowCell->CellData = insertKeyArray(rowCell->CellData, textBoxKeyName->Text, keyLevel + 1);
 					//次のセルへ
 					rowCell = rowCell->right;
 				}
 			}
-			//親ではないとき
-			else {
-				//編集中のセルのキーの親にテキストボックスに入力された値を挿入
-				KeyEditForm::insertKeyArray(keyArray, textBoxKeyName->Text, keyLevel);
-			}
+			//編集中のセルのキーの親にテキストボックスに入力された値を挿入
+			keyArray = KeyEditForm::insertKeyArray(keyArray, textBoxKeyName->Text, keyLevel + 1);
+
 
 		}
 
@@ -463,13 +469,13 @@ namespace JSONMaker {
 		System::Void createBro() {
 			//
 			int insertRowNum = 0;
+			int insertColNum = 0;
 			//階層が親の時
 			if (keyLevel == constants.LEVEL_PARENT) {
 				//兄ボタンから呼ばれたフォームであるなら
 				if (FormFrom == constants.FROM_BIGBRO_BUTTON) {
 					//読んだセルの行取得
 					insertRowNum = row;
-
 				}
 				//弟ボタンからよばれたフォームの時
 				else {
@@ -478,11 +484,11 @@ namespace JSONMaker {
 				}
 				//取得した行に挿入してその時の先頭のセルを取得
 				CellChain^ rowCell = gridCell->insertRow(insertRowNum);
-				
+
 				//列数分繰り返す
-				while (rowCell == nullptr) {
+				while (rowCell != nullptr) {
 					//そのセルのキーの配列の一番上にテキストボックスに入力された値を格納する
-					rowCell->CellKey[keyLevel] = textBoxKeyName->Text;
+					rowCell->CellData[keyLevel] = textBoxKeyName->Text;
 					//次のセルへ移動
 					rowCell = rowCell->right;
 				}
@@ -491,21 +497,22 @@ namespace JSONMaker {
 				//兄から呼ばれた場合
 				if (FormFrom == constants.FROM_BIGBRO_BUTTON) {
 					//呼んだ時のセルを取得する
-
+					insertColNum = col;
 				}
 				//弟からの場合
 				else {
 					//読んだ時のセルの右のセルを取得する
-
+					insertColNum = col + 1;
 				}
-				//insert();
-				//
-				array<String^>^ temp = gcnew array<String^>(keyLevel);
-				//
-				for (int i = 0; i < keyLevel; i++) {
-					//
+				CellChain^ insertCell = gridCell->insert(row, insertColNum);
+				array<String^>^ temp = gcnew array<String^>(keyLevel + 1);
+				//キーの階層分繰り返す
+				for (int i = 0; i < keyLevel + 1; i++) {
+					//一時オブジェクトに要素をコピーしていく
 					temp[i] = keyArray[i];
 				}
+				//その配列を挿入したセルに持たせる
+				insertCell->CellData = temp;
 
 			}
 		}
@@ -522,11 +529,11 @@ namespace JSONMaker {
 			//編集中のキーの階層が行をなす親の階層の時
 			if (keyLevel == constants.LEVEL_PARENT) {
 				//編集中のセルの先頭のセルを取得
-				CellChain^ rowCell = this->gridCell->getCell(row -1, 0);
+				CellChain^ rowCell = this->gridCell->getCell(row, 0);
 				//列数分繰り返す
 				while (rowCell != nullptr) {
 					//配列のその位置の値をテキストボックスに入力されている値にする
-					rowCell->CellKey[keyLevel] = textBoxKeyName->Text;
+					rowCell->CellData[keyLevel] = textBoxKeyName->Text;
 					//次のセルへ
 					rowCell = rowCell->right;
 				}

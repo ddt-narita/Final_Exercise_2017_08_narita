@@ -226,8 +226,8 @@ namespace JSONMaker {
 						labels[labelCount] = gcnew Label();
 						//キーを分けるハイフンを書き込む
 						labels[labelCount]->Text = "-";
-						labels[labelCount]->Location = Point((i * 80) + 5, 35);
-						labels[labelCount]->Size = System::Drawing::Size(10, 35);
+						labels[labelCount]->Location = Point((i * 70) + 5, 50);
+						labels[labelCount]->Size = System::Drawing::Size(10, 40);
 						//フォームにラベルを追加
 						this->Controls->Add(labels[labelCount]);
 						labelCount++;
@@ -245,10 +245,10 @@ namespace JSONMaker {
 					//一個以上作成済み
 					else {
 						//前のラベルに場所を合わせておく
-						labels[labelCount]->Location = Point((i * 80) + 20, 35);
+						labels[labelCount]->Location = Point((i * 70) + 20, 35);
 					}
 					//ラベルの情報を渡す
-					labels[labelCount]->Size = System::Drawing::Size(60, 35);
+					labels[labelCount]->Size = System::Drawing::Size(50, 40);
 					labels[labelCount]->BorderStyle = Windows::Forms::BorderStyle::FixedSingle;
 					labels[labelCount]->DoubleClick += gcnew EventHandler(this, &CellEditForm::LavelKeys_Click);
 					//フォームに追加する
@@ -313,10 +313,10 @@ namespace JSONMaker {
 		System::Void LavelKeys_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			//どのボタンが押されたかを取得
-			int level = (((Label^)sender)->Location.X - 20) / 80;
+			int level = (((Label^)sender)->Location.X - 20) / 70;
 			//キー編集フォームを作製
 			KeyEditForm^ keyEdit = gcnew KeyEditForm();
-			keyEdit->row = row;
+			keyEdit->row = row-1;
 			keyEdit->col = col;
 			//フォームに配列を渡す
 			keyEdit->keyArray = keyArray;
@@ -347,7 +347,7 @@ namespace JSONMaker {
 		//テキストボックスに入力された値をメンバに格納
 		Value = textBoxValue->Text;
 		//値が入力されていないとき
-		if (Value == "") {
+		if ("" == Value) {
 			//入力されていないことを警告
 			MessageBox::Show("値が入力されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 		}

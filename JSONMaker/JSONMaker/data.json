@@ -5,10 +5,10 @@
             "text": "コース案内"
         },
         "courseGuideHead": {
-            "class": "guideHead",
             "stageHead": {
-                "text": "成田"
+                "text": "レベル"
             },
+            "class": "guideHead",
             "timesHead": {
                 "text": "回数"
             },
@@ -30,17 +30,6 @@
         "secondStage": {
             "stage": {
                 "text": "NFD2級"
-            },
-            "times": {
-                "text": "全40単位"
-            },
-            "price": {
-                "text": "3,000 円／回"
-            }
-        },
-        "thirdStage": {
-            "stage": {
-                "text": "NFD3級"
             },
             "times": {
                 "text": "全40単位"

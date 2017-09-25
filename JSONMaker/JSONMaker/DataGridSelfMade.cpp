@@ -83,7 +83,7 @@ Void DataGridSelfMade::SelectedCell_click(int row, int col) {
 	if (checkBound(row)) {
 		//大きさ、位置を結合されたセルの大きさに合わせる
 		text->Size = System::Drawing::Size(cellWidth * colCount - 1, cellHeight - 1);
-		text->Location = Point(0, cellHeight * rowCount);
+		text->Location = Point(0, cellHeight * row);
 	}
 	//結合された行でない
 	else {
@@ -297,7 +297,7 @@ int narita::DataGridSelfMade::selectedColFromBoundRow(int row)
 	}
 
 	//結合された行を管理するメンバからその時選択された列を抽出して返却する。
-	return col + 1;
+	return col;
 }
 
 /*
@@ -338,6 +338,7 @@ Void DataGridSelfMade::BindRelease(int row, int col)
 		//その行を結合された行として描画
 		drawCell(row, col, Brushes::Aqua);
 	}
+	text->Visible = false;
 	return Void();
 }
 
@@ -365,7 +366,7 @@ Void DataGridSelfMade::Paint()
 			//結合されたときに選択された列を取得 @mod セルクラスから取得するように変更
 			int selectedColFromBoundRow = cell->getSelectedColFromRow(i);
 			//結合された行について描画
-			drawCell(i, selectedColFromBoundRow + 1, Brushes::White);
+			drawCell(i, selectedColFromBoundRow, Brushes::White);
 		}
 		//結合されていないなら
 		else {

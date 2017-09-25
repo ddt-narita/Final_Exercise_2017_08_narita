@@ -47,12 +47,15 @@ std::string GridJSONCreator::createAcsessKey(std::vector<std::string> eachCellKe
 
 	//選択された・DBのもの・入力されたノードの名前(いまは仮にノード)
 	string acsessKey = this->jsonmanager->env.getNodeName();
-	//引数の配列のサイズから配列かどうかに合わせた値分繰り返す
-	for (int i = 0; i < eachCellKeys.size() - adjuster; i++) {
-		//キーが空ではなく、配列内にもきちんと値があれば
-		if (acsessKey != "" && eachCellKeys[i] != "") {
-			//区切りとその時の値を加える
-			acsessKey += "." + eachCellKeys[i];
+	//
+	if (eachCellKeys.size() >= adjuster) {
+		//引数の配列のサイズから配列かどうかに合わせた値分繰り返す
+		for (int i = 0; i < eachCellKeys.size() - adjuster; i++) {
+			//キーが空ではなく、配列内にもきちんと値があれば
+			if (acsessKey != "" && eachCellKeys[i] != "") {
+				//区切りとその時の値を加える
+				acsessKey += "." + eachCellKeys[i];
+			}
 		}
 	}
 	//アクセス可能な文字列を返却する
@@ -87,7 +90,7 @@ bool isArray(vector<string> eachCellKey) {
 
 bool emptyData(vector<string> data) {
 	int i = 0;
-	for (i = 0; i < data.size(); i++) {
+	for (i = 1; i < data.size(); i++) {
 		if (data[i] != "") {
 			break;
 		}

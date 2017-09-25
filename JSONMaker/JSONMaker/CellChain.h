@@ -1,15 +1,24 @@
 #pragma once
+#ifndef __CellChain
+#define __CellChain
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+#include <boost/optional.hpp>
+
 ref class CellChain
 {
 public:
 	//そのセルに格納されたキー群
-	array < System::String^ >^ CellKey;
+	boost::property_tree::ptree* CellData;
 	static int rowCount;	//行数全セル共通
 	static int colCount;	//列数
 	CellChain^ CurrentCell;
 	System::String^ Value;
 	bool isBound;
 	bool isSelectedCol;
+
 
 	CellChain^ upper;
 	CellChain^ under;
@@ -30,9 +39,9 @@ public:
 	void init(int row, int col);
 	CellChain^ getCell(int row, int col);
 	System::String^ getValue(int row, int col);
-	array<System::String^>^ getCellKey(int row, int col);
+	boost::property_tree::ptree* getCellData(int row, int col);
 	void setValue(int row, int col, System::String^ value);
-	void setCellKey(int row, int col, array<System::String^>^ cellKeys);
+	void setCellKey(int row, int col, boost::property_tree::ptree* cellData);
 	void next();
 	void beforeFirst();
 	void addRight(CellChain^ temp);
@@ -46,3 +55,4 @@ public:
 	CellChain^ operator=(CellChain^ temp);
 };
 
+#endif // !__CellChain

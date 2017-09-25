@@ -40,6 +40,7 @@ namespace narita {
 			}
 			void set(int col) {
 				_colCount = col;
+				cell->colCount = col;
 			}
 		}
 		//行数のプロパティー
@@ -49,6 +50,7 @@ namespace narita {
 			}
 			void set(int row) {
 				_rowCount = row;
+				cell->rowCount = row;
 			}
 		}
 		//現在選択中のセル

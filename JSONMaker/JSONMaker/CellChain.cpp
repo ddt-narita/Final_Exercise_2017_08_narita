@@ -2,6 +2,7 @@
 
 using namespace System;
 using namespace System::Collections;
+using namespace boost::property_tree;
 
 /*
 関数名:コンストラクタ
@@ -13,10 +14,6 @@ using namespace System::Collections;
 */
 CellChain::CellChain()
 {
-	//セルのキー群としての配列を格納する
-	CellKey = gcnew array<String^>(1);
-	//そのセルの一番初めのキーとして空文字格納する
-	CellKey[0] = gcnew String("");
 	//そのセルの値として空文字を格納する
 	Value = gcnew String("");
 }
@@ -42,6 +39,8 @@ CellChain^ CellChain::insert(int row, int col)
 	left->addRight(insertCell);
 	//そのセルの右に指定のセルを追加する
 	insertCell->addRight(temp);
+
+	colCount++;
 				
 	//挿入したセルを返す
 	return insertCell;
@@ -229,10 +228,10 @@ CellChain ^ CellChain::getCell(int row, int col)
 }
 
 /*
-関数名:
-概要:
+関数名:getValue
+概要:行列指定したセルからValueを取得する
 引数:int row 行数, int col 列数
-返却値:
+返却値:String value　値
 作成者:成田修之
 作成日:9月20日(水)
 */
@@ -252,12 +251,12 @@ System::String ^ CellChain::getValue(int row, int col)
 作成者:成田修之
 作成日:9月20日(水)
 */
-array<System::String^>^ CellChain::getCellKey(int row, int col)
+ ptree* CellChain::getCellData(int row, int col)
 {
 	//指定の位置のセルを取得する
 	CellChain^ current = getCell(row, col);
 	//そのセルのキー群を取得する
-	return current->CellKey;
+	return current->CellData;
 }
 
 /*
@@ -284,12 +283,12 @@ void CellChain::setValue(int row, int col, String^ value)
 作成者:成田修之
 作成日:9月20日(水)
 */
-void CellChain::setCellKey(int row, int col, array<String^>^ cellKeys)
+void CellChain::setCellKey(int row, int col, ptree* cellData)
 {
 	//指定の位置のセルを取得する
 	CellChain^ current = getCell(row, col);
 	//そのセルのキー群に引数のキー群を格納
-	current->CellKey = cellKeys;
+	current->CellData = cellData;
 }
 
 /*
@@ -407,6 +406,8 @@ int CellChain::getSelectedColFromRow(int row)
 			//ループを抜ける
 			break;
 		}
+		//右に移動する
+		cell = cell->right;
 	}
 	//ループを抜けたときの見つかったセルの列の値を返却する
 	return col;
@@ -427,8 +428,7 @@ void CellChain::Clear()
 	delete this->right;
 	//
 	this->Value = "";
-	this->CellKey = gcnew array<String^>(1);
-	CellKey[0] = "";
+	this->CellData->clear();
 	//
 	this->isBound = false;
 	this->isSelectedCol = false;
@@ -448,13 +448,13 @@ bool CellChain::isCellValid()
 {
 	int retBool = 0;
 
-	for (int i = 1; i < CellKey->Length; i++) {
-		if (CellKey[i] != "") {
+	/*for (int i = 1; i < CellData->Length; i++) {
+		if (CellData[i] != "") {
 			break;
 			retBool = 1;
 		}
 	}
-	
+	*/
 	if (Value != "") {
 		retBool = 1;
 	}
@@ -474,7 +474,7 @@ CellChain ^ CellChain::operator=(CellChain ^ temp)
 {
 	//各要素を代入
 	this->Value = temp->Value;
-	this->CellKey = temp->CellKey;
+	this->CellData = temp->CellData;
 	this->CurrentCell = temp->CurrentCell;
 	this->upper = temp->upper;
 	this->under = temp->under;
