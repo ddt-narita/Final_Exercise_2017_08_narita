@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "boost\property_tree\ptree.hpp"
+#include "boost\property_tree\json_parser.hpp"
 
 class Constants {
 public:
@@ -14,14 +16,14 @@ public:
 	static const int ROW_BUTTON_HEIGHT = 19;
 	static const int CODE_UTF8 = 0;
 	static const int CODE_SJIS = 1;
-
-	static const int FROM_CELL_EDIT_FORM = 0;
-	static const int FROM_PARENT_BUTTON  = 1;
-	static const int FROM_CHILD_BUTTON	 = 2;
-	static const int FROM_BIGBRO_BUTTON	 = 3;
-	static const int FROM_BRO_BUTTON	 = 4;
 	static const int LEVEL_PARENT = 0;
+	static const int COLUMN_ONE = 0;
 
+	static const int FROM_MAINFORM = 0;
+	static const int FROM_PARENT_BUTTON = 1;
+	static const int FROM_CHILD_BUTTON = 2;
+	
+	static const int IS_SUB_FORM = 1;
 
 	void fileout(std::string str)
 	{
@@ -30,6 +32,12 @@ public:
 		ofs.open(filename, std::ios::app);
 		ofs << str << std::endl;
 		ofs.close();
+	}
+
+	void jsonfileout(boost::property_tree::ptree json) {
+		std::stringstream ss;
+		boost::property_tree::write_json(ss, json);
+		fileout(ss.str());
 	}
 };
 

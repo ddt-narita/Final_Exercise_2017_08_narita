@@ -2,16 +2,20 @@
 
 #include <map>
 #include <vector>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+#include <boost/optional.hpp>
+
 
 class GridManager
 {
 private:
 	std::map <std::string, std::string> grid;						//•\¦‚·‚éî•ñ‚ğŠi”[
-	std::map <std::string, std::vector<std::string>> gridData;		//ƒZƒ‹‚²‚Æ‚Ìî•ñ‚ğŠi”[
-	//std::map <std::string, std::vector<std::string>> gridRowData;	//s‚²‚Æ‚Ìî•ñ‚ğŠi”[
-	
+	std::map <std::string, boost::property_tree::ptree> gridData;		//ƒZƒ‹‚²‚Æ‚Ìî•ñ‚ğŠi”[
+
 	int rowNum = 0;		//s”
-	int colMaxNum = 0;		//Å‘å—ñ”
+	int colNum = 0;		//Å‘å—ñ”
 
 public:
 	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -28,16 +32,15 @@ public:
 	void setGrid(int rowN, int colN, std::string value);
 	
 	//ƒZƒ‹‚Ìî•ñ
-	std::vector<std::string> getGridData(int rowN, int colN);
-	void setGridData(int rowN, int colN, std::vector<std::string> data);
+	boost::property_tree::ptree getGridData(int rowN, int colN);
+	void setGridData(int rowN, int colN, boost::property_tree::ptree data);
 
 	//•\‚Ìc‰¡‚Ì’·‚³
 	int getGridRowLength();
-	int getGridColLength(int rowN = 0);
+	int getGridColLen(int rowN = 0);
 	void setRowLen(int rowN);
 	void setColLen(int colN);
 
-	void adjustGridSize();
 	void Clear();
 	void GridClear();
 	void GridDataClear();

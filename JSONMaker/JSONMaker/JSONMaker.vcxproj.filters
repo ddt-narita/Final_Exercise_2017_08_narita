@@ -24,9 +24,6 @@
     <EmbeddedResource Include="NodeSelectForm.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="CellEditForm.resx">
-      <Filter>リソース ファイル</Filter>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GuiMain.cpp">
@@ -67,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="CellEditForm.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyEditForm.cpp">
-      <Filter>ヘッダー ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +113,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="CellEditForm.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyEditForm.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

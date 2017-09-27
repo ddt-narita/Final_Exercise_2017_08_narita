@@ -157,7 +157,6 @@
     <ClCompile Include="JSONDBManager.cpp" />
     <ClCompile Include="JsonLoader.cpp" />
     <ClCompile Include="JSONManager.cpp" />
-    <ClCompile Include="KeyEditForm.cpp" />
     <ClCompile Include="NodeSelectForm.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +181,6 @@
     <ClInclude Include="JSONDBManager.h" />
     <ClInclude Include="JsonLoader.h" />
     <ClInclude Include="JSONManager.h" />
-    <ClInclude Include="KeyEditForm.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
     <ClInclude Include="NodeSelectForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -198,9 +194,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GuiMain.resx">
       <DependentUpon>GuiMain.h</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="KeyEditForm.resx">
-      <DependentUpon>KeyEditForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NodeSelectForm.resx">
       <DependentUpon>NodeSelectForm.h</DependentUpon>

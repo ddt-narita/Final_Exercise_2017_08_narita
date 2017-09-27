@@ -15,9 +15,10 @@ public:
 
 	void init(int rowN, int colN);
 
-	std::string createAcsessKey(std::vector<std::string> eachCellKeys, int isArray);
+	void job();
+	
 	//ÀÛ‚ÉJSON‚ğì¬‚·‚éŠÖ”
-	void CreateJSON();
+	boost::property_tree::ptree CreateJSON();
 };
 
 #endif // !__GRID_JSON_CREATOR

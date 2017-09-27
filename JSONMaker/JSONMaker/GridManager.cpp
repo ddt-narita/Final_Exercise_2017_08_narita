@@ -39,17 +39,6 @@ string GridManager::CreateMapKey(int rowN, int colN)
 */
 void GridManager::init(int rowN, int colN)
 {
-	//セルごとのキーデータを格納させるのに使う一時オブジェクト
-	vector<string> data(1);
-	//全行列の要素分
-	for (int i = 0; i < rowN; i++) {
-		for (int j = 0; j < colN; j++) {
-			//空文字で初期化
-			grid[CreateMapKey(i, j)] = "";
-			//一時オブジェクトのコピーで初期化
-			gridData[CreateMapKey(i, j)] = data;
-		}
-	}
 	//行数列数を設定
 	this->setRowLen(rowN);
 	this->setColLen(colN);
@@ -92,7 +81,7 @@ void GridManager::setGrid(int rowN, int colN, std::string value)
 作成者:成田修之
 作成日:9月4日(月)
 */
-std::vector<std::string> GridManager::getGridData(int rowN, int colN)
+boost::property_tree::ptree GridManager::getGridData(int rowN, int colN)
 {
 	//引数の位置のセルの情報配列を返却
 	return gridData[CreateMapKey(rowN, colN)];
@@ -107,7 +96,7 @@ std::vector<std::string> GridManager::getGridData(int rowN, int colN)
 作成者:成田修之
 作成日:9月4日(月)
 */
-void GridManager::setGridData(int rowN, int colN, std::vector<std::string> data)
+void GridManager::setGridData(int rowN, int colN, boost::property_tree::ptree data)
 {
 	//引数の位置にその位置のセルの情報配列をセット
 	gridData[CreateMapKey(rowN, colN)] = data;
@@ -135,10 +124,10 @@ int GridManager::getGridRowLength()
 作成者:成田修之
 作成日:9月4日(月)
 */
-int GridManager::getGridColLength(int rowN)
+int GridManager::getGridColLen(int rowN)
 {
 	//列数を返却
-	return colMaxNum;
+	return colNum;
 }
 
 void GridManager::setRowLen(int rowN)
@@ -150,25 +139,7 @@ void GridManager::setRowLen(int rowN)
 void GridManager::setColLen(int coln)
 {
 	//列数をセット
-	colMaxNum = coln;
-}
-
-void GridManager::adjustGridSize()
-{
-	//表のタテヨコの最大値を取得
-	int rowMax = this->getGridRowLength()+1;
-	int colMax = this->getGridColLength()+1;
-
-	//最大の行数、列数分すべて繰り返す
-	for (int i = 0; i < rowMax; i++) {
-		for (int j = 0; j < colMax; j++) {
-			//その行、列のキーがない
-			if (gridData.count(CreateMapKey(i, j)) != 1 || gridData[CreateMapKey(i, j)].size() == 0) {
-				//初期値を入力
-				gridData[CreateMapKey(i, j)] = vector<string>(2);
-			}
-		}
-	}
+	colNum = coln;
 }
 
 void GridManager::Clear()

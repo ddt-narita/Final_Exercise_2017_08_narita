@@ -23,12 +23,12 @@ void JSONManager::setGrid(int rowN, int colN, std::string value)
 	grid->setGrid(rowN, colN, value);
 }
 
-std::vector<std::string> JSONManager::getGridData(int rowN, int colN)
+boost::property_tree::ptree JSONManager::getGridData(int rowN, int colN)
 {
 	return grid->getGridData(rowN, colN);
 }
 
-void JSONManager::setGridData(int rowN, int colN, std::vector<std::string> data)
+void JSONManager::setGridData(int rowN, int colN, boost::property_tree::ptree data)
 {
 	grid->setGridData(rowN, colN, data);
 }
@@ -38,9 +38,9 @@ int JSONManager::getGridRowLength()
 	return grid->getGridRowLength();
 }
 
-int JSONManager::getGridColLength()
+int JSONManager::getGridColLen()
 {
-	return grid->getGridColLength();
+	return grid->getGridColLen();
 }
 
 void JSONManager::setGridRowLen(int rown)
@@ -95,7 +95,4 @@ void JSONManager::jsonClear()
 
 }
 
-void JSONManager::adjustGridDataSize()
-{
-	grid->adjustGridSize();
-}
+

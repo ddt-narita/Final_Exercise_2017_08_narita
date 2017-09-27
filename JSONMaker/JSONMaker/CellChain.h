@@ -12,9 +12,8 @@ ref class CellChain
 public:
 	//そのセルに格納されたキー群
 	boost::property_tree::ptree* CellData;
-	static int rowCount;	//行数全セル共通
-	static int colCount;	//列数
-	CellChain^ CurrentCell;
+	int rowCount;	//行数全セル共通
+	int colCount;	//列数
 	System::String^ Value;
 	bool isBound;
 	bool isSelectedCol;
@@ -41,7 +40,7 @@ public:
 	System::String^ getValue(int row, int col);
 	boost::property_tree::ptree* getCellData(int row, int col);
 	void setValue(int row, int col, System::String^ value);
-	void setCellKey(int row, int col, boost::property_tree::ptree* cellData);
+	void setCellData(int row, int col, boost::property_tree::ptree* cellData);
 	void next();
 	void beforeFirst();
 	void addRight(CellChain^ temp);

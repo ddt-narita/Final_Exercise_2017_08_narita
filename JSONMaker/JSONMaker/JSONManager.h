@@ -6,10 +6,7 @@
 #include <vector>
 #include "GridManager.h"
 #include "Environment.h"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
-#include <boost/optional.hpp>
+
 
 class JSONManager
 {
@@ -27,12 +24,12 @@ public:
 	void setGrid(int rowN, int colN, std::string value);
 
 	//セルの情報
-	std::vector<std::string> getGridData(int rowN, int colN);
-	void setGridData(int rowN, int colN, std::vector<std::string> data);
+	boost::property_tree::ptree getGridData(int rowN, int colN);
+	void setGridData(int rowN, int colN, boost::property_tree::ptree data);
 
 	//グリッドの長さ
 	int getGridRowLength();
-	int getGridColLength();
+	int getGridColLen();
 	void setGridRowLen(int rown);
 	void setGridColLen(int coln);
 
@@ -46,7 +43,7 @@ public:
 
 	//メンバのjsonをクリア
 	void jsonClear();
-	void adjustGridDataSize();
+	
 	
 };
 

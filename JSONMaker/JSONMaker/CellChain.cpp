@@ -14,6 +14,7 @@ using namespace boost::property_tree;
 */
 CellChain::CellChain()
 {
+	CellData = new ptree();
 	//そのセルの値として空文字を格納する
 	Value = gcnew String("");
 }
@@ -283,7 +284,7 @@ void CellChain::setValue(int row, int col, String^ value)
 作成者:成田修之
 作成日:9月20日(水)
 */
-void CellChain::setCellKey(int row, int col, ptree* cellData)
+void CellChain::setCellData(int row, int col, ptree* cellData)
 {
 	//指定の位置のセルを取得する
 	CellChain^ current = getCell(row, col);
@@ -302,7 +303,7 @@ void CellChain::setCellKey(int row, int col, ptree* cellData)
 void CellChain::next()
 {
 	//下のセルを自分のセルにする
-	this->CurrentCell = this->under;
+	//this->CurrentCell = this->under;
 }
 
 /*
@@ -316,10 +317,10 @@ void CellChain::next()
 void CellChain::beforeFirst()
 {
 	//上のセルがナルになるまで繰り返す
-	while (this->CurrentCell->upper != nullptr) {
-		//現在のセルを上のセルに更新
-		this->CurrentCell = this->CurrentCell->upper;
-	}
+	//while (this->CurrentCell->upper != nullptr) {
+	//	//現在のセルを上のセルに更新
+	//	this->CurrentCell = this->CurrentCell->upper;
+	//}
 }
 
 /*
@@ -475,7 +476,6 @@ CellChain ^ CellChain::operator=(CellChain ^ temp)
 	//各要素を代入
 	this->Value = temp->Value;
 	this->CellData = temp->CellData;
-	this->CurrentCell = temp->CurrentCell;
 	this->upper = temp->upper;
 	this->under = temp->under;
 	this->left = temp->left;
