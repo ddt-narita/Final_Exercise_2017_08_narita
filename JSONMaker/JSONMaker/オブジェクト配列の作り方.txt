@@ -1,0 +1,23 @@
+オブジェクト配列の作り方 boost::property_tree
+
+a.put("1", "2");
+a.put("3", "4");
+arrayOb.push_back(make_pair("", a));
+a.clear();
+a.put("2", "1");
+a.put("4", "3");
+arrayOb.push_back(make_pair("", a));
+arrayNode.add_child("3", arrayOb);
+
+{
+    "3": [
+        {
+            "1": "2",
+            "3": "4"
+        },
+        {
+            "2": "1",
+            "4": "3"
+        }
+    ]
+}

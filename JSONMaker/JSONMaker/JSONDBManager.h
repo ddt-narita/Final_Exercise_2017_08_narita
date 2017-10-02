@@ -4,6 +4,7 @@
 //
 //#include "DBConnector.h"
 //#include "JSONManager.h"
+//#include "ChainData.h"
 //
 //class JSONDBManager:public DBConnector
 //{
@@ -17,12 +18,12 @@
 //	JSONDBManager();
 //	~JSONDBManager();
 //	
-//	void run();
+//	void run(ChainData* cell);
 //	void init();
-//	void job();
+//	void job(ChainData* cell);
 //	std::string getQuery();
 //	bool isQuerySet();
-//	void loadDBResult(std::string query);
+//	void loadDBResult(std::string query, ChainData* cell);
 //
 //};
 //

@@ -13,7 +13,6 @@ public:
 	std::string JSONFilePath = "";
 	std::string JsonNodeName = "";
 
-public:
 	/*std::string getJSONName() {
 		return JSONName;
 	}

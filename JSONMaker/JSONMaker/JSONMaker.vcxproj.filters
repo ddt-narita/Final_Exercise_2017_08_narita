@@ -24,15 +24,15 @@
     <EmbeddedResource Include="NodeSelectForm.resx">
       <Filter>リソース ファイル</Filter>
     </EmbeddedResource>
+    <EmbeddedResource Include="CellEditForm.resx">
+      <Filter>リソース ファイル</Filter>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GuiMain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="JSONManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GridManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GridJSONCreator.cpp">
@@ -59,10 +59,10 @@
     <ClCompile Include="DBConnector.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="CellChain.cpp">
+    <ClCompile Include="CellEditForm.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="CellEditForm.cpp">
+    <ClCompile Include="ChainData.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,9 +71,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="JSONManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GridManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GridJSONCreator.h">
@@ -109,10 +106,10 @@
     <ClInclude Include="JsonBadAcsessException.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="CellChain.h">
+    <ClInclude Include="CellEditForm.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="CellEditForm.h">
+    <ClInclude Include="ChainData.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

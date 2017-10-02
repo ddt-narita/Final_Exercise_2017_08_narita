@@ -12,6 +12,7 @@ namespace narita {
 		Cell(int row, int col);
 
 		Cell^ operator=(const Cell^ e);
+		bool isValid();
+		System::Void Reset();
 	};
-
 }

@@ -1,0 +1,9 @@
+’Êí‚Ì”z—ñ‚Ìì‚è•û boost::property_tree
+
+a.put("", "3");
+b.push_back(make_pair("", a));
+a.put("", "4");
+b.push_back(make_pair("", a));
+a.put("", "5");
+b.push_back(make_pair("",a));
+arrayNode.add_child("3", b);

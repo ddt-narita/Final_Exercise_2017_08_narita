@@ -3,11 +3,13 @@
 #define __GRID_JSON_CREATOR
 
 #include "JSONManager.h"
+#include "ChainData.h"
 
 class GridJSONCreator
 {
 private:
-	
+	std::vector<std::string> keyHierarchy;
+	int level;
 public:
 	JSONManager* jsonmanager;
 	GridJSONCreator();
@@ -15,10 +17,11 @@ public:
 
 	void init(int rowN, int colN);
 
-	void job();
+	void job(ChainData* cell);
 	
+	std::string createAcsessKey(std::vector<std::string> keyarray, int level);
 	//é¿ç€Ç…JSONÇçÏê¨Ç∑ÇÈä÷êî
-	boost::property_tree::ptree CreateJSON();
+	void CreateJSON(ChainData* cell, boost::property_tree::ptree& json);
 };
 
 #endif // !__GRID_JSON_CREATOR

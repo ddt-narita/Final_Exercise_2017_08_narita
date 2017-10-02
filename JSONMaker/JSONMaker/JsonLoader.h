@@ -4,16 +4,12 @@
 
 #include "JSONManager.h"
 #include <vector>
+#include "ChainData.h"
+
 
 class JsonLoader
 {
 private:
-	//セットする際にBOOST_EACHでループするため、ループ変数を外に置く
-	//セットする際にどの行にセットするか指す変数
-	int setGridRowN = 0;
-	//セットする際にどの列にセットするかを指す変数
-	int setGridColN = 0;
-
 
 public:
 	JSONManager* jsonmanager;
@@ -22,10 +18,10 @@ public:
 	~JsonLoader();
 
 	void init();
-	void job(std::string jsonnode);
+	void job(std::string jsonnode, ChainData* cell);
 
 	//
-	void loadJson(boost::property_tree::ptree json);
+	void loadJson(boost::property_tree::ptree json, ChainData* cell);
 	void returnRow();
 	std::vector<std::string> getNodes(boost::property_tree::ptree json);
 };

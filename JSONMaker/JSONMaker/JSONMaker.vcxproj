@@ -146,13 +146,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
-    <ClCompile Include="CellChain.cpp" />
     <ClCompile Include="CellEditForm.cpp" />
+    <ClCompile Include="ChainData.cpp" />
     <ClCompile Include="DataGridSelfMade.cpp" />
     <ClCompile Include="DBConnector.cpp" />
     <ClCompile Include="EnvForm.cpp" />
     <ClCompile Include="GridJSONCreator.cpp" />
-    <ClCompile Include="GridManager.cpp" />
     <ClCompile Include="GuiMain.cpp" />
     <ClCompile Include="JSONDBManager.cpp" />
     <ClCompile Include="JsonLoader.cpp" />
@@ -161,10 +160,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
-    <ClInclude Include="CellChain.h" />
     <ClInclude Include="CellEditForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="ChainData.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DataGridSelfMade.h" />
     <ClInclude Include="DBConnector.h" />
@@ -173,7 +172,6 @@
     </ClInclude>
     <ClInclude Include="Environment.h" />
     <ClInclude Include="GridJSONCreator.h" />
-    <ClInclude Include="GridManager.h" />
     <ClInclude Include="GuiMain.h">
       <FileType>CppForm</FileType>
     </ClInclude>

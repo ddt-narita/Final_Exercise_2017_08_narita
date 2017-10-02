@@ -1,63 +1,22 @@
 #include "JSONManager.h"
+#include "Constants.h"
 
 
 
 JSONManager::JSONManager()
 {
-	grid = new GridManager();
+	
 }
 
+JSONManager::~JSONManager() {
 
-JSONManager::~JSONManager()
-{
-	delete grid;
-}
-
-std::string JSONManager::getGrid(int rowN, int colN)
-{
-	return grid->getGrid(rowN, colN);
-}
-
-void JSONManager::setGrid(int rowN, int colN, std::string value)
-{
-	grid->setGrid(rowN, colN, value);
-}
-
-boost::property_tree::ptree JSONManager::getGridData(int rowN, int colN)
-{
-	return grid->getGridData(rowN, colN);
-}
-
-void JSONManager::setGridData(int rowN, int colN, boost::property_tree::ptree data)
-{
-	grid->setGridData(rowN, colN, data);
-}
-
-int JSONManager::getGridRowLength()
-{
-	return grid->getGridRowLength();
-}
-
-int JSONManager::getGridColLen()
-{
-	return grid->getGridColLen();
-}
-
-void JSONManager::setGridRowLen(int rown)
-{
-	grid->setRowLen(rown);
-}
-
-void JSONManager::setGridColLen(int coln)
-{
-	grid->setColLen(coln);
 }
 
 
 
 std::string JSONManager::getQuery()
 {
-	return std::string();
+	return env.Query;
 }
 
 bool JSONManager::isQuerySet()
@@ -86,13 +45,5 @@ bool JSONManager::isJSONFilePathSet()
 	return (env.getJSONFilePath() != "");
 }
 
-//JSON‚Ì‰Šú‰»‚ðs‚¤
-void JSONManager::jsonClear()
-{
-	grid->Clear();
-	setGridColLen(0);
-	setGridRowLen(0);
-
-}
 
 

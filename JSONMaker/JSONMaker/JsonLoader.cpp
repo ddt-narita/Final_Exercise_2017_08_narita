@@ -34,7 +34,7 @@ JsonLoader::~JsonLoader()
 */
 void JsonLoader::init()
 {
-	jsonmanager->grid->Clear();
+	//
 
 	//セットされたファイルパスを取得
 	std::string path = this->jsonmanager->getJsonFilePath();
@@ -50,18 +50,14 @@ void JsonLoader::init()
 作成者:成田修之
 作成日:9月5日
 */
-void JsonLoader::job(string jsonnode)
+void JsonLoader::job(string jsonnode, ChainData* cell)
 {
 	//選択されたノードを取得
 	ptree node = jsonmanager->json.get_child(jsonnode);
 
+	cell->key = jsonnode;
 	//そのノードに対して読み込み処理を行う
-	this->loadJson(node);
-
-	//読み込みが終わった後は現在の行数列数をリセット
-	this->jsonmanager->setGridRowLen(setGridRowN);
-	setGridColN = 0;
-	setGridRowN = 0;
+	this->loadJson(node, cell);
 }
 
 
@@ -74,56 +70,65 @@ void JsonLoader::job(string jsonnode)
 作成者:成田修之
 作成日:9月13日(水)
 */
-void JsonLoader::loadJson(boost::property_tree::ptree json)
+void JsonLoader::loadJson(boost::property_tree::ptree json, ChainData* cell)
 {
-	//第一階層についてループ
+	cell->addRight(new ChainData());
+	ChainData * current = cell->right;
+
 	BOOST_FOREACH(const ptree::value_type& child, json) {
-		//一列目についてキーとデータ群を取得してセットする
-		jsonmanager->grid->setGrid(setGridRowN, setGridColN, child.first);
-		jsonmanager->grid->setGridData(setGridRowN, setGridColN, child.second);
-		setGridColN++;
-		//子がある時
-		if (!child.second.empty() && child.second.data().empty()) {
-			//子についてループして
-			BOOST_FOREACH(const ptree::value_type& chldNodes, child.second) {
-				//子が配列を示しているとき
-				if ("" == chldNodes.first) {
-					//配列内の要素についてループする
-					BOOST_FOREACH(const ptree::value_type& arrayNode, chldNodes.second) {
-						//配列の要素のキーを取得する(オブジェクトならキーあり、通常要素ならキーなし)
-						jsonmanager->setGrid(setGridRowN, setGridColN, arrayNode.first);
-						//配列の要素までのキー群を
-						jsonmanager->setGridData(setGridRowN, setGridColN, (arrayNode.second));
-						setGridColN++;
-					}
+		current->key = constants.UTF8toSjis(child.first);
+		//配列の時
+		if ("" == child.first) {
+			//要素がオブジェクトの時
+			if (child.second.data().empty()) {
+				//子を作成する
+				current->addRight(new ChainData());
+				//子に移動してカレントとする
+				ChainData* arrayCurrent = current->right;
+
+				//オブジェクト内の要素数分繰り返す
+				BOOST_FOREACH(const ptree::value_type& arrayElement, child.second) {
+					//キーを格納
+					arrayCurrent->key = constants.UTF8toSjis(arrayElement.first);
+					//値を格納
+					arrayCurrent->value = constants.UTF8toSjis(arrayElement.second.data());
+					//弟を作成する
+					arrayCurrent->addUnder(new ChainData());
+					//カレントを作成した弟へ移動
+					arrayCurrent = arrayCurrent->under;
 				}
-				else {
-					//その子のキー名を表示させるものとして格納する
-					jsonmanager->grid->setGrid(setGridRowN, setGridColN, chldNodes.first);
-					//その子以下のオブジェクトなどについてはデータとして格納する
-					jsonmanager->grid->setGridData(setGridRowN, setGridColN, chldNodes.second);
-					//次のセルへ行くためインクリメント
-					setGridColN++;
-				}
+				//最後まで来たら余計につけられた弟を指していた兄のポインタをナルを指すように
+				arrayCurrent->upper->under = nullptr;
+				//最後の弟を削除
+				delete arrayCurrent;
+			}
+			//通常の配列の時
+			else {
+				//キーを格納(空文字)
+				current->key = constants.UTF8toSjis(child.first);
+				//値を格納する
+				current->value = constants.UTF8toSjis(child.second.data());
 			}
 		}
-		//改行処理
-		returnRow();
+		//子がある時
+		else if (!child.second.empty() && child.second.data().empty()) {
+			//子について再帰処理
+			loadJson(child.second, current);
+		}
+		//最下層の値の時
+		else if (child.second.empty() && !child.second.data().empty()) {
+			//その右のセルの値をとして格納
+			current->value = constants.UTF8toSjis(child.second.data());
+		}
+		//
+		current->addUnder(new ChainData());
+		current = current->under;
 	}
-}
+	//最後まで行ったら余計な最後に追加されたセルを指すポインタがナルを指すようにする
+	current->upper->under = nullptr;
+	//余計なセルを削除する
+	delete current;
 
-void JsonLoader::returnRow() {
-	//改行するので今の行の値をセットする
-	jsonmanager->setGridRowLen(this->setGridRowN);
-	//いままでの最大の列数よりも今回の列が多いとき
-	if (jsonmanager->getGridColLen() < setGridColN) {
-		//最大の列数として列数を保管する
-		jsonmanager->setGridColLen(setGridColN);
-	}
-	//改行するので列はリセット
-	setGridColN = 0;
-	//次の行へ行くために行の値をプラス一する
-	setGridRowN++;
 
 }
 

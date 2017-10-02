@@ -46,6 +46,7 @@ namespace JSONMaker {
 	private: System::Windows::Forms::TextBox^  textBoxJSONName;
 	private: System::Windows::Forms::TextBox^  textBoxQuery;
 	private: System::Windows::Forms::Button^  buttonOK;
+	private: System::Windows::Forms::Button^  buttonRefer;
 
 
 
@@ -69,6 +70,7 @@ namespace JSONMaker {
 			this->textBoxJSONName = (gcnew System::Windows::Forms::TextBox());
 			this->textBoxQuery = (gcnew System::Windows::Forms::TextBox());
 			this->buttonOK = (gcnew System::Windows::Forms::Button());
+			this->buttonRefer = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// labelDB
@@ -117,7 +119,6 @@ namespace JSONMaker {
 			this->textBoxJSONName->Name = L"textBoxJSONName";
 			this->textBoxJSONName->Size = System::Drawing::Size(223, 19);
 			this->textBoxJSONName->TabIndex = 4;
-			this->textBoxJSONName->DoubleClick += gcnew System::EventHandler(this, &EnvForm::textBoxJSONName_DoubleClick);
 			// 
 			// textBoxQuery
 			// 
@@ -136,11 +137,22 @@ namespace JSONMaker {
 			this->buttonOK->UseVisualStyleBackColor = true;
 			this->buttonOK->Click += gcnew System::EventHandler(this, &EnvForm::buttonOK_Click);
 			// 
+			// buttonRefer
+			// 
+			this->buttonRefer->Location = System::Drawing::Point(338, 91);
+			this->buttonRefer->Name = L"buttonRefer";
+			this->buttonRefer->Size = System::Drawing::Size(37, 26);
+			this->buttonRefer->TabIndex = 7;
+			this->buttonRefer->Text = L"参照";
+			this->buttonRefer->UseVisualStyleBackColor = true;
+			this->buttonRefer->Click += gcnew System::EventHandler(this, &EnvForm::buttonRefer_Click);
+			// 
 			// EnvForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(445, 204);
+			this->Controls->Add(this->buttonRefer);
 			this->Controls->Add(this->buttonOK);
 			this->Controls->Add(this->textBoxQuery);
 			this->Controls->Add(this->textBoxJSONName);
@@ -196,6 +208,22 @@ public:
 
 private: System::Void textBoxJSONName_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
 	
+
+}
+		 
+private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
+	
+	JSONFilePath = textBoxJSONName->Text;
+	Query = textBoxQuery->Text;
+
+	this->Close();
+}
+private: System::Void EnvForm_Load(System::Object^  sender, System::EventArgs^  e) {
+	textBoxJSONName->Text = JSONFilePath;
+	textBoxDBName->Text = DBName;
+	textBoxQuery->Text = Query;
+}
+private: System::Void buttonRefer_Click(System::Object^  sender, System::EventArgs^  e) {
 	//エクスプローラーを開くためのインスタンスを生成
 	OpenFileDialog^ fileDialog = gcnew OpenFileDialog();
 
@@ -215,24 +243,11 @@ private: System::Void textBoxJSONName_DoubleClick(System::Object^  sender, Syste
 		//OKボタンがクリックされたとき、ファイルパスを取得
 		filepath = (fileDialog->FileName);
 	}
-	
+
 	//取得したファイルパスを外部からアクセスできるようにプロパティにセット
 	JSONFilePath = filepath;
 	//テキストボックスに表示
 	textBoxJSONName->Text = filepath;
-}
-		 
-private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
-	
-	JSONFilePath = textBoxJSONName->Text;
-	Query = textBoxQuery->Text;
-
-	this->Close();
-}
-private: System::Void EnvForm_Load(System::Object^  sender, System::EventArgs^  e) {
-	textBoxJSONName->Text = JSONFilePath;
-	textBoxDBName->Text = DBName;
-	textBoxQuery->Text = Query;
 }
 };
 }

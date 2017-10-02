@@ -21,3 +21,15 @@ narita::Cell ^ narita::Cell::operator=(const narita::Cell ^ cell)
 	
 	return temp;
 }
+
+bool narita::Cell::isValid()
+{
+	return row >= 0 && col >= 0;
+}
+
+System::Void narita::Cell::Reset()
+{
+	row = -1;
+	col = -1;
+	return System::Void();
+}

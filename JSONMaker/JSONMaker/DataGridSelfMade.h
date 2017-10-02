@@ -1,6 +1,7 @@
 #pragma once
 #include "Cell.h"
-#include "CellChain.h"
+#include "ChainData.h"
+
 
 namespace narita {
 
@@ -20,18 +21,19 @@ namespace narita {
 		Graphics^ graphic;		//描画するためのオブジェクト
 		Pen^ cellFramePen;		//セルの枠を書くためのペンオブジェクト
 		Font^ font;				//フォント
-		
+
 
 		int _colCount;	//列数
 		int _rowCount;	//行数
 
-		
+
 
 	public:
 		int cellWidth;	//セルの幅
 		int cellHeight;	//セルの高さ
-		//表を表示するのに使うセルごとのクラス
-		CellChain^ cell;
+
+		ChainData* cell;
+
 		TextBox^ text;	//テキストボックス
 		//列数のプロパティー
 		property int colCount {
@@ -40,7 +42,6 @@ namespace narita {
 			}
 			void set(int col) {
 				_colCount = col;
-				cell->colCount = col;
 			}
 		}
 		//行数のプロパティー
@@ -50,7 +51,6 @@ namespace narita {
 			}
 			void set(int row) {
 				_rowCount = row;
-				cell->rowCount = row;
 			}
 		}
 		//現在選択中のセル
@@ -66,7 +66,7 @@ namespace narita {
 		Void SelectedCell_click(int row, int col);
 		Void notSelectedCell_click(int row, int col);
 		//表示部の値を取得するためのキーを作成する関数
-		String^ CreateGridMapKey(int row, int col);
+		
 		//指定の行、列に引数の色のセルを描画する関数
 		Void drawCell(int row, int col, Brush^ color);
 		//引数がセルの時
@@ -76,13 +76,19 @@ namespace narita {
 		int selectedColFromBoundRow(int row);
 		//引数の位置のセルを結合／解除する関数
 		Void BindRelease(int row, int col);
+
+		Void setRowColFromChain();
+		Void adjustCell();
+
+		//セットされたセルのチェーンデータから表示を行う処理
+		Void View();
 		//全体を一から描画するメソッド
 		Void Paint();
 		//表部分のデータをクリアする関数
 		Void Clear();
 
 	private:Void textboxEnter(System::Object^  sender, Windows::Forms::KeyEventArgs^  e);
-	Void textboxLostFocus(System::Object ^ sender, EventArgs ^ e);
+			Void textboxLostFocus(System::Object ^ sender, EventArgs ^ e);
 	};
 
 }
