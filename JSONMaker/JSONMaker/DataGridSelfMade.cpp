@@ -196,6 +196,11 @@ Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 			//キーとその値を
 			value = gcnew String(("key:" + selectCell->key + "\nvalue:" + selectCell->value).c_str());
 		}
+		//オブジェクト配列への空のオブジェクトであるとき
+		else if (selectCell->isObject() && selectCell->key == "" && selectCell->getParents().size() > 0 && nullptr != selectCell->right && "" != selectCell->right->key && "" != selectCell->right->value) {
+			//オブジェクト配列であることを表示する
+			value = "arrayObject";
+		}
 		else {
 			value = gcnew String(selectCell->key.c_str());
 		}
@@ -306,35 +311,44 @@ Void narita::DataGridSelfMade::setRowColFromChain()
 	ChainData* parentCurrent = cell->getCell(0, 0);
 	int rowCount = 0;	//行数を求める
 	int colCount = 0;	//列数を求める
+	int lastValidRow = 0;
 	//親についてすべて走査
-	while (nullptr != parentCurrent && parentCurrent->isValid()) {
+	while (nullptr != parentCurrent) {
 		//子の数を数える
 		int childCol = 0;
+		int lastValidChild = 0;
 		//子を取得
 		ChainData* childCurrent = parentCurrent->right;
 		//子についてすべて走査
-		while (nullptr != childCurrent && childCurrent->isValid()) {
-			//兄弟に移動
-			childCurrent = childCurrent->under;
+		while (nullptr != childCurrent) {
 			//兄弟の数を数える
 			childCol++;
+			if (childCurrent->isValid()) {
+				lastValidChild = childCol;
+			}
+			//兄弟に移動
+			childCurrent = childCurrent->under;
 		}
 		//いままでの列数を子の数が超えたら
-		if (colCount < childCol) {
+		if (colCount < lastValidChild) {
 			//その数を列数にする
-			colCount = childCol;
+			colCount = lastValidChild;
 		}
-		//次の親に移動
-		parentCurrent = parentCurrent->under;
 		//行の数を加算する
 		rowCount++;
+
+		if (parentCurrent->isValid()) {
+			lastValidRow = rowCount;
+		}
+
+		parentCurrent = parentCurrent->under;
 	}
 
 	//求めた行数列数にセットする
-	this->rowCount = rowCount;
+	this->rowCount = lastValidRow;
 	this->colCount = colCount;
 	//きちんと行があれば
-	if (rowCount > 0) {
+	if (this->rowCount > 0) {
 		//先頭の列分プラスする
 		this->colCount += 1;
 	}
@@ -352,8 +366,7 @@ Void narita::DataGridSelfMade::adjustCell()
 			//子を作成
 			parentCurrent->addRight(new ChainData());
 			//埋め合わせであることを示す値を格納
-			parentCurrent->right->key = constants.STR_INVALID_CELL;
-			parentCurrent->right->value = constants.STR_NOVALUE;
+			parentCurrent->right->valid = false;
 		}
 
 		//列の先頭のセルを取得
@@ -365,8 +378,7 @@ Void narita::DataGridSelfMade::adjustCell()
 				//下にセルを追加
 				childCurrent->addUnder(new ChainData());
 				//埋め合わせであることを示す値を格納
-				childCurrent->under->key = constants.STR_INVALID_CELL;
-				childCurrent->under->value = constants.STR_NOVALUE;
+				childCurrent->under->valid = false;
 			}
 			//次の兄弟へ移動
 			childCurrent = childCurrent->under;
@@ -402,7 +414,6 @@ Void DataGridSelfMade::Paint()
 	if (rowCount == 0 || colCount == 0) {
 		return;
 	}
-
 	//ピクチャーボックスの大きさを設定されている行数列数に合わせる
 	pictureBox->Size = System::Drawing::Size(colCount * cellWidth, rowCount * cellHeight);
 	//ピクチャーボックスの大きさに合わせて描画先のオブジェクトを生成しなおす
@@ -430,7 +441,6 @@ Void DataGridSelfMade::Paint()
 		//行ごと線を描画
 		graphic->DrawLine(cellFramePen, Point(0, (i + 1) * cellHeight), Point(colCount * cellWidth, (i + 1) * cellHeight));
 	}
-
 	//＠修正　カレントのセルのある行がなくなった時セルの値を取得できずに
 	//例外が出るので行数列数より多いときはカレントのセルを描画しない
 	if (currentCell->row < rowCount && currentCell->col < colCount) {

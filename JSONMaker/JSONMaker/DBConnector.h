@@ -1,4 +1,4 @@
-//#pragma once
+#pragma once
 //
 //#ifndef __DBConnector
 //#define __DBConnector
@@ -22,7 +22,7 @@
 //
 //	DBConnector();
 //	~DBConnector();
-//	void Connect();
+//	void Connect(std::string DBName);
 //	void disConnect();
 //};
 //

@@ -1,4 +1,4 @@
-//#pragma
+#pragma
 //#include "JSONDBManager.h"
 //#include <vector>
 //
@@ -24,7 +24,7 @@
 //void JSONDBManager::init()
 //{
 //	//DB‚ÉÚ‘±‚·‚é
-//	this->Connect();	
+//	this->Connect(env.DBname);	
 //}
 //
 //void JSONDBManager::job(ChainData* cell)

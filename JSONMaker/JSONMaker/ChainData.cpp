@@ -6,6 +6,7 @@ ChainData::ChainData()
 {
 	this->key = "";
 	this->value = "";
+	this->valid = true;
 	this->right = nullptr;
 	this->left = nullptr;
 	this->upper = nullptr;
@@ -50,6 +51,10 @@ ChainData * ChainData::insertFront()
 		upper->addUnder(insertCell);
 		//挿入したセルの下に選択されたセルを追加する
 		insertCell->addUnder(selectedCell);
+		//兄のセルが無効なら挿入したセルも無効に
+		if (!upper->valid) {
+			insertCell->valid = false;
+		}
 	}
 	//挿入したセルを返す
 	return insertCell;
@@ -77,7 +82,37 @@ ChainData * ChainData::insertBack()
 		//選択されたセルの下に挿入するためのセルを追加する
 		selectedCell->addUnder(insertCell);
 	}
+	//兄のセルが無効なら挿入したセルも無効に
+	if (!selectedCell->valid) {
+		insertCell->valid = false;
+	}
 
+	//挿入したセルを返却する
+	return insertCell;
+}
+
+/*
+関数名:insert
+概要:前か後に挿入する関数
+引数:ChainData::FrontBacm fb　前か後か
+返却値:ChainData* insertCell　挿入したセル
+作成日:10月2日(月)
+作成者:成田修之
+*/
+ChainData * ChainData::insert(FrontBack fb)
+{
+	//挿入したセルを取得して返すための変数
+	ChainData* insertCell;
+	//引数の値が前を示していたら
+	if (FrontBack::Front == fb) {
+		//前への追加関数を実行
+		insertCell = insertFront();
+	}
+	//後ろを示しているとき
+	else {
+		//後ろへの追加関数を実行
+		insertCell = insertBack();
+	}
 	//挿入したセルを返却する
 	return insertCell;
 }
@@ -128,11 +163,11 @@ void ChainData::remove()
 	delete selectedCell;
 }
 
-ChainData * ChainData::insertRow(int row)
+ChainData * ChainData::insertRow(int row, FrontBack fb)
 {
 	ChainData* rowHead = this->getCell(row, 0);
-	//その行の先頭のセルに対して挿入する
-	ChainData* insertRowHead = rowHead->insertFront();
+	//その行の先頭のセルに対して引数の前後ろを渡して挿入する
+	ChainData* insertRowHead = rowHead->insert(fb);
 	
 	//行を追加したので行数を+1する
 	//行の先頭のセルを返却する
@@ -147,7 +182,7 @@ void ChainData::removeRow(int row)
 
 }
 
-void ChainData::insertCol(int col)
+void ChainData::insertCol(int col, FrontBack fb)
 {
 	//一行目については仕様から後ろに追加（2行目について挿入のためこの処理に）
 	if (0 == col) {
@@ -157,8 +192,8 @@ void ChainData::insertCol(int col)
 	//行数分繰り返す
 	for (int i = 0; i < row; i++) {
 		ChainData* colCell = this->getCell(i, col);
-		//そのセルに対して挿入する
-		colCell->insertFront();
+		//そのセルに対して引数の前後ろを渡して挿入する
+		colCell->insert(fb);
 	}
 }
 
@@ -414,7 +449,7 @@ void ChainData::Clear()
 bool ChainData::isValid()
 {
 	//キーと値に無効なセルであることを示す値が入力されていないかどうかを返却する
-	return this->key != constants.STR_INVALID_CELL || this->value != constants.STR_NOVALUE;
+	return valid;
 }
 
 
@@ -435,8 +470,8 @@ bool ChainData::isCellToArray()
 	}
 	//配列の要素である子を取得
 	ChainData* child = this->right;
-	//要素のセルがキーが空で値はあり、そのさらに子は存在しない,また有効なセルであるとき
-	if ("" == child->key && "" != child->value && (nullptr == child->right || child->isValid())) {
+	//要素のセルがキーが空で値はあり、そのさらに子は存在しない,またあっても有効でないとき
+	if ("" == child->key && "" != child->value && (nullptr == child->right || !child->right->isValid())) {
 		//通常の配列へのセルであることを返す
 		return true;
 	}

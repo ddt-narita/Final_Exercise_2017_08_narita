@@ -1,3 +1,4 @@
+#pragma
 //#include "DBConnector.h"
 //#include  <iostream>
 //#include  <sstream>
@@ -15,7 +16,7 @@
 //	delete con;
 //}
 //
-//void DBConnector::Connect()
+//void DBConnector::Connect(string DBName)
 //{
 //	//ドライバーを読みこむ
 //	sql::mysql::MySQL_Driver *driver;
@@ -27,7 +28,7 @@
 //	//DBに接続
 //	con = driver->connect("tcp://127.0.0.1:3306", "root", "");
 //	//DBを指定
-//	con->setSchema(dbname);
+//	con->setSchema(DBName);
 //
 //}
 //

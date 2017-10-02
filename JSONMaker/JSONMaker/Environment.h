@@ -11,7 +11,7 @@ public:
 	
 	std::string Query = "";
 	std::string JSONFilePath = "";
-	std::string JsonNodeName = "";
+	std::string DBname = "";
 
 	/*std::string getJSONName() {
 		return JSONName;
@@ -37,13 +37,8 @@ public:
 	void setQuery(std::string query) {
 		Query = query;
 	}
+	
 
-	void setNodeName(std::string node) {
-		JsonNodeName = node;
-	}
-	std::string getNodeName() {
-		return JsonNodeName;
-	}
 
 };
 

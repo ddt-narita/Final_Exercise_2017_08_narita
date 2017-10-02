@@ -46,7 +46,8 @@ namespace JSONMaker {
 
 	private: System::Windows::Forms::Label^  labelKey;
 	private: System::Windows::Forms::Label^  labelValue;
-	private: System::Windows::Forms::Button^  buttonCandel;
+	private: System::Windows::Forms::Button^  buttonCancel;
+
 	private: System::Windows::Forms::Button^  buttonOK;
 	private: System::Windows::Forms::Button^  buttonParent;
 	private: System::Windows::Forms::Button^  buttonChild;
@@ -75,7 +76,7 @@ namespace JSONMaker {
 			this->textBoxValue = (gcnew System::Windows::Forms::TextBox());
 			this->labelKey = (gcnew System::Windows::Forms::Label());
 			this->labelValue = (gcnew System::Windows::Forms::Label());
-			this->buttonCandel = (gcnew System::Windows::Forms::Button());
+			this->buttonCancel = (gcnew System::Windows::Forms::Button());
 			this->buttonOK = (gcnew System::Windows::Forms::Button());
 			this->buttonParent = (gcnew System::Windows::Forms::Button());
 			this->buttonChild = (gcnew System::Windows::Forms::Button());
@@ -115,15 +116,16 @@ namespace JSONMaker {
 			this->labelValue->TabIndex = 3;
 			this->labelValue->Text = L"値";
 			// 
-			// buttonCandel
+			// buttonCancel
 			// 
-			this->buttonCandel->Location = System::Drawing::Point(258, 211);
-			this->buttonCandel->Name = L"buttonCandel";
-			this->buttonCandel->Size = System::Drawing::Size(88, 41);
-			this->buttonCandel->TabIndex = 5;
-			this->buttonCandel->Text = L"Cancel";
-			this->buttonCandel->UseVisualStyleBackColor = true;
-			this->buttonCandel->Click += gcnew System::EventHandler(this, &CellEditForm::buttonCancel_Click);
+			this->buttonCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+			this->buttonCancel->Location = System::Drawing::Point(258, 211);
+			this->buttonCancel->Name = L"buttonCancel";
+			this->buttonCancel->Size = System::Drawing::Size(88, 41);
+			this->buttonCancel->TabIndex = 5;
+			this->buttonCancel->Text = L"Cancel";
+			this->buttonCancel->UseVisualStyleBackColor = true;
+			this->buttonCancel->Click += gcnew System::EventHandler(this, &CellEditForm::buttonCancel_Click);
 			// 
 			// buttonOK
 			// 
@@ -177,15 +179,17 @@ namespace JSONMaker {
 			// 
 			// CellEditForm
 			// 
+			this->AcceptButton = this->buttonOK;
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->CancelButton = this->buttonCancel;
 			this->ClientSize = System::Drawing::Size(358, 264);
 			this->Controls->Add(this->buttonBro);
 			this->Controls->Add(this->buttonBigBro);
 			this->Controls->Add(this->buttonChild);
 			this->Controls->Add(this->buttonParent);
 			this->Controls->Add(this->buttonOK);
-			this->Controls->Add(this->buttonCandel);
+			this->Controls->Add(this->buttonCancel);
 			this->Controls->Add(this->labelValue);
 			this->Controls->Add(this->labelKey);
 			this->Controls->Add(this->textBoxValue);
@@ -202,7 +206,6 @@ namespace JSONMaker {
 		ChainData* cell;
 		array<Label^>^ labels;
 		int FormFrom;
-		std::vector<ChainData*>* parent;
 
 	private:
 		System::Void createKeyLabels(array<String^>^ path) {
@@ -245,9 +248,7 @@ namespace JSONMaker {
 			this->Controls->AddRange(labels);
 		}
 
-
-
-		//
+		//ラベルをクリアする関数
 		System::Void ClearLabels(int level) {
 			//表示させるラベルの数だけ繰り返す
 			for (int i = 0; i < level; i++) {
@@ -270,6 +271,10 @@ namespace JSONMaker {
 		作成者:成田修之
 		*/
 		System::Void CellEditForm_Load(System::Object^  sender, System::EventArgs^  e) {
+			
+			buttonOK->DialogResult = Windows::Forms::DialogResult::OK;
+			buttonCancel->DialogResult = Windows::Forms::DialogResult::Cancel;		
+			
 			//親セル群を取得
 			std::vector<ChainData*> parent = cell->getParents();
 			std::vector<std::string>parentKey(parent.size());
@@ -296,7 +301,12 @@ namespace JSONMaker {
 				//値についてのテキストボックスに値を格納
 				textBoxValue->Text = gcnew String(cell->value.c_str());
 			}
+			//親がいないとき
+			if (cell->getParents().size() < 1) {
+				buttonParent->Visible = false;
+			}
 		}
+
 
 		/*
 		関数名:buttonOK_Click
@@ -314,6 +324,12 @@ namespace JSONMaker {
 				//セルの値にテキストボックスに入力された値を格納する
 				cell->value = constants.StrToc_str(textBoxValue->Text);
 			}
+			//セルに値がきちんと入力されていたら
+			if ("" != cell->key || "" != cell->value) {
+				//有効にする
+				cell->valid = true;
+			}
+
 			//このフォームを閉じる
 			this->Close();
 		}
@@ -349,19 +365,25 @@ namespace JSONMaker {
 			//兄ボタンからの時
 			else if ("buttonBigBro" == send->Name) {
 				//兄を作成して渡す
-				subForm->cell = cell->insertFront();
+				subForm->cell = cell->insert(ChainData::FrontBack::Front);
 				//兄ボタンからであることを示す値を渡す
 				subForm->FormFrom = constants.FROM_BIGBRO_BUTTON;
 			}
 			//弟ボタンからの時
 			else {
 				//弟を作成して渡す
-				subForm->cell = cell->insertBack();
+				subForm->cell = cell->insert(ChainData::FrontBack::Back);
 				//弟ボタンからであることを示す値を渡す
 				subForm->FormFrom = constants.FROM_BRO_BUTTON;
 			}
 			//フォームを表示する
-			subForm->ShowDialog();
+			Windows::Forms::DialogResult rb = subForm->ShowDialog();
+
+			//結果がOKできちんと親子兄弟が作れたなら
+			if (Windows::Forms::DialogResult::OK == rb) {
+				//そのセルを有効にする
+				cell->valid = true;
+			}
 		}
 
 

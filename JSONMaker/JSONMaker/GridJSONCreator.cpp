@@ -59,7 +59,7 @@ string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level) {
 	try {//引数の階層の値分繰り返す
 		for (int i = 0; i < level; i++) {
 			//返却するキーが空でなければ(一番初めではなければ)
-			if ("" != acsesskey) {
+			if ("" != acsesskey && "" != keyarray[i]) {
 				//アクセス可能なようにカンマで区切る
 				acsesskey += ".";
 			}
@@ -91,16 +91,22 @@ void GridJSONCreator::CreateJSON(ChainData* cell, ptree& json)
 {
 	try {
 		//兄弟すべて走査
-		while (nullptr != cell && cell->isValid()) {
+		while (nullptr != cell) {
 			if (keyHierarchy[0] != "" && level == 0) {
 				return;
 			}
-			
+
+			if (!cell->isValid()) {
+				//次の兄弟へ移動する
+				cell = cell->under;
+				continue;
+			}
+
 			//値を階層のキーとして保管する
 			keyHierarchy[level] = constants.SjistoUTF8(cell->key);
 			//その階層までのキーからアクセスするためのキー文字列を作成する
 			string acsesskey = createAcsessKey(keyHierarchy, level + 1);
-			
+
 
 
 			//オブジェクト配列へのセル先頭のセルの時
@@ -153,7 +159,7 @@ void GridJSONCreator::CreateJSON(ChainData* cell, ptree& json)
 				json.put_child(acsesskey, arrayJson);
 			}
 			//子がある時
-			else if (nullptr != cell->right && cell->right->isValid()) //子が通常通りある時
+			else if (cell->isObject()) //子が通常通りある時
 			{
 				//子について行うので階層の値を+1
 				level++;
@@ -166,6 +172,7 @@ void GridJSONCreator::CreateJSON(ChainData* cell, ptree& json)
 			else {
 				//それまでのキー配下に格納する
 				json.put(acsesskey, constants.SjistoUTF8(cell->value));
+
 			}
 			//次の兄弟へ移動する
 			cell = cell->under;

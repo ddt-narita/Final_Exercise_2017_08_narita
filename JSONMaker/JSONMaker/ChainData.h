@@ -11,6 +11,11 @@ public:
 
 	std::string key;
 	std::string value;
+	bool valid;
+	enum FrontBack {
+		Front,
+		Back
+	};
 
 	ChainData* upper;
 	ChainData* under;
@@ -19,9 +24,10 @@ public:
 
 	ChainData* insertFront();
 	ChainData* insertBack();
+	ChainData* insert(FrontBack);
 	void remove();
-	ChainData* insertRow(int row);
-	void insertCol(int col);
+	ChainData* insertRow(int row, FrontBack);
+	void insertCol(int col, FrontBack);
 	void removeRow(int row);
 	void removeCol(int col);
 	ChainData* createParent();

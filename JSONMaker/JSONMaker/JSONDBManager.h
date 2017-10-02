@@ -1,4 +1,4 @@
-//#pragma once
+#pragma once
 //#ifndef __JSON_DB_MANAGER
 //#define __JSON_DB_MANAGER
 //

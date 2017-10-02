@@ -28,7 +28,7 @@ public:
 	
 	static const int IS_SUB_FORM = 1;
 
-	const std::string STR_INVALID_CELL = "\n";
+	const std::string STR_INVALID_CELL = "";
 	const std::string STR_NOVALUE = "";
 
 	void fileout(std::string str)
