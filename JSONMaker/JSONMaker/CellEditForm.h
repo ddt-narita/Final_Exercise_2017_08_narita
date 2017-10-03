@@ -129,6 +129,7 @@ namespace JSONMaker {
 			// 
 			// buttonOK
 			// 
+			this->buttonOK->DialogResult = System::Windows::Forms::DialogResult::OK;
 			this->buttonOK->Location = System::Drawing::Point(258, 163);
 			this->buttonOK->Name = L"buttonOK";
 			this->buttonOK->Size = System::Drawing::Size(88, 42);
@@ -195,6 +196,7 @@ namespace JSONMaker {
 			this->Controls->Add(this->textBoxValue);
 			this->Controls->Add(this->textBoxKey);
 			this->Name = L"CellEditForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"CellEditForm";
 			this->Load += gcnew System::EventHandler(this, &CellEditForm::CellEditForm_Load);
 			this->ResumeLayout(false);
@@ -271,9 +273,6 @@ namespace JSONMaker {
 		ì¬Ò:¬“cC”V
 		*/
 		System::Void CellEditForm_Load(System::Object^  sender, System::EventArgs^  e) {
-			
-			buttonOK->DialogResult = Windows::Forms::DialogResult::OK;
-			buttonCancel->DialogResult = Windows::Forms::DialogResult::Cancel;		
 			
 			//eƒZƒ‹ŒQ‚ğæ“¾
 			std::vector<ChainData*> parent = cell->getParents();

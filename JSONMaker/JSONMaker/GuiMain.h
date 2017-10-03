@@ -1,6 +1,6 @@
 #pragma once
 #include "GridJSONCreator.h"
-//#include "JSONDBManager.h"
+#include "JSONDBManager.h"
 #include "Constants.h"
 #include "EnvForm.h"
 #include "JsonLoader.h"
@@ -11,6 +11,7 @@
 #include "ChainData.h"
 #include <windows.h>
 #include <boost/foreach.hpp>
+#include "CLIConstants.h"
 
 namespace JSONMaker {
 
@@ -311,10 +312,11 @@ namespace JSONMaker {
 				| System::Windows::Forms::AnchorStyles::Left)
 				| System::Windows::Forms::AnchorStyles::Right));
 			this->panel1->AutoScroll = true;
+			this->panel1->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->panel1->Controls->Add(this->pictureBox1);
 			this->panel1->Location = System::Drawing::Point(8, 87);
 			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(661, 417);
+			this->panel1->Size = System::Drawing::Size(661, 419);
 			this->panel1->TabIndex = 13;
 			this->panel1->Click += gcnew System::EventHandler(this, &GuiMain::LostFocusFromGrid);
 			// 
@@ -336,6 +338,7 @@ namespace JSONMaker {
 			this->textBoxNodeName->Name = L"textBoxNodeName";
 			this->textBoxNodeName->Size = System::Drawing::Size(100, 19);
 			this->textBoxNodeName->TabIndex = 12;
+			this->textBoxNodeName->TextChanged += gcnew System::EventHandler(this, &GuiMain::textBoxNodeName_TextChanged);
 			// 
 			// labelNodeName
 			// 
@@ -442,23 +445,30 @@ namespace JSONMaker {
 		}
 #pragma endregion
 	private:
-		JsonLoader* jsonLoader;
-		GridJSONCreator* gridJsonCreator;
-		//JSONDBManager* jsonDbLoader;
-		narita::DataGridSelfMade^ dataGridJson;
-		JSONManager* jsonmanager;
-		int FormType = 0;
-		ChainData* cellChain;
-		ChainData::FrontBack _fb;
+		JsonLoader* jsonLoader;						//JSON読み込みに関するクラス
+		GridJSONCreator* gridJsonCreator;			//読みこんだり作成したセルからJSONを作成するクラス
+		JSONDBManager* jsonDbLoader;				//DBの結果からセルに落とすクラス
+		narita::DataGridSelfMade^ dataGridJson;		//表クラス
+		JSONManager* jsonmanager;					//各クラスの共有オブジェクト
+		int FormType = 0;							//サブフォームかどうかを表す値
+		ChainData* cellChain;						//トップノードのセル
+		ChainData::FrontBack _fb;					//挿入の方向を表す
+		CLIConstants^ cliconstants;					//CLIでの定数クラス
 
+
+		//前に挿入するか後ろに挿入するかを選択するメンバのプロパティー
 		property ChainData::FrontBack frontBack {
+			//ゲッター
 			ChainData::FrontBack get() {
+				//そのまま返す
 				return _fb;
 			}
 
+			//セッター
 			System::Void set(ChainData::FrontBack fb) {
+				//引数の値をセットして
 				_fb = fb;
-
+				//それに該当する文字をラベルに表示する
 				labelInsertFrontBack->Text = fb == ChainData::Front ? "前" : "後ろ";
 			}
 		}
@@ -547,8 +557,6 @@ namespace JSONMaker {
 			try {
 				//読み込み開始
 				jsonLoader->init();
-
-
 				//読みこんだJSONから兄弟群を抜き出す
 				array<String^>^ Nodes = getNodes(jsonLoader->getNodes(jsonmanager->json));
 				//ノードを選択するフォームのインスタンスを作成する
@@ -557,7 +565,13 @@ namespace JSONMaker {
 				//ノード群をフォームに渡す
 				nodeForm->Nodes = Nodes;
 				//フォームをモーダル表示する
-				nodeForm->ShowDialog();
+				Windows::Forms::DialogResult dr = nodeForm->ShowDialog();
+
+				//フォームの結果がキャンセルをクリックされたなら
+				if (Windows::Forms::DialogResult::Cancel == dr) {
+					//処理をやめる
+					return;
+				}
 
 				//読み込みを開始する
 				jsonLoader->job(StrToc_str(nodeForm->selectedNode), cellChain);
@@ -569,7 +583,7 @@ namespace JSONMaker {
 				pictureBox1->Invalidate();
 			}
 			catch (std::exception& e) {
-				MessageBox::Show("ファイルを読めこめませんでした。\n指定されたファイルについて見直してください。", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_FAILD_TO_READ_JSON, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 			}
 		}
 
@@ -632,8 +646,15 @@ namespace JSONMaker {
 				}
 			}
 			catch (Exception^) {
-				MessageBox::Show("入力されている値が無効です", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+				MessageBox::Show(cliconstants->MESSAGE_INVALID_VALUE, "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 				throw gcnew Exception("タテヨコに無効な値が入力されています。");
+			}
+			//作成をすることをOKキャンセルで確認を取る
+			Windows::Forms::DialogResult dr = MessageBox::Show(rowN.ToString() + "行" + colN.ToString() + "列で表を作成します\nよろしいですか", "", MessageBoxButtons::OKCancel, MessageBoxIcon::Question);
+			//キャンセルが押されたら
+			if (Windows::Forms::DialogResult::Cancel == dr) {
+				//処理をやめる
+				return;
 			}
 			//取得した行と列で表を作成する
 			createGrid(rowN, colN);
@@ -648,11 +669,46 @@ namespace JSONMaker {
 		返却値:無し
 		作成日:9月15日(金)
 		作成者:成田修之
-		*/
-		//private:Void getJsonFromQuery(ChainData* cell) {
-		//	jsonDbLoader->run(cell);
-		//	ViewTable();
-		//}
+		*/	    
+		
+	    private:Void getJsonFromQuery(ChainData* cell) {
+			//
+			try {
+				//DBの結果読み込みを開始する
+				jsonDbLoader->run(cell);
+				//読みこんだセルで表を作成する
+				ViewTable();
+			}
+			//例外が発生したとき
+			catch (sql::SQLException& e) {
+				//エラーがDB接続に関するものだった時
+				if (e.getErrorCode() == constants.CODE_DB_ERROR) {
+					//メッセージボックスで表示
+					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_DB, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				
+				}//MySQLへの接続に関するエラー
+				else if(e.getErrorCode() == constants.CODE_MYSQL_ERROR) {
+					//メッセージボックスで表示
+					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_MySQL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);					
+				
+				}//ログインに関するエラーの時
+				else if(e.getErrorCode() == constants.CODE_ROGIN_ERROR) {
+					//メッセージボックスで表示
+					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_ROGIN, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				
+				} //無効なクエリに関するエラー
+				else if(e.getErrorCode() == constants.CODE_INVALID_QUERY_ERROR){
+					//メッセージボックスで表示
+					MessageBox::Show(cliconstants->MESSAGE_INVALID_QUERY, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				}
+				//文法的に間違ったSQLのエラー
+				else if (e.getErrorCode() == constants.CODE_QUERY_SYNTAX_ERROR) {
+					//メッセージボックスで表示
+					MessageBox::Show(cliconstants->MESSAGE_QUERY_SYNTAX_ERROR, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				}
+			}
+		}
+		
 
 		/*
 		関数名:buttonOK_Click
@@ -666,10 +722,11 @@ namespace JSONMaker {
 		System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 			//レイアウトの作成をやめる（描画がおもいため）
 			this->SuspendLayout();
+			//サブフォームなら
 			if (FormType == constants.IS_SUB_FORM) {
-				
 				//フォームを閉じる
 				this->Close();
+				//処理をやめる
 				return;
 			}
 			else {
@@ -679,10 +736,10 @@ namespace JSONMaker {
 						//JSON読み込み処理を実行する
 						LoadJson();
 					}
-					//else if (jsonDbLoader->isQuerySet()) {
-					//	//
-					//	getJsonFromQuery(cellChain);
-					//}
+					else if (jsonDbLoader->isQuerySet()) {
+						//
+						getJsonFromQuery(cellChain);
+					}
 					else {
 						//新規にJSONを作成するための表を表示する処理を実行
 						printGrid();
@@ -695,8 +752,6 @@ namespace JSONMaker {
 					return;
 				}
 			}
-
-			pictureBox1->Visible = true;
 			//レイアウトの表示を開始する
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -716,10 +771,10 @@ namespace JSONMaker {
 			//描画処理を一旦停止
 			this->SuspendLayout();
 			if (nullptr == cellChain->right) {
-				MessageBox::Show("先にJSONを読み込むか、\n行列指定して表を作成してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_HAVE_NOT_VIEW_TABLE_YET, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 				return;
 			}
-			System::Windows::Forms::DialogResult result = MessageBox::Show("すべて削除します\nよろしいですか？", "警告", MessageBoxButtons::OKCancel, MessageBoxIcon::Exclamation);
+			System::Windows::Forms::DialogResult result = MessageBox::Show(cliconstants->MESSAGE_ALL_CLEAR, "警告", MessageBoxButtons::OKCancel, MessageBoxIcon::Exclamation);
 			if (result != System::Windows::Forms::DialogResult::OK) {
 				return;
 			}
@@ -758,19 +813,15 @@ namespace JSONMaker {
 			//子が存在しないとき(子が存在しないということはまだ読みこみも新規の行列指定もしていない)
 			if (nullptr == cellChain->right) {
 				//エラーメッセージをだす
-				MessageBox::Show("先にJSONを読み込むか、\n行列指定して表を作成してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_HAVE_NOT_VIEW_TABLE_YET, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 				//処理をやめる
 				return;
 			}
 			//ノード名が入力されていない
 			if ("" == textBoxNodeName->Text) {
 				//ノード名が空であることとこのまま続けるかを聞く
-				System::Windows::Forms::DialogResult result = MessageBox::Show("ノード名が空です。\nこのまま作成しますか", "警告", MessageBoxButtons::OKCancel, MessageBoxIcon::Error);
-				//OKボタンが押されていなければ
-				if (result != System::Windows::Forms::DialogResult::OK) {
-					//処理をやめる
-					return;
-				}
+				MessageBox::Show(cliconstants->MESSAGE_EMPTY_NODE_NAME, "警告", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				return;
 			}
 
 			try {
@@ -780,16 +831,18 @@ namespace JSONMaker {
 				gridJsonCreator->job(cellChain);
 
 			}
+			//JSON作成で例外が発生したとき
 			catch (std::exception& e) {
+				//エラーメッセージを取得
 				String^ errorMessage = gcnew String(e.what());
+				//デバッグ出力する
 				System::Diagnostics::Debug::WriteLine(errorMessage);
-				MessageBox::Show("入力されたJSON構造でエラーが発生しました。\n確認してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				//メッセージボックスでエラー内容を表示
+				MessageBox::Show(cliconstants->MESSAGE_CREATE_JSON_ERROR + "\n" + gcnew String(e.what()), "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 				return;
 			}
-			//作成し終えたらメンバのJSONをクリアする
-			jsonmanager->json.clear();
 			//作成が完了したことを通知
-			MessageBox::Show("JSON作成完了！！", "通知");
+			MessageBox::Show(cliconstants->MESSAGE_CREATED, "通知");
 		}
 
 		/*
@@ -825,6 +878,7 @@ namespace JSONMaker {
 			//セット
 			jsonmanager->setQuery(query);
 			jsonmanager->env.DBname = StrToc_str(envform->DBName == nullptr ? "" : envform->DBName);
+constants.fileout(StrToc_str(envform->DBName));
 		}
 
 		/*
@@ -840,27 +894,18 @@ namespace JSONMaker {
 			//各種クラスのインスタンスの作成
 			jsonLoader = new JsonLoader();
 			gridJsonCreator = new GridJSONCreator();
-			//jsonDbLoader = new JSONDBManager();
+			jsonDbLoader = new JSONDBManager();
 			//共有オブジェクトを生成
 			jsonmanager = new JSONManager();
 			dataGridJson = gcnew narita::DataGridSelfMade(pictureBox1);
+			cliconstants = gcnew CLIConstants();
 
 			//共有オブジェクトを共有させる
-			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = /*jsonDbLoader->jsonmanager =*/ jsonmanager;
+			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = jsonDbLoader->jsonmanager = jsonmanager;
 			//表のテキストボックスにダブルクリックイベントを登録
 			dataGridJson->text->DoubleClick += gcnew EventHandler(this, &GuiMain::pictureBox1_DoubleClick);
 			//セルを表示する描画対象を見えなくする
 			pictureBox1->Visible = false;
-			//デバッグ時用のパス
-			std::string filePathFlower = "C:\\Users\\lenovo\\Documents\\flower\\flower\\WebContent\\source\\nfd.json";
-			std::string filePathObjectArray = "C:\\Users\\lenovo\\Documents\\final_exercise_2017_08_narita\\JSONMaker\\JSONMaker\\objectArray.json";
-			std::string filePathArray = "C:\\Users\\lenovo\\Documents\\final_exercise_2017_08_narita\\JSONMaker\\JSONMaker\\array.json";
-			
-			//パスを設定
-			jsonmanager->setJsonFilePath(filePathFlower);
-			jsonmanager->env.DBname = "ddthink-com00006";
-			jsonmanager->env.Query = "SELECT id, school_key, send_datetime, magazine_type, magazine_title, magazine_content FROM mail_magazine ORDER BY send_datetime DESC";
-
 			
 			//JSONがセットされてnullではないとき(サブフォームの時)
 			if (nullptr != cellChain && cellChain->isValid()) {
@@ -872,11 +917,14 @@ namespace JSONMaker {
 				//ノード名をテキストボックスに
 				textBoxNodeName->Text = gcnew String(cellChain->key.c_str());
 			}
+			//最初のフォーム立ち上げなら
 			else {
+				//メンバのセルを生成する
 				cellChain = new ChainData();
+				//そのセルを表クラスに渡す
 				dataGridJson->cell = cellChain;
 			}
-			
+
 		}
 
 		/*
@@ -902,10 +950,6 @@ namespace JSONMaker {
 		System::Void pictureBox1_Click(System::Object^  sender, System::EventArgs^  e) {
 			int row = ((MouseEventArgs^)e)->Y / dataGridJson->cellHeight;
 			int col = ((MouseEventArgs^)e)->X / dataGridJson->cellWidth;
-			if (dataGridJson->checkBound(row)) {
-				col = dataGridJson->selectedColFromBoundRow(row);
-			}
-
 			//その位置についてクリック処理
 			dataGridJson->cell_click(row, col);
 		}
@@ -956,7 +1000,8 @@ namespace JSONMaker {
 				//詳細を開く
 				OpenDetail(selected);
 			}
-			dataGridJson->Paint();
+			//全体を描画する
+			ViewTable();
 			//表の表示を促す
 			pictureBox1->Invalidate();
 			//スクロールのポジションをフォーム表示前と同じにする
@@ -1060,7 +1105,7 @@ namespace JSONMaker {
 			//セルが選択されていないとき
 			else {
 				//メッセージでそのことを警告
-				MessageBox::Show("セルを選択してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_NOT_SELECTED_CELL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 			}
 		}
 
@@ -1108,7 +1153,7 @@ namespace JSONMaker {
 			//セルが選択されていないとき
 			else {
 				//メッセージでそのことを警告
-				MessageBox::Show("セルを選択してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_NOT_SELECTED_CELL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 			}
 		}
 
@@ -1151,7 +1196,7 @@ namespace JSONMaker {
 			//セルが選択されていないとき
 			else {
 				//メッセージでそのことを警告
-				MessageBox::Show("セルを選択してください", "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+				MessageBox::Show(cliconstants->MESSAGE_NOT_SELECTED_CELL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
 			}
 		}
 
@@ -1183,9 +1228,21 @@ namespace JSONMaker {
 				pictureBox1->Visible = true;
 			}
 		}
-	private: System::Void buttonFrontBack_Click(System::Object^  sender, System::EventArgs^  e) {
-		//いままでが前なら後ろに、後ろだったなら前に変える
-		frontBack = (ChainData::Front == frontBack ? ChainData::Back : ChainData::Front);
+
+		/*
+		関数名:buttonFrontBack_Click
+		概要:前後ろボタンがクリックされたとき、挿入の前後ろを変更する
+		引数:イベントの引数
+		返却値:無し
+		作成日:10月2日(月)
+		作成者:成田修之
+		*/
+		System::Void buttonFrontBack_Click(System::Object^  sender, System::EventArgs^  e) {
+			//いままでが前なら後ろに、後ろだったなら前に変える
+			frontBack = (ChainData::Front == frontBack ? ChainData::Back : ChainData::Front);
+		}
+	private: System::Void textBoxNodeName_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+		cellChain->key = StrToc_str(textBoxNodeName->Text);
 	}
 };
 };

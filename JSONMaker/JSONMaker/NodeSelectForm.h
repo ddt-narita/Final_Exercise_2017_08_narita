@@ -36,6 +36,7 @@ namespace JSONMaker {
 		}
 
 	private: System::Windows::Forms::Button^  buttonOK;
+	private: System::Windows::Forms::Button^  buttonCancel;
 	protected:
 
 	private:
@@ -52,10 +53,12 @@ namespace JSONMaker {
 		void InitializeComponent(void)
 		{
 			this->buttonOK = (gcnew System::Windows::Forms::Button());
+			this->buttonCancel = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// buttonOK
 			// 
+			this->buttonOK->DialogResult = System::Windows::Forms::DialogResult::OK;
 			this->buttonOK->Location = System::Drawing::Point(12, 16);
 			this->buttonOK->Name = L"buttonOK";
 			this->buttonOK->Size = System::Drawing::Size(75, 23);
@@ -64,16 +67,26 @@ namespace JSONMaker {
 			this->buttonOK->UseVisualStyleBackColor = true;
 			this->buttonOK->Click += gcnew System::EventHandler(this, &NodeSelectForm::buttonOK_Click);
 			// 
+			// buttonCancel
+			// 
+			this->buttonCancel->DialogResult = System::Windows::Forms::DialogResult::Cancel;
+			this->buttonCancel->Location = System::Drawing::Point(114, 16);
+			this->buttonCancel->Name = L"buttonCancel";
+			this->buttonCancel->Size = System::Drawing::Size(75, 23);
+			this->buttonCancel->TabIndex = 2;
+			this->buttonCancel->Text = L"Cancel";
+			this->buttonCancel->UseVisualStyleBackColor = true;
+			// 
 			// NodeSelectForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(288, 271);
+			this->Controls->Add(this->buttonCancel);
 			this->Controls->Add(this->buttonOK);
 			this->Name = L"NodeSelectForm";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
 			this->Text = L"NodeSelectForm";
-			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &NodeSelectForm::NodeSelectForm_FormClosing);
 			this->Load += gcnew System::EventHandler(this, &NodeSelectForm::NodeSelectForm_Load);
 			this->ResumeLayout(false);
 
@@ -109,7 +122,6 @@ namespace JSONMaker {
 
 		}
 	}
-
 			 /*
 			 関数名:buttonOK_Click
 			 概要:OKボタンがクリックされたときのイベント
@@ -141,38 +153,6 @@ namespace JSONMaker {
 			//選択されたものとしてフォームを閉じる
 			this->Close();
 		}
-	}
-
-
-			 /*
-			 関数名:NodeSelectForm_FormClosing
-			 概要:フォームが閉じるときに行われる処理
-			 引数:イベントの引数
-			 返却値:無し
-			 作成日:9月15日(金)
-			 作成者:成田修之
-			 */
-	private: System::Void NodeSelectForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-		//選択されていないラジオボタンの数を取得する変数
-		int i;
-		//ラジオボタンの数だけ繰り返す
-		for (i = 0; i < buttonNodes->Length; i++) {
-			//チェックされていたら
-			if (buttonNodes[i]->Checked) {
-				//そのノード名を取得
-				selectedNode = buttonNodes[i]->Text;
-				//見受かったのでループを抜ける
-				break;
-			}
-		}
-		//きちんと選択されたノードがみつかっていなければ
-		if (i == buttonNodes->Length) {
-			//選択されていないことを警告
-			MessageBox::Show("ノードが選択されていません", "警告", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-			//フォームを閉じるのをやめる
-			e->Cancel = true;
-		}
-		
 	}
 };
 }

@@ -164,6 +164,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="ChainData.h" />
+    <ClInclude Include="CLIConstants.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DataGridSelfMade.h" />
     <ClInclude Include="DBConnector.h" />

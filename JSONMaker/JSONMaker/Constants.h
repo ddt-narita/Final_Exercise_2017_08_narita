@@ -25,12 +25,27 @@ public:
 	static const int FROM_CHILD_BUTTON = 2;
 	static const int FROM_BIGBRO_BUTTON = 3;
 	static const int FROM_BRO_BUTTON = 4;
-	
+
 	static const int IS_SUB_FORM = 1;
 
 	const std::string STR_INVALID_CELL = "";
 	const std::string STR_NOVALUE = "";
 
+	const std::string STR_DB_HOST_NAME = "tcp://127.0.0.1:3306";
+	const std::string STR_DB_USER_NAME = "root";
+	const std::string STR_DB_PASSWD = "";
+
+	const std::string MESSAGE_FAILED_TO_CONNECT_DB = "入力されているDBに接続できませんでした。\nDB名を確認して下さい。";
+	const std::string MESSAGE_CANNOT_CONNECT_MySQL = "MySQLに接続できませんでした。\nMySQLが起動していることを確認して下さい";
+	const std::string MESSAGE_INVALID_QUERY = "入力されたクエリが無効です。\n結果を返すクエリを入力して下さい";
+
+	const int CODE_DB_ERROR = 1049;
+	const int CODE_MYSQL_ERROR = 2003;
+	const int CODE_ROGIN_ERROR = 1045;
+	const int CODE_QUERY_SYNTAX_ERROR = 1064;
+	const int CODE_INVALID_QUERY_ERROR = 0;
+	
+	
 	void fileout(std::string str)
 	{
 		std::string filename = "debug.txt";

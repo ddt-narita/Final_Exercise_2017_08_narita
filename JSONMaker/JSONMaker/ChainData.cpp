@@ -187,6 +187,7 @@ void ChainData::insertCol(int col, FrontBack fb)
 	//一行目については仕様から後ろに追加（2行目について挿入のためこの処理に）
 	if (0 == col) {
 		col = 1;
+		fb = ChainData::FrontBack::Front;
 	}
 	int row = getChildCount();
 	//行数分繰り返す

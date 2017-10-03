@@ -116,18 +116,21 @@ Void DataGridSelfMade::SelectedCell_click(int row, int col) {
 Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
 	//今表示されているテキストボックスを非表示にする
 	text->Visible = false;
-
+	//無効なセルが選択されているときは何もしない
 	if (!currentCell->isValid()) {
 
 	}
+	//セルがオブジェクトへの配列なら
 	else if (cell->getCell(currentCell->row, currentCell->col)->isObject()) {
+		//オブジェクト用の色に戻す
 		drawCell(currentCell, Brushes::LemonChiffon);
 	}
+	//それ以外なら
 	else {
 		//カレントのセルについて色をもとに戻す
 		drawCell(currentCell, Brushes::White);
 	}
-	//行・列ともに取得した値に
+	//カレントの行・列ともに取得した値に
 	currentCell->row = row;
 	currentCell->col = col;
 
@@ -180,7 +183,9 @@ Void narita::DataGridSelfMade::cell_click(Cell ^ cell)
 */
 Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 {
+	//描こうとしているセルが無効な時は
 	if (row < 0 || col < 0) {
+		//処理を終了する
 		return;
 	}
 
@@ -201,11 +206,15 @@ Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 			//オブジェクト配列であることを表示する
 			value = "arrayObject";
 		}
+		//オブジェクトなら
 		else {
+			//キーのみを表示する
 			value = gcnew String(selectCell->key.c_str());
 		}
 	}
+	//ナルなら
 	else {
+		//空文字を入れておく
 		value = "";
 	}
 	//そのセルを覆う四角形を作成
@@ -323,7 +332,9 @@ Void narita::DataGridSelfMade::setRowColFromChain()
 		while (nullptr != childCurrent) {
 			//兄弟の数を数える
 			childCol++;
+			//セルが有効なら
 			if (childCurrent->isValid()) {
+				//その時の値を入れておく
 				lastValidChild = childCol;
 			}
 			//兄弟に移動
@@ -337,10 +348,12 @@ Void narita::DataGridSelfMade::setRowColFromChain()
 		//行の数を加算する
 		rowCount++;
 
+		//有効なセルなら
 		if (parentCurrent->isValid()) {
+			//その時の行の値を保管する
 			lastValidRow = rowCount;
 		}
-
+		//兄弟へ移動
 		parentCurrent = parentCurrent->under;
 	}
 

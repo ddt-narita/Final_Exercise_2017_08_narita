@@ -204,17 +204,12 @@ public:
 			_Query = query;
 		}
 	}
-
-
-private: System::Void textBoxJSONName_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
-	
-
-}
 		 
 private: System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 	
 	JSONFilePath = textBoxJSONName->Text;
 	Query = textBoxQuery->Text;
+	DBName = textBoxDBName->Text;
 
 	this->Close();
 }
