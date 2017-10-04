@@ -22,7 +22,7 @@ narita::Cell ^ narita::Cell::operator=(const narita::Cell ^ cell)
 	return temp;
 }
 
-bool narita::Cell::isValid()
+bool narita::Cell::isExist()
 {
 	return row >= 0 && col >= 0;
 }

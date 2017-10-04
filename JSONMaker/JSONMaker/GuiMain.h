@@ -1,6 +1,6 @@
 #pragma once
 #include "GridJSONCreator.h"
-#include "JSONDBManager.h"
+//#include "JSONDBManager.h"
 #include "Constants.h"
 #include "EnvForm.h"
 #include "JsonLoader.h"
@@ -152,19 +152,18 @@ namespace JSONMaker {
 			// 
 			// tabControl1
 			// 
-			this->tabControl1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
-				| System::Windows::Forms::AnchorStyles::Left)
-				| System::Windows::Forms::AnchorStyles::Right));
 			this->tabControl1->Controls->Add(this->GridtabPage);
 			this->tabControl1->Controls->Add(this->tabPage2);
-			this->tabControl1->Location = System::Drawing::Point(0, 23);
+			this->tabControl1->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->tabControl1->Location = System::Drawing::Point(0, 0);
 			this->tabControl1->Name = L"tabControl1";
 			this->tabControl1->SelectedIndex = 0;
-			this->tabControl1->Size = System::Drawing::Size(685, 538);
+			this->tabControl1->Size = System::Drawing::Size(685, 561);
 			this->tabControl1->TabIndex = 0;
 			// 
 			// GridtabPage
 			// 
+			this->GridtabPage->Controls->Add(this->buttonEnv);
 			this->GridtabPage->Controls->Add(this->labelInsertFrontBack);
 			this->GridtabPage->Controls->Add(this->buttonJsonCreate);
 			this->GridtabPage->Controls->Add(this->buttonChangeFrontBack);
@@ -188,7 +187,7 @@ namespace JSONMaker {
 			this->GridtabPage->Location = System::Drawing::Point(4, 22);
 			this->GridtabPage->Name = L"GridtabPage";
 			this->GridtabPage->Padding = System::Windows::Forms::Padding(3);
-			this->GridtabPage->Size = System::Drawing::Size(677, 512);
+			this->GridtabPage->Size = System::Drawing::Size(677, 535);
 			this->GridtabPage->TabIndex = 0;
 			this->GridtabPage->Text = L"Grid";
 			this->GridtabPage->UseVisualStyleBackColor = true;
@@ -316,7 +315,7 @@ namespace JSONMaker {
 			this->panel1->Controls->Add(this->pictureBox1);
 			this->panel1->Location = System::Drawing::Point(8, 87);
 			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(661, 419);
+			this->panel1->Size = System::Drawing::Size(661, 442);
 			this->panel1->TabIndex = 13;
 			this->panel1->Click += gcnew System::EventHandler(this, &GuiMain::LostFocusFromGrid);
 			// 
@@ -360,7 +359,7 @@ namespace JSONMaker {
 			// 
 			// buttonCancel
 			// 
-			this->buttonCancel->Location = System::Drawing::Point(571, 53);
+			this->buttonCancel->Location = System::Drawing::Point(578, 59);
 			this->buttonCancel->Name = L"buttonCancel";
 			this->buttonCancel->Size = System::Drawing::Size(75, 23);
 			this->buttonCancel->TabIndex = 5;
@@ -370,7 +369,7 @@ namespace JSONMaker {
 			// 
 			// buttonOK
 			// 
-			this->buttonOK->Location = System::Drawing::Point(571, 19);
+			this->buttonOK->Location = System::Drawing::Point(578, 36);
 			this->buttonOK->Name = L"buttonOK";
 			this->buttonOK->Size = System::Drawing::Size(75, 23);
 			this->buttonOK->TabIndex = 4;
@@ -415,7 +414,7 @@ namespace JSONMaker {
 			// 
 			this->buttonEnv->Font = (gcnew System::Drawing::Font(L"ＭＳ Ｐゴシック", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
-			this->buttonEnv->Location = System::Drawing::Point(551, 12);
+			this->buttonEnv->Location = System::Drawing::Point(578, 11);
 			this->buttonEnv->Name = L"buttonEnv";
 			this->buttonEnv->Size = System::Drawing::Size(75, 23);
 			this->buttonEnv->TabIndex = 1;
@@ -428,7 +427,6 @@ namespace JSONMaker {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(685, 561);
-			this->Controls->Add(this->buttonEnv);
 			this->Controls->Add(this->tabControl1);
 			this->Name = L"GuiMain";
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
@@ -447,7 +445,7 @@ namespace JSONMaker {
 	private:
 		JsonLoader* jsonLoader;						//JSON読み込みに関するクラス
 		GridJSONCreator* gridJsonCreator;			//読みこんだり作成したセルからJSONを作成するクラス
-		JSONDBManager* jsonDbLoader;				//DBの結果からセルに落とすクラス
+		//JSONDBManager* jsonDbLoader;				//DBの結果からセルに落とすクラス
 		narita::DataGridSelfMade^ dataGridJson;		//表クラス
 		JSONManager* jsonmanager;					//各クラスの共有オブジェクト
 		int FormType = 0;							//サブフォームかどうかを表す値
@@ -463,7 +461,6 @@ namespace JSONMaker {
 				//そのまま返す
 				return _fb;
 			}
-
 			//セッター
 			System::Void set(ChainData::FrontBack fb) {
 				//引数の値をセットして
@@ -471,77 +468,6 @@ namespace JSONMaker {
 				//それに該当する文字をラベルに表示する
 				labelInsertFrontBack->Text = fb == ChainData::Front ? "前" : "後ろ";
 			}
-		}
-
-
-		//utf8をSJISに変換する関数
-		//ファイルの文字コードがutf8であり、フォームで使う文字列がSJISのため
-		std::string UTF8toSjis(std::string srcUTF8) {
-			//Unicodeへ変換後の文字列長を得る
-			int lenghtUnicode = MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, NULL, 0);
-			//必要な分だけUnicode文字列のバッファを確保
-			wchar_t* bufUnicode = new wchar_t[lenghtUnicode];
-			//UTF8からUnicodeへ変換
-			MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, bufUnicode, lenghtUnicode);
-			//ShiftJISへ変換後の文字列長を得る
-			int lengthSJis = WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, -1, NULL, 0, NULL, NULL);
-			//必要な分だけShiftJIS文字列のバッファを確保
-			char* bufShiftJis = new char[lengthSJis];
-			//UnicodeからShiftJISへ変換
-			WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, lenghtUnicode + 1, bufShiftJis, lengthSJis, NULL, NULL);
-			std::string strSJis(bufShiftJis);
-			delete bufUnicode;
-			delete bufShiftJis;
-			return strSJis;
-		}
-
-		//SJISからutf8に変換する関数
-		//フォームで使う文字列がSJISであり、JSONファイルの文字コードがutf8のため
-		std::string SjistoUTF8(std::string srcSjis) {
-			//Unicodeへ変換後の文字列長を得る
-			int lenghtUnicode = MultiByteToWideChar(CP_THREAD_ACP, 0, srcSjis.c_str(), srcSjis.size() + 1, NULL, 0);
-			//必要な分だけUnicode文字列のバッファを確保
-			wchar_t* bufUnicode = new wchar_t[lenghtUnicode];
-			//ShiftJISからUnicodeへ変換
-			MultiByteToWideChar(CP_THREAD_ACP, 0, srcSjis.c_str(), srcSjis.size() + 1, bufUnicode, lenghtUnicode);
-			//UTF8へ変換後の文字列長を得る
-			int lengthUTF8 = WideCharToMultiByte(CP_UTF8, 0, bufUnicode, -1, NULL, 0, NULL, NULL);
-			//必要な分だけUTF8文字列のバッファを確保
-			char* bufUTF8 = new char[lengthUTF8];
-			//UnicodeからUTF8へ変換
-			WideCharToMultiByte(CP_UTF8, 0, bufUnicode, lenghtUnicode + 1, bufUTF8, lengthUTF8, NULL, NULL);
-			std::string strUTF8(bufUTF8);
-			delete bufUnicode;
-			delete bufUTF8;
-			return strUTF8;
-		}
-
-		/*
-		関数名:
-		概要:
-		引数:
-		返却値:
-		作成日:9月15日(金)
-		作成者:成田修之
-		*/
-		array<String^>^ getNodes(std::vector<std::string> node) {
-			array<String^>^ retArray = gcnew array<String^>(node.size());
-			for (int i = 0; i < node.size(); i++) {
-				retArray[i] = gcnew String(node[i].c_str());
-			}
-			return retArray;
-		}
-
-		/*
-		関数名:StrToC_str
-		概要:System::String^からstd::stringに変換して返す関数
-		引数:String^ 変換元
-		返却値:string 変換後の文字列
-		作成日:9月15日(金)
-		作成者:成田修之
-		*/
-		std::string StrToc_str(String^ temp) {
-			return (char*)System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(temp).ToPointer();
 		}
 
 		/*
@@ -558,10 +484,9 @@ namespace JSONMaker {
 				//読み込み開始
 				jsonLoader->init();
 				//読みこんだJSONから兄弟群を抜き出す
-				array<String^>^ Nodes = getNodes(jsonLoader->getNodes(jsonmanager->json));
+				array<String^>^ Nodes = constants.vectorToArray(jsonLoader->getNodes(jsonmanager->json));
 				//ノードを選択するフォームのインスタンスを作成する
 				NodeSelectForm^ nodeForm = gcnew NodeSelectForm();
-
 				//ノード群をフォームに渡す
 				nodeForm->Nodes = Nodes;
 				//フォームをモーダル表示する
@@ -574,7 +499,7 @@ namespace JSONMaker {
 				}
 
 				//読み込みを開始する
-				jsonLoader->job(StrToc_str(nodeForm->selectedNode), cellChain);
+				jsonLoader->job(constants.StrToc_str(nodeForm->selectedNode), cellChain);
 				//フォームのノード名に選択されたノードを表示
 				textBoxNodeName->Text = nodeForm->selectedNode;
 				//描画処理を行う
@@ -587,7 +512,14 @@ namespace JSONMaker {
 			}
 		}
 
-
+		/*
+		関数名:createGrid
+		概要:テキストボックスに入力された値から表を作成
+		引数:int rowN, int colN
+		返却値:無し
+		作成日:10月3日(火)
+		作成者:成田修之
+		*/
 		System::Void createGrid(int rowN, int colN) {
 			//現在のトップのセルに子を作成
 			cellChain->addRight(new ChainData());
@@ -669,55 +601,63 @@ namespace JSONMaker {
 		返却値:無し
 		作成日:9月15日(金)
 		作成者:成田修之
-		*/	    
-		
-	    private:Void getJsonFromQuery(ChainData* cell) {
-			//
-			try {
-				//DBの結果読み込みを開始する
-				jsonDbLoader->run(cell);
-				//読みこんだセルで表を作成する
-				ViewTable();
-			}
-			//例外が発生したとき
-			catch (sql::SQLException& e) {
-				//エラーがDB接続に関するものだった時
-				if (e.getErrorCode() == constants.CODE_DB_ERROR) {
-					//メッセージボックスで表示
-					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_DB, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-				
-				}//MySQLへの接続に関するエラー
-				else if(e.getErrorCode() == constants.CODE_MYSQL_ERROR) {
-					//メッセージボックスで表示
-					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_MySQL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);					
-				
-				}//ログインに関するエラーの時
-				else if(e.getErrorCode() == constants.CODE_ROGIN_ERROR) {
-					//メッセージボックスで表示
-					MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_ROGIN, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-				
-				} //無効なクエリに関するエラー
-				else if(e.getErrorCode() == constants.CODE_INVALID_QUERY_ERROR){
-					//メッセージボックスで表示
-					MessageBox::Show(cliconstants->MESSAGE_INVALID_QUERY, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-				}
-				//文法的に間違ったSQLのエラー
-				else if (e.getErrorCode() == constants.CODE_QUERY_SYNTAX_ERROR) {
-					//メッセージボックスで表示
-					MessageBox::Show(cliconstants->MESSAGE_QUERY_SYNTAX_ERROR, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-				}
-			}
-		}
-		
-
-		/*
-		関数名:buttonOK_Click
-		概要:OKボタンが押されたときのイベント
-		引数:イベントの引数
-		返却値:無し
-		作成日:9月15日(金)
-		作成者:成田修之
 		*/
+
+		//   private:Void getJsonFromQuery(ChainData* cell) {
+		   //	//メッセージを作成
+		   //	String^ message = gcnew String(jsonmanager->env.DbName.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BEFORE + gcnew String(jsonmanager->env.Query.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BACK;
+		   //	//メッセージボックスで表示
+		   //	Windows::Forms::DialogResult dr = MessageBox::Show(message, "確認", MessageBoxButtons::OKCancel, MessageBoxIcon::Question);
+		   //	//キャンセルが選択されたら
+		   //	if(Windows::Forms::DialogResult::Cancel == dr) {
+		   //		//関数の実行をやめる
+		   //		return;
+		   //	}
+		   //	try {
+		   //		//DBの結果読み込みを開始する
+		   //		jsonDbLoader->run(cell);
+		   //		//読みこんだセルで表を作成する
+		   //		ViewTable();
+		   //	}
+		   //	//例外が発生したとき
+		   //	catch (sql::SQLException& e) {
+		   //		//エラーがDB接続に関するものだった時
+		   //		if (e.getErrorCode() == constants.CODE_DB_ERROR) {
+		   //			//メッセージボックスで表示
+		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_DB, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   //		
+		   //		}//MySQLへの接続に関するエラー
+		   //		else if(e.getErrorCode() == constants.CODE_MYSQL_ERROR) {
+		   //			//メッセージボックスで表示
+		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_MySQL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);					
+		   //		
+		   //		}//ログインに関するエラーの時
+		   //		else if(e.getErrorCode() == constants.CODE_ROGIN_ERROR) {
+		   //			//メッセージボックスで表示
+		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_ROGIN, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   //		
+		   //		} //無効なクエリに関するエラー
+		   //		else if(e.getErrorCode() == constants.CODE_INVALID_QUERY_ERROR){
+		   //			//メッセージボックスで表示
+		   //			MessageBox::Show(cliconstants->MESSAGE_INVALID_QUERY, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   //		}
+		   //		//文法的に間違ったSQLのエラー
+		   //		else if (e.getErrorCode() == constants.CODE_QUERY_SYNTAX_ERROR) {
+		   //			//メッセージボックスで表示
+		   //			MessageBox::Show(cliconstants->MESSAGE_QUERY_SYNTAX_ERROR, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   //		}
+		   //	}
+		   //}
+
+
+		   /*
+		   関数名:buttonOK_Click
+		   概要:OKボタンが押されたときのイベント
+		   引数:イベントの引数
+		   返却値:無し
+		   作成日:9月15日(金)
+		   作成者:成田修之
+		   */
 	private:
 		System::Void buttonOK_Click(System::Object^  sender, System::EventArgs^  e) {
 			//レイアウトの作成をやめる（描画がおもいため）
@@ -736,10 +676,10 @@ namespace JSONMaker {
 						//JSON読み込み処理を実行する
 						LoadJson();
 					}
-					else if (jsonDbLoader->isQuerySet()) {
-						//
-						getJsonFromQuery(cellChain);
-					}
+					//else if (jsonDbLoader->isQuerySet()) {
+					//	//
+					//	getJsonFromQuery(cellChain);
+					//}
 					else {
 						//新規にJSONを作成するための表を表示する処理を実行
 						printGrid();
@@ -791,14 +731,20 @@ namespace JSONMaker {
 			//表の値をクリア
 			dataGridJson->Clear();
 
-			if (nullptr == cellChain->left) {
+			//セルに親が存在しないときは
+			if (cellChain->getParents().size() == 0) {
+				//そのセルを削除して
 				delete cellChain;
+				//新たに作り直して表クラスにも渡す
 				dataGridJson->cell = cellChain = new ChainData();
 			}
+			//セルに親がいるなら(サブフォームなら)
 			else {
+				//そのセルの削除関数を実行
 				cellChain->remove();
 			}
 
+			//ピクチャーボックスを非表示にする
 			pictureBox1->Visible = false;
 			//描画処理をおこなう
 			this->ResumeLayout(false);
@@ -806,7 +752,14 @@ namespace JSONMaker {
 		}
 
 
-		//作成ボタン押下時のイベント
+		/*
+		関数名:buttonJsonCreate_Click
+		概要:作成ボタン押下時のイベント
+		引数:イベントの引数
+		返却値:なし
+		作成日:10月3日(火)
+		作成者:成田修之
+		*/
 	private:
 		System::Void buttonJsonCreate_Click(System::Object^  sender, System::EventArgs^  e) {
 
@@ -874,11 +827,10 @@ namespace JSONMaker {
 			//取得したパスをセットする
 			jsonmanager->setJsonFilePath(filepath);
 			//入力されたクエリを取得して
-			std::string query = envform->Query == nullptr ? "" : StrToc_str(envform->Query);
+			std::string query = envform->Query == nullptr ? "" : constants.StrToc_str(envform->Query);
 			//セット
 			jsonmanager->setQuery(query);
-			jsonmanager->env.DBname = StrToc_str(envform->DBName == nullptr ? "" : envform->DBName);
-constants.fileout(StrToc_str(envform->DBName));
+			jsonmanager->env.DBname = constants.StrToc_str(envform->DBName == nullptr ? "" : envform->DBName);
 		}
 
 		/*
@@ -894,19 +846,19 @@ constants.fileout(StrToc_str(envform->DBName));
 			//各種クラスのインスタンスの作成
 			jsonLoader = new JsonLoader();
 			gridJsonCreator = new GridJSONCreator();
-			jsonDbLoader = new JSONDBManager();
+			//jsonDbLoader = new JSONDBManager();
 			//共有オブジェクトを生成
 			jsonmanager = new JSONManager();
 			dataGridJson = gcnew narita::DataGridSelfMade(pictureBox1);
 			cliconstants = gcnew CLIConstants();
 
 			//共有オブジェクトを共有させる
-			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = jsonDbLoader->jsonmanager = jsonmanager;
+			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = /*jsonDbLoader->jsonmanager = */ jsonmanager;
 			//表のテキストボックスにダブルクリックイベントを登録
 			dataGridJson->text->DoubleClick += gcnew EventHandler(this, &GuiMain::pictureBox1_DoubleClick);
 			//セルを表示する描画対象を見えなくする
 			pictureBox1->Visible = false;
-			
+
 			//JSONがセットされてnullではないとき(サブフォームの時)
 			if (nullptr != cellChain && cellChain->isValid()) {
 				dataGridJson->cell = cellChain;
@@ -924,7 +876,6 @@ constants.fileout(StrToc_str(envform->DBName));
 				//そのセルを表クラスに渡す
 				dataGridJson->cell = cellChain;
 			}
-
 		}
 
 		/*
@@ -969,6 +920,7 @@ constants.fileout(StrToc_str(envform->DBName));
 
 			int row;
 			int col;
+			//選択されたセルを格納する
 			ChainData* selected;
 
 			//テキストボックスから呼ばれたとき
@@ -989,7 +941,7 @@ constants.fileout(StrToc_str(envform->DBName));
 			//一列目のセルがクリックされたときのイベント
 			if (col == constants.COLUMN_ONE && cellChain->getCell(row, col)->isObject()) {
 				//一列目のセルを取得
-				selected = cellChain->getCell(row, 0);
+				selected = cellChain->getCell(row, col);
 				//そのセルについて展開する
 				OpenCell(selected);
 			}
@@ -1005,7 +957,7 @@ constants.fileout(StrToc_str(envform->DBName));
 			//表の表示を促す
 			pictureBox1->Invalidate();
 			//スクロールのポジションをフォーム表示前と同じにする
-			GridtabPage->AutoScrollPosition = Point(-nowX, -nowY);
+			panel1->AutoScrollPosition = Point(-nowX, -nowY);
 		}
 
 		/*
@@ -1075,9 +1027,8 @@ constants.fileout(StrToc_str(envform->DBName));
 		System::Void InsertButtons_Click(System::Object^  sender, System::EventArgs^  e) {
 			//挿入に関係したボタンを取得
 			Button^ InsertButton = (Button^)sender;
-
 			//選択中のセルが有効な値の時
-			if (dataGridJson->currentCell->isValid()) {
+			if (dataGridJson->currentCell->isExist()) {
 				//選択されているセルの行を取得する
 				int row = dataGridJson->currentCell->row;
 				//選択されているセルの列を取得する
@@ -1122,7 +1073,7 @@ constants.fileout(StrToc_str(envform->DBName));
 			Button^ RemoveButton = (Button^)sender;
 
 			//選択中のセルが有効な値の時
-			if (dataGridJson->currentCell->isValid()) {
+			if (dataGridJson->currentCell->isExist()) {
 				//選択されているセルの行を取得する
 				int row = dataGridJson->currentCell->row;
 				//選択されているセルの列を取得する
@@ -1168,9 +1119,8 @@ constants.fileout(StrToc_str(envform->DBName));
 		System::Void OpenDialogButtons_Click(System::Object^  sender, System::EventArgs^  e) {
 			//削除に関係したボタンを取得
 			Button^ OpenDialogButtons = (Button^)sender;
-
 			//選択中のセルが有効な値の時
-			if (dataGridJson->currentCell->isValid()) {
+			if (dataGridJson->currentCell->isExist()) {
 				//選択されているセルの行を取得する
 				int row = dataGridJson->currentCell->row;
 				//選択されているセルの列を取得する
@@ -1241,8 +1191,18 @@ constants.fileout(StrToc_str(envform->DBName));
 			//いままでが前なら後ろに、後ろだったなら前に変える
 			frontBack = (ChainData::Front == frontBack ? ChainData::Back : ChainData::Front);
 		}
-	private: System::Void textBoxNodeName_TextChanged(System::Object^  sender, System::EventArgs^  e) {
-		cellChain->key = StrToc_str(textBoxNodeName->Text);
-	}
-};
+
+		/*
+		関数名:textBoxNodename_TextChanged
+		概要:ノード名を入力するテキストボックスの値が変化したときトップのセルのキーにその値を入力する
+		引数:イベントの引数
+		返却値:無し
+		作成日:10月3日(火)
+		作成者:成田修之
+		*/
+		System::Void textBoxNodeName_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+			//トップのセルのキーに代入する
+			cellChain->key = constants.StrToc_str(textBoxNodeName->Text);
+		}
+	};
 };

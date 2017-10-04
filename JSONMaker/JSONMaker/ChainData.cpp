@@ -433,11 +433,6 @@ bool ChainData::isObject()
 	return this->right != nullptr && this->right->isValid();
 }
 
-void ChainData::Clear()
-{
-}
-
-
 /*
 関数名:isValid
 概要:有効なセルかどうか判定する関数
@@ -505,7 +500,7 @@ bool ChainData::isCellToObjectArray()
 		retVal = 0;
 	}
 	//孫がいないとき
-	else if(nullptr == child->right) {
+	else if(nullptr == child->right || !child->right->isValid()) {
 		//条件に合わない
 		retVal = 0;
 	}
@@ -514,7 +509,7 @@ bool ChainData::isCellToObjectArray()
 		//孫を取得して
 		ChainData* Gchild = child->right;
 		//孫のキーと値が入力されていて、そのさらに子は存在しないか無効の時
-		if ("" != Gchild->key && "" != Gchild->value && (nullptr == Gchild->right || !Gchild->right->isValid())) {
+		if ((nullptr == Gchild->right || !Gchild->right->isValid())) {
 			//オブジェクト配列へのセルであることを返す
 			retVal = 1;
 		}
@@ -522,3 +517,41 @@ bool ChainData::isCellToObjectArray()
 	//すべてに当てはまらなければfalseを返す
 	return retVal == 1;
 }
+
+bool ChainData::isEmptyCellToObjectArray()
+{
+	//返却する真理値に用いる値
+	int retVal = 1;
+	//キーが空でないとき
+	if ("" != this->value) {
+		//確実に違うのでそのことを返す
+		return false;
+	}
+
+	//自身を取得してカレントとする
+	ChainData* current = this;
+	//兄がいなくなるまでさかのぼって長男を取得
+	while (nullptr != current->upper)
+	{
+		//兄へ移動
+		current = current->upper;
+	}
+
+	//カレントがナルになるまで繰り返す
+	while (nullptr != current) {
+		//カレントのセルのキーに空でないものがあるなら
+		if ("" != current->key) {
+			//返却に用いる値にfalseを表す値を格納
+			retVal = 0;
+			//ループを抜ける
+			break;
+		}
+		//弟に移動する
+		current = current->under;
+	}
+
+	//trueを示す値と等しいかどうかで判定を返す
+	return retVal == 1;
+}
+
+

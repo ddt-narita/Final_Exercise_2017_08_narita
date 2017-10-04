@@ -12,6 +12,7 @@ public:
 	std::string Query = "";
 	std::string JSONFilePath = "";
 	std::string DBname = "";
+	std::string jsonSavePath = "data.json";
 
 	/*std::string getJSONName() {
 		return JSONName;

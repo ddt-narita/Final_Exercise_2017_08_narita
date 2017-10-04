@@ -117,8 +117,8 @@ Void DataGridSelfMade::notSelectedCell_click(int row, int col) {
 	//今表示されているテキストボックスを非表示にする
 	text->Visible = false;
 	//無効なセルが選択されているときは何もしない
-	if (!currentCell->isValid()) {
-
+	if (!currentCell->isExist()) {
+		int i = 0;
 	}
 	//セルがオブジェクトへの配列なら
 	else if (cell->getCell(currentCell->row, currentCell->col)->isObject()) {
@@ -202,7 +202,7 @@ Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 			value = gcnew String(("key:" + selectCell->key + "\nvalue:" + selectCell->value).c_str());
 		}
 		//オブジェクト配列への空のオブジェクトであるとき
-		else if (selectCell->isObject() && selectCell->key == "" && selectCell->getParents().size() > 0 && nullptr != selectCell->right && "" != selectCell->right->key && "" != selectCell->right->value) {
+		else if (selectCell->isEmptyCellToObjectArray()) {
 			//オブジェクト配列であることを表示する
 			value = "arrayObject";
 		}
@@ -268,7 +268,6 @@ Boolean DataGridSelfMade::checkBound(int row)
 */
 int narita::DataGridSelfMade::selectedColFromBoundRow(int row)
 {
-	//セルを取得
 	return 0;
 }
 

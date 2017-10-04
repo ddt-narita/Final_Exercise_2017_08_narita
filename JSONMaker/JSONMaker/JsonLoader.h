@@ -22,7 +22,7 @@ public:
 
 	//
 	void loadJson(boost::property_tree::ptree json, ChainData* cell);
-	void returnRow();
+
 	std::vector<std::string> getNodes(boost::property_tree::ptree json);
 };
 

@@ -61,8 +61,8 @@ void GridJSONCreator::job(ChainData* cell) {
 	keyHierarchy.clear();
 	//階層の値を元に戻す
 	level = 0;
-	//そのJSONオブジェクトを書き出す
-	write_json("data.json", json);
+	//そのJSONオブジェクトを環境クラスに保存しておいた保存先のパス書き出す
+	write_json(jsonmanager->env.jsonSavePath, json);
 	//書き込んだオブジェクトをクリア
 	json.clear();
 }
@@ -79,20 +79,15 @@ void GridJSONCreator::job(ChainData* cell) {
 string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level) {
 	//返却するキー
 	string acsesskey;
-	try {//引数の階層の値分繰り返す
-		for (int i = 0; i < level; i++) {
-			//返却するキーが空でなければ(一番初めではなければ)
-			if ("" != acsesskey && "" != keyarray[i]) {
-				//アクセス可能なようにカンマで区切る
-				acsesskey += ".";
-			}
-			//キーを上から順に継ぎ足していく
-			acsesskey += keyarray[i];
+	//引数の値分繰り返す
+	for (int i = 0; i < level; i++) {
+		//返却するキーが空でなければ(一番初めではなければ)
+		if ("" != acsesskey && "" != keyarray[i]) {
+			//アクセス可能なようにカンマで区切る
+			acsesskey += ".";
 		}
-	}
-	//例外が発生したとき
-	catch (exception& e) {
-		int i = 0;
+		//キーを上から順に継ぎ足していく
+		acsesskey += keyarray[i];
 	}
 	return acsesskey;
 }
@@ -116,8 +111,14 @@ void GridJSONCreator::createArrayJson(std::string acsessKey, ChainData * cellToA
 	ptree arrayJson;
 	//配列の要素を格納するためのJSONオブジェクト
 	ptree objectEle;
+
 	//子の数だけ繰り返す
 	for (int i = 0; i < cellToArray->getChildCount(); i++) {
+		//配列の要素にキーが入力されているセルがある時
+		if ("" != childCurrent->key) {
+			//メッセージを添えて例外を送出する
+			throw exception(constants.MESSAGE_ARRAY_ERROR.c_str());
+		}
 		//要素としてキーと値を格納する
 		objectEle.put(constants.SjistoUTF8(childCurrent->key), constants.SjistoUTF8(childCurrent->value));
 		//配列を示すため空のキーと作ったオブジェクトのペアを格納
@@ -127,6 +128,7 @@ void GridJSONCreator::createArrayJson(std::string acsessKey, ChainData * cellToA
 	}
 	//子でできた空の配列へのキーをそれまでのキーはいかに格納する
 	json.put_child(acsessKey, arrayJson);
+
 }
 
 /*
@@ -152,6 +154,11 @@ void GridJSONCreator::createObjectArrayJson(std::string acsessKey, ChainData* ce
 		ptree ObjectArrayEle;
 		//孫の数だけ繰り返す
 		for (int j = 0; j < childCurrent->getChildCount(); j++) {
+			//オブジェクト配列にキーのない要素が入力されたとき
+			if ("" == GchildCurrent->key) {
+				//メッセージを添えて例外を送出する
+				throw exception(constants.MESSAGE_OBJECT_ARRAY_ERROR.c_str());
+			}			
 			//オブジェクト配列の要素として孫のキーと値を格納する
 			ObjectArrayEle.put(constants.SjistoUTF8(GchildCurrent->key), constants.SjistoUTF8(GchildCurrent->value));
 			//孫をその兄弟に移動
@@ -229,7 +236,7 @@ void GridJSONCreator::CreateJSON(ChainData* cell, ptree& json)
 	//例外が発生したとき
 	catch (std::exception& e) {
 		//その階層とそのセルの値を格納したメッセージを用意
-		string Message = "階層：" + to_string(level) + "　値：" + cell->key;
+		string Message = "階層：" + to_string(level) + "　値：" + cell->key + "\n" + e.what();
 		//メッセージで初期化した例外を送出する
 		throw exception(Message.c_str());
 	}

@@ -34,8 +34,6 @@ JsonLoader::~JsonLoader()
 */
 void JsonLoader::init()
 {
-	//
-
 	//セットされたファイルパスを取得
 	std::string path = this->jsonmanager->getJsonFilePath();
 	//そのパスでjson読み込み

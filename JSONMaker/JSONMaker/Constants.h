@@ -38,6 +38,9 @@ public:
 	const std::string MESSAGE_FAILED_TO_CONNECT_DB = "入力されているDBに接続できませんでした。\nDB名を確認して下さい。";
 	const std::string MESSAGE_CANNOT_CONNECT_MySQL = "MySQLに接続できませんでした。\nMySQLが起動していることを確認して下さい";
 	const std::string MESSAGE_INVALID_QUERY = "入力されたクエリが無効です。\n結果を返すクエリを入力して下さい";
+	const std::string MESSAGE_ARRAY_ERROR = "配列のJSON作成の際にキーの入った要素が見つかりました。\n確認してください。";
+	const std::string MESSAGE_OBJECT_ARRAY_ERROR = "オブジェクト配列の作成の際にキーのない要素が見つかりました。\n確認してください。";
+	const std::string MESSAGE_CHECK_BRO_ERROR = "兄弟のセルにキーが空でないものと空のものが混在しています。\n確認して下さい";
 
 	const int CODE_DB_ERROR = 1049;
 	const int CODE_MYSQL_ERROR = 2003;
