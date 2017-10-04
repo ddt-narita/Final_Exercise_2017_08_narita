@@ -12,9 +12,7 @@
 
 class Constants {
 public:
-	const std::string KEY_ISARRAY = "";
-	static const int ROW_BUTTON_WIDTH = 20;
-	static const int ROW_BUTTON_HEIGHT = 19;
+	const std::string Message_check_bro_error = "兄弟のセルにキーが空でないものと空のものが混在しています。確認して下さい。";
 	static const int CODE_UTF8 = 0;
 	static const int CODE_SJIS = 1;
 	static const int LEVEL_PARENT = 0;
@@ -35,12 +33,11 @@ public:
 	const std::string STR_DB_USER_NAME = "root";
 	const std::string STR_DB_PASSWD = "";
 
-	const std::string MESSAGE_FAILED_TO_CONNECT_DB = "入力されているDBに接続できませんでした。\nDB名を確認して下さい。";
-	const std::string MESSAGE_CANNOT_CONNECT_MySQL = "MySQLに接続できませんでした。\nMySQLが起動していることを確認して下さい";
-	const std::string MESSAGE_INVALID_QUERY = "入力されたクエリが無効です。\n結果を返すクエリを入力して下さい";
-	const std::string MESSAGE_ARRAY_ERROR = "配列のJSON作成の際にキーの入った要素が見つかりました。\n確認してください。";
-	const std::string MESSAGE_OBJECT_ARRAY_ERROR = "オブジェクト配列の作成の際にキーのない要素が見つかりました。\n確認してください。";
-	const std::string MESSAGE_CHECK_BRO_ERROR = "兄弟のセルにキーが空でないものと空のものが混在しています。\n確認して下さい";
+	const std::string MESSAGE_FAILED_TO_CONNECT_DB = "入力されているDBに接続できませんでした。DB名を確認して下さい。";
+	const std::string MESSAGE_CANNOT_CONNECT_MySQL = "MySQLに接続できませんでした。MySQLが起動していることを確認して下さい";
+	const std::string MESSAGE_INVALID_QUERY = "入力されたクエリが無効です。結果を返すクエリを入力して下さい";
+	const std::string MESSAGE_ARRAY_ERROR = "配列のJSON作成の際にキーの入った要素が見つかりました。確認してください。";
+	const std::string MESSAGE_OBJECT_ARRAY_ERROR = "オブジェクト配列の作成の際にキーのない要素が見つかりました。確認してください。";
 
 	const int CODE_DB_ERROR = 1049;
 	const int CODE_MYSQL_ERROR = 2003;
@@ -126,7 +123,7 @@ public:
 	作成日:9月30日
 	作成者:成田修之
 	*/
-	std::vector<std::string> ArrayToVector(array<System::String^>^ ar) {
+	std::vector<std::string> ArrayToVector(cli::array<System::String^>^ ar) {
 		//返却する配列を引数の配列の長さで確保
 		std::vector<std::string> vec(ar->Length);
 		//配列の長さ分繰り返す
@@ -146,9 +143,9 @@ public:
 	作成日:9月30日
 	作成者:成田修之
 	*/
-	array<System::String^>^ vectorToArray(std::vector<std::string> vec) {
+	cli::array<System::String^>^ vectorToArray(std::vector<std::string> vec) {
 		//返却する配列を引数の配列の長さ分で確保
-		array<System::String^>^ retArr = gcnew array<System::String^>(vec.size());
+		cli::array<System::String^>^ retArr = gcnew cli::array<System::String^>(vec.size());
 		//配列の長さ分繰り返す
 		for (int i = 0; i < retArr->Length; i++) {
 			//各要素を変換して代入

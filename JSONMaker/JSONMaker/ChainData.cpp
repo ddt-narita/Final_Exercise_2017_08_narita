@@ -272,6 +272,54 @@ ChainData * ChainData::createChild()
 	//挿入したセルを返却する
 	return insertCell;
 }
+/*
+関数名:removeParent
+概要:親を取り除いて兄弟を親の兄弟へ格納
+引数:無し
+返却値:無し
+作成日:10月4日(水)
+作成者:成田修之
+*/
+void ChainData::removeParent()
+{
+	//親とその親までがいなければ
+	if (2 > this->getParents().size()) {
+		//処理を行わない
+		return;
+	}
+
+	//自身の兄弟の長男のセルを取得
+	ChainData* elderBro = this->getFirstBro();
+	//親を取得する
+	ChainData* parent = elderBro->left;
+
+	//親が長男のセルであれば
+	if (nullptr == parent->upper) {
+		//親の親のセルを取得する
+		ChainData* GrandPa = parent->left;
+		//親の親の子、として長男を格納する
+		GrandPa->addRight(elderBro);
+	}
+	//親が長男ではなければ
+	else {
+		//兄のセルを取得する
+		ChainData* parentBigBro = parent->upper;
+		//兄の弟として長男を格納する
+		parentBigBro->addUnder(elderBro);
+		//長男の親へのポインタをナルを指すようにする
+		elderBro->left = nullptr;
+	}
+
+	//親に弟がいれば
+	if (nullptr != parent->under) {
+		//親の弟を取得
+		ChainData* parentBro = parent->under;
+		//自身の兄弟で末の弟を取得する
+		ChainData* lastBro = this->getLastBro();
+		//末の弟の下に親の弟を格納する
+		lastBro->addUnder(parentBro);
+	}
+}
 
 
 ChainData * ChainData::getCell(int row, int col)
@@ -295,6 +343,41 @@ ChainData * ChainData::getCell(int row, int col)
 		}
 	}
 	//そのセルを返却する
+	return current;
+}
+
+/*
+関数名:getFirstBro
+概要:長男のセルを取得して返す関数
+引数:無し
+返却値:ChainData*　長男のセル
+作成日:10月4日(水)
+作成者:成田修之
+*/
+ChainData * ChainData::getFirstBro()
+{
+	//自身のセルをカレントのセルとして格納
+	ChainData* current = this;
+	//兄へのポインタがナルになるまで繰り返す
+	while (nullptr != current->upper) {
+		//兄へ移動する
+		current = current->upper;
+	}
+	//長男のセルを返却する
+	return current;
+}
+
+ChainData * ChainData::getLastBro()
+{
+	//自身をカレントとして保管
+	ChainData* current = this;
+	//弟がいなくなるまで繰り返す
+	while (nullptr != current->under) {
+		//カレントを弟へ移動する
+		current = current->under;
+	}
+
+	//カレントを返却する
 	return current;
 }
 
@@ -383,7 +466,7 @@ int ChainData::getChildCount()
 
 
 /*
-関数名:getParentPath
+関数名:getParents
 概要:一番上からそのセルまでのパスを取得する
 引数:なし
 返却値:vector<string> retPath 一番上の親からのパス
@@ -522,8 +605,8 @@ bool ChainData::isEmptyCellToObjectArray()
 {
 	//返却する真理値に用いる値
 	int retVal = 1;
-	//キーが空でないとき
-	if ("" != this->value) {
+	//親がないときやキーが空でないとき
+	if (nullptr != this->left && "" != this->key) {
 		//確実に違うのでそのことを返す
 		return false;
 	}

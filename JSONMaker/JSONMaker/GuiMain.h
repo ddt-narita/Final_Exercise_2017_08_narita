@@ -1,6 +1,6 @@
 #pragma once
 #include "GridJSONCreator.h"
-//#include "JSONDBManager.h"
+#include "JSONDBManager.h"
 #include "Constants.h"
 #include "EnvForm.h"
 #include "JsonLoader.h"
@@ -89,6 +89,10 @@ namespace JSONMaker {
 	private: System::Windows::Forms::Button^  buttonDetail;
 	private: System::Windows::Forms::Label^  labelInsertFrontBack;
 	private: System::Windows::Forms::Button^  buttonChangeFrontBack;
+	private: System::Windows::Forms::Panel^  panel2;
+
+
+
 
 
 
@@ -121,6 +125,8 @@ namespace JSONMaker {
 		{
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->GridtabPage = (gcnew System::Windows::Forms::TabPage());
+			this->panel2 = (gcnew System::Windows::Forms::Panel());
+			this->buttonEnv = (gcnew System::Windows::Forms::Button());
 			this->labelInsertFrontBack = (gcnew System::Windows::Forms::Label());
 			this->buttonJsonCreate = (gcnew System::Windows::Forms::Button());
 			this->buttonChangeFrontBack = (gcnew System::Windows::Forms::Button());
@@ -143,7 +149,6 @@ namespace JSONMaker {
 			this->textBoxRowN = (gcnew System::Windows::Forms::TextBox());
 			this->GridColLabel = (gcnew System::Windows::Forms::Label());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
-			this->buttonEnv = (gcnew System::Windows::Forms::Button());
 			this->tabControl1->SuspendLayout();
 			this->GridtabPage->SuspendLayout();
 			this->panel1->SuspendLayout();
@@ -163,6 +168,7 @@ namespace JSONMaker {
 			// 
 			// GridtabPage
 			// 
+			this->GridtabPage->Controls->Add(this->panel2);
 			this->GridtabPage->Controls->Add(this->buttonEnv);
 			this->GridtabPage->Controls->Add(this->labelInsertFrontBack);
 			this->GridtabPage->Controls->Add(this->buttonJsonCreate);
@@ -193,13 +199,35 @@ namespace JSONMaker {
 			this->GridtabPage->UseVisualStyleBackColor = true;
 			this->GridtabPage->Click += gcnew System::EventHandler(this, &GuiMain::LostFocusFromGrid);
 			// 
+			// panel2
+			// 
+			this->panel2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->panel2->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->panel2->Location = System::Drawing::Point(8, 87);
+			this->panel2->Name = L"panel2";
+			this->panel2->Size = System::Drawing::Size(661, 48);
+			this->panel2->TabIndex = 24;
+			// 
+			// buttonEnv
+			// 
+			this->buttonEnv->Font = (gcnew System::Drawing::Font(L"ＭＳ Ｐゴシック", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(128)));
+			this->buttonEnv->Location = System::Drawing::Point(578, 6);
+			this->buttonEnv->Name = L"buttonEnv";
+			this->buttonEnv->Size = System::Drawing::Size(75, 23);
+			this->buttonEnv->TabIndex = 1;
+			this->buttonEnv->Text = L"基本";
+			this->buttonEnv->UseVisualStyleBackColor = true;
+			this->buttonEnv->Click += gcnew System::EventHandler(this, &GuiMain::buttonEnv_Click);
+			// 
 			// labelInsertFrontBack
 			// 
 			this->labelInsertFrontBack->AutoSize = true;
 			this->labelInsertFrontBack->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
 			this->labelInsertFrontBack->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
-			this->labelInsertFrontBack->Location = System::Drawing::Point(506, 9);
+			this->labelInsertFrontBack->Location = System::Drawing::Point(470, 9);
 			this->labelInsertFrontBack->Name = L"labelInsertFrontBack";
 			this->labelInsertFrontBack->Size = System::Drawing::Size(36, 26);
 			this->labelInsertFrontBack->TabIndex = 23;
@@ -207,7 +235,7 @@ namespace JSONMaker {
 			// 
 			// buttonJsonCreate
 			// 
-			this->buttonJsonCreate->Location = System::Drawing::Point(446, 48);
+			this->buttonJsonCreate->Location = System::Drawing::Point(410, 48);
 			this->buttonJsonCreate->Name = L"buttonJsonCreate";
 			this->buttonJsonCreate->Size = System::Drawing::Size(54, 33);
 			this->buttonJsonCreate->TabIndex = 7;
@@ -217,7 +245,7 @@ namespace JSONMaker {
 			// 
 			// buttonChangeFrontBack
 			// 
-			this->buttonChangeFrontBack->Location = System::Drawing::Point(447, 9);
+			this->buttonChangeFrontBack->Location = System::Drawing::Point(411, 9);
 			this->buttonChangeFrontBack->Name = L"buttonChangeFrontBack";
 			this->buttonChangeFrontBack->Size = System::Drawing::Size(53, 33);
 			this->buttonChangeFrontBack->TabIndex = 22;
@@ -227,7 +255,7 @@ namespace JSONMaker {
 			// 
 			// buttonOpen
 			// 
-			this->buttonOpen->Location = System::Drawing::Point(378, 48);
+			this->buttonOpen->Location = System::Drawing::Point(353, 48);
 			this->buttonOpen->Name = L"buttonOpen";
 			this->buttonOpen->Size = System::Drawing::Size(52, 33);
 			this->buttonOpen->TabIndex = 21;
@@ -237,7 +265,7 @@ namespace JSONMaker {
 			// 
 			// buttonDetail
 			// 
-			this->buttonDetail->Location = System::Drawing::Point(378, 9);
+			this->buttonDetail->Location = System::Drawing::Point(353, 9);
 			this->buttonDetail->Name = L"buttonDetail";
 			this->buttonDetail->Size = System::Drawing::Size(52, 33);
 			this->buttonDetail->TabIndex = 20;
@@ -247,7 +275,7 @@ namespace JSONMaker {
 			// 
 			// buttonColRemove
 			// 
-			this->buttonColRemove->Location = System::Drawing::Point(318, 48);
+			this->buttonColRemove->Location = System::Drawing::Point(293, 48);
 			this->buttonColRemove->Name = L"buttonColRemove";
 			this->buttonColRemove->Size = System::Drawing::Size(54, 33);
 			this->buttonColRemove->TabIndex = 19;
@@ -257,7 +285,7 @@ namespace JSONMaker {
 			// 
 			// buttonColInsert
 			// 
-			this->buttonColInsert->Location = System::Drawing::Point(318, 9);
+			this->buttonColInsert->Location = System::Drawing::Point(293, 9);
 			this->buttonColInsert->Name = L"buttonColInsert";
 			this->buttonColInsert->Size = System::Drawing::Size(54, 33);
 			this->buttonColInsert->TabIndex = 18;
@@ -267,7 +295,7 @@ namespace JSONMaker {
 			// 
 			// buttonRowRemove
 			// 
-			this->buttonRowRemove->Location = System::Drawing::Point(258, 48);
+			this->buttonRowRemove->Location = System::Drawing::Point(233, 48);
 			this->buttonRowRemove->Name = L"buttonRowRemove";
 			this->buttonRowRemove->Size = System::Drawing::Size(54, 33);
 			this->buttonRowRemove->TabIndex = 17;
@@ -277,7 +305,7 @@ namespace JSONMaker {
 			// 
 			// buttonRowInsert
 			// 
-			this->buttonRowInsert->Location = System::Drawing::Point(258, 9);
+			this->buttonRowInsert->Location = System::Drawing::Point(233, 9);
 			this->buttonRowInsert->Name = L"buttonRowInsert";
 			this->buttonRowInsert->Size = System::Drawing::Size(54, 33);
 			this->buttonRowInsert->TabIndex = 16;
@@ -287,7 +315,7 @@ namespace JSONMaker {
 			// 
 			// buttonRemove
 			// 
-			this->buttonRemove->Location = System::Drawing::Point(198, 48);
+			this->buttonRemove->Location = System::Drawing::Point(173, 48);
 			this->buttonRemove->Name = L"buttonRemove";
 			this->buttonRemove->Size = System::Drawing::Size(54, 33);
 			this->buttonRemove->TabIndex = 15;
@@ -297,7 +325,7 @@ namespace JSONMaker {
 			// 
 			// buttonInsert
 			// 
-			this->buttonInsert->Location = System::Drawing::Point(198, 9);
+			this->buttonInsert->Location = System::Drawing::Point(173, 9);
 			this->buttonInsert->Name = L"buttonInsert";
 			this->buttonInsert->Size = System::Drawing::Size(54, 33);
 			this->buttonInsert->TabIndex = 14;
@@ -313,9 +341,9 @@ namespace JSONMaker {
 			this->panel1->AutoScroll = true;
 			this->panel1->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->panel1->Controls->Add(this->pictureBox1);
-			this->panel1->Location = System::Drawing::Point(8, 87);
+			this->panel1->Location = System::Drawing::Point(8, 141);
 			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(661, 442);
+			this->panel1->Size = System::Drawing::Size(661, 388);
 			this->panel1->TabIndex = 13;
 			this->panel1->Click += gcnew System::EventHandler(this, &GuiMain::LostFocusFromGrid);
 			// 
@@ -405,22 +433,10 @@ namespace JSONMaker {
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage2->Size = System::Drawing::Size(677, 512);
+			this->tabPage2->Size = System::Drawing::Size(677, 535);
 			this->tabPage2->TabIndex = 1;
 			this->tabPage2->Text = L"List";
 			this->tabPage2->UseVisualStyleBackColor = true;
-			// 
-			// buttonEnv
-			// 
-			this->buttonEnv->Font = (gcnew System::Drawing::Font(L"ＭＳ Ｐゴシック", 9.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->buttonEnv->Location = System::Drawing::Point(578, 11);
-			this->buttonEnv->Name = L"buttonEnv";
-			this->buttonEnv->Size = System::Drawing::Size(75, 23);
-			this->buttonEnv->TabIndex = 1;
-			this->buttonEnv->Text = L"基本";
-			this->buttonEnv->UseVisualStyleBackColor = true;
-			this->buttonEnv->Click += gcnew System::EventHandler(this, &GuiMain::buttonEnv_Click);
 			// 
 			// GuiMain
 			// 
@@ -445,7 +461,7 @@ namespace JSONMaker {
 	private:
 		JsonLoader* jsonLoader;						//JSON読み込みに関するクラス
 		GridJSONCreator* gridJsonCreator;			//読みこんだり作成したセルからJSONを作成するクラス
-		//JSONDBManager* jsonDbLoader;				//DBの結果からセルに落とすクラス
+		JSONDBManager* jsonDbLoader;				//DBの結果からセルに落とすクラス
 		narita::DataGridSelfMade^ dataGridJson;		//表クラス
 		JSONManager* jsonmanager;					//各クラスの共有オブジェクト
 		int FormType = 0;							//サブフォームかどうかを表す値
@@ -469,6 +485,14 @@ namespace JSONMaker {
 				labelInsertFrontBack->Text = fb == ChainData::Front ? "前" : "後ろ";
 			}
 		}
+
+		/*
+		*/
+		void cellReset() {
+			delete cellChain;
+			dataGridJson->cell = cellChain = new ChainData();
+		}
+
 
 		/*
 		関数名:LoadJson
@@ -497,7 +521,7 @@ namespace JSONMaker {
 					//処理をやめる
 					return;
 				}
-
+				cellReset();
 				//読み込みを開始する
 				jsonLoader->job(constants.StrToc_str(nodeForm->selectedNode), cellChain);
 				//フォームのノード名に選択されたノードを表示
@@ -588,6 +612,7 @@ namespace JSONMaker {
 				//処理をやめる
 				return;
 			}
+			cellReset();
 			//取得した行と列で表を作成する
 			createGrid(rowN, colN);
 			//表を表示する
@@ -603,51 +628,52 @@ namespace JSONMaker {
 		作成者:成田修之
 		*/
 
-		//   private:Void getJsonFromQuery(ChainData* cell) {
-		   //	//メッセージを作成
-		   //	String^ message = gcnew String(jsonmanager->env.DbName.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BEFORE + gcnew String(jsonmanager->env.Query.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BACK;
-		   //	//メッセージボックスで表示
-		   //	Windows::Forms::DialogResult dr = MessageBox::Show(message, "確認", MessageBoxButtons::OKCancel, MessageBoxIcon::Question);
-		   //	//キャンセルが選択されたら
-		   //	if(Windows::Forms::DialogResult::Cancel == dr) {
-		   //		//関数の実行をやめる
-		   //		return;
-		   //	}
-		   //	try {
-		   //		//DBの結果読み込みを開始する
-		   //		jsonDbLoader->run(cell);
-		   //		//読みこんだセルで表を作成する
-		   //		ViewTable();
-		   //	}
-		   //	//例外が発生したとき
-		   //	catch (sql::SQLException& e) {
-		   //		//エラーがDB接続に関するものだった時
-		   //		if (e.getErrorCode() == constants.CODE_DB_ERROR) {
-		   //			//メッセージボックスで表示
-		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_DB, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-		   //		
-		   //		}//MySQLへの接続に関するエラー
-		   //		else if(e.getErrorCode() == constants.CODE_MYSQL_ERROR) {
-		   //			//メッセージボックスで表示
-		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_MySQL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);					
-		   //		
-		   //		}//ログインに関するエラーの時
-		   //		else if(e.getErrorCode() == constants.CODE_ROGIN_ERROR) {
-		   //			//メッセージボックスで表示
-		   //			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_ROGIN, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-		   //		
-		   //		} //無効なクエリに関するエラー
-		   //		else if(e.getErrorCode() == constants.CODE_INVALID_QUERY_ERROR){
-		   //			//メッセージボックスで表示
-		   //			MessageBox::Show(cliconstants->MESSAGE_INVALID_QUERY, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-		   //		}
-		   //		//文法的に間違ったSQLのエラー
-		   //		else if (e.getErrorCode() == constants.CODE_QUERY_SYNTAX_ERROR) {
-		   //			//メッセージボックスで表示
-		   //			MessageBox::Show(cliconstants->MESSAGE_QUERY_SYNTAX_ERROR, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
-		   //		}
-		   //	}
-		   //}
+		   private:Void getJsonFromQuery(ChainData* cell) {
+		   	//メッセージを作成
+		   	String^ message = gcnew String(jsonmanager->env.DBname.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BEFORE + gcnew String(jsonmanager->env.Query.c_str()) + cliconstants->MESSAGE_EXECUTE_QUERY_BACK;
+		   	//メッセージボックスで表示
+		   	Windows::Forms::DialogResult dr = MessageBox::Show(message, "確認", MessageBoxButtons::OKCancel, MessageBoxIcon::Question);
+		   	//キャンセルが選択されたら
+		   	if(Windows::Forms::DialogResult::Cancel == dr) {
+		   		//関数の実行をやめる
+		   		return;
+		   	}
+		   	try {
+				cellReset();
+		   		//DBの結果読み込みを開始する
+		   		jsonDbLoader->run(cell);
+		   		//読みこんだセルで表を作成する
+		   		ViewTable();
+		   	}
+		   	//例外が発生したとき
+		   	catch (sql::SQLException& e) {
+		   		//エラーがDB接続に関するものだった時
+		   		if (e.getErrorCode() == constants.CODE_DB_ERROR) {
+		   			//メッセージボックスで表示
+		   			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_DB, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   		
+		   		}//MySQLへの接続に関するエラー
+		   		else if(e.getErrorCode() == constants.CODE_MYSQL_ERROR) {
+		   			//メッセージボックスで表示
+		   			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_CONNECT_MySQL, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);					
+		   		
+		   		}//ログインに関するエラーの時
+		   		else if(e.getErrorCode() == constants.CODE_ROGIN_ERROR) {
+		   			//メッセージボックスで表示
+		   			MessageBox::Show(cliconstants->MESSAGE_FAILED_TO_ROGIN, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   		
+		   		} //無効なクエリに関するエラー
+		   		else if(e.getErrorCode() == constants.CODE_INVALID_QUERY_ERROR){
+		   			//メッセージボックスで表示
+		   			MessageBox::Show(cliconstants->MESSAGE_INVALID_QUERY, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   		}
+		   		//文法的に間違ったSQLのエラー
+		   		else if (e.getErrorCode() == constants.CODE_QUERY_SYNTAX_ERROR) {
+		   			//メッセージボックスで表示
+		   			MessageBox::Show(cliconstants->MESSAGE_QUERY_SYNTAX_ERROR, "エラー", MessageBoxButtons::OK, MessageBoxIcon::Hand);
+		   		}
+		   	}
+		   }
 
 
 		   /*
@@ -676,10 +702,10 @@ namespace JSONMaker {
 						//JSON読み込み処理を実行する
 						LoadJson();
 					}
-					//else if (jsonDbLoader->isQuerySet()) {
-					//	//
-					//	getJsonFromQuery(cellChain);
-					//}
+					else if (jsonDbLoader->isQuerySet()) {
+						//
+						getJsonFromQuery(cellChain);
+					}
 					else {
 						//新規にJSONを作成するための表を表示する処理を実行
 						printGrid();
@@ -718,7 +744,6 @@ namespace JSONMaker {
 			if (result != System::Windows::Forms::DialogResult::OK) {
 				return;
 			}
-
 			//ファイルパスをクリア
 			jsonmanager->env.JSONFilePath = "";
 			//クエリをクリア
@@ -743,7 +768,6 @@ namespace JSONMaker {
 				//そのセルの削除関数を実行
 				cellChain->remove();
 			}
-
 			//ピクチャーボックスを非表示にする
 			pictureBox1->Visible = false;
 			//描画処理をおこなう
@@ -762,7 +786,6 @@ namespace JSONMaker {
 		*/
 	private:
 		System::Void buttonJsonCreate_Click(System::Object^  sender, System::EventArgs^  e) {
-
 			//子が存在しないとき(子が存在しないということはまだ読みこみも新規の行列指定もしていない)
 			if (nullptr == cellChain->right) {
 				//エラーメッセージをだす
@@ -776,13 +799,11 @@ namespace JSONMaker {
 				MessageBox::Show(cliconstants->MESSAGE_EMPTY_NODE_NAME, "警告", MessageBoxButtons::OK, MessageBoxIcon::Error);
 				return;
 			}
-
 			try {
 				//ノード名のテキストボックスに入力された値をキー名に
 				cellChain->key = constants.StrToc_str(textBoxNodeName->Text);
 				//セットされた値でJSONを作成する
 				gridJsonCreator->job(cellChain);
-
 			}
 			//JSON作成で例外が発生したとき
 			catch (std::exception& e) {
@@ -832,6 +853,109 @@ namespace JSONMaker {
 			jsonmanager->setQuery(query);
 			jsonmanager->env.DBname = constants.StrToc_str(envform->DBName == nullptr ? "" : envform->DBName);
 		}
+		/*
+		関数名:createKeyLabels
+		概要:キー配列からラベル群を作成する
+		引数:array<String^>^ path　キー群
+		返却値:無し
+		作成日:10月2日(月)
+		作成者:成田修之
+		*/
+		System::Void createKeyLabels(array<String^>^ path) {
+			//ラベル配列の長さをハイフン分を含めてキーの数×２＋１にする
+			array<Label^>^ labels = gcnew array<Label^>(path->Length * 2);
+			//ラベル配列のインデックス
+			int labelIndex = 0;
+			//引数のキー配列の長さ分だけ繰り返す
+			for (int i = 0; i < path->Length; i++) {
+				//一番初めでないなら（ハイフンのラベルを作る）
+				if (0 != i) {
+					//ラベルを生成する
+					labels[labelIndex] = gcnew Label();
+					//大きさをハイフン分に合わせる
+					labels[labelIndex]->Size = System::Drawing::Size(10, 35);
+					//位置をハイフンに合わせる
+					labels[labelIndex]->Location = Point((i * 80) + 5, 5);
+					//ラベルにハイフンを書き込む
+					labels[labelIndex]->Text = "\n-";
+					//ラベル配列のインデックスを次へ
+					labelIndex++;
+				}//ハイフン分完了
+
+				 //ラベルを作成する
+				labels[labelIndex] = gcnew Label();
+				//サイズをキーに合わせる
+				labels[labelIndex]->Size = System::Drawing::Size(60, 35);
+				//位置をキーに合わせる
+				labels[labelIndex]->Location = Point((i * 80) + 20, 5);
+				//ラベルにその時のキーを書き込む
+				labels[labelIndex]->Text = path[i];
+				//ラベルを四角で囲む形にする
+				labels[labelIndex]->BorderStyle = BorderStyle::FixedSingle;
+				//
+				labels[labelIndex]->DoubleClick += gcnew EventHandler(this, &GuiMain::Labels_DoubleClick);
+				//ラベルの配列のインデックスを次へ
+				labelIndex++;
+			}
+			//できたラベルの配列をフォームに追加する
+			this->panel2->Controls->AddRange(labels);
+		}
+		/*
+		関数名:Labels_DoubleClick
+		概要:ラベル群のいずれかがクリックされたときのイベント
+		引数:イベントの引数
+		返却値:無し
+		作成日:10月2日
+		作成者:成田修之
+		*/
+		System::Void Labels_DoubleClick(System::Object^  sender, System::EventArgs^  e) {
+			//クリックされたラベルを取得
+			Label^ selectedLabel = (Label^)sender;
+			//そのラベルの座標から選択されたセルが何番目かを取得
+			int select = ((selectedLabel->Location.X - 20) / 80);
+			//親のキー群を取得する
+			std::vector<ChainData*> parents = cellChain->getParents();
+			//詳細フォームのインスタンスを生成する
+			GuiMain^ editForm = gcnew GuiMain();
+			//フォームに選択されたセルを渡す
+			editForm->cellChain = parents[select];
+			editForm->FormType = constants.IS_SUB_FORM;
+			//環境ボタンをいじれないようにする
+			editForm->buttonEnv->Visible = false;
+			//フォームを表示
+			editForm->ShowDialog();
+			ClearLabels();
+			createlabels();
+
+		}
+		//ラベルをクリアする関数
+		System::Void ClearLabels() {
+			int level = cellChain->getParents().size();
+			//表示させるラベルの数だけ繰り返す
+			for (int i = 0; i < level; i++) {
+				//一番目だけでなければ
+				if (i != 0) {
+					//キー間のハイフンのラベルを削除
+					this->panel2->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 5, 5)));
+				}
+				//キーのラベルを削除する
+				this->panel2->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 20, 5)));
+			}
+		}
+
+		void createlabels() {
+			//親セル群を取得
+			std::vector<ChainData*> parent = cellChain->getParents();
+			std::vector<std::string>parentKey(parent.size());
+			for (int i = 0; i < parent.size(); i++) {
+				parentKey[i] = parent[i]->key;
+			}
+
+			//渡されたセルの一番上からそのセルまでの親キー群配列を取得する
+			array<String^>^ keyPath = constants.vectorToArray(parentKey);
+			//親の階層のキーからキーの連鎖を表示
+			createKeyLabels(keyPath);
+		}
 
 		/*
 		関数名:GuiMain_Load
@@ -846,19 +970,18 @@ namespace JSONMaker {
 			//各種クラスのインスタンスの作成
 			jsonLoader = new JsonLoader();
 			gridJsonCreator = new GridJSONCreator();
-			//jsonDbLoader = new JSONDBManager();
+			jsonDbLoader = new JSONDBManager();
 			//共有オブジェクトを生成
 			jsonmanager = new JSONManager();
 			dataGridJson = gcnew narita::DataGridSelfMade(pictureBox1);
 			cliconstants = gcnew CLIConstants();
 
 			//共有オブジェクトを共有させる
-			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = /*jsonDbLoader->jsonmanager = */ jsonmanager;
+			jsonLoader->jsonmanager = gridJsonCreator->jsonmanager = jsonDbLoader->jsonmanager =  jsonmanager;
 			//表のテキストボックスにダブルクリックイベントを登録
 			dataGridJson->text->DoubleClick += gcnew EventHandler(this, &GuiMain::pictureBox1_DoubleClick);
 			//セルを表示する描画対象を見えなくする
 			pictureBox1->Visible = false;
-
 			//JSONがセットされてnullではないとき(サブフォームの時)
 			if (nullptr != cellChain && cellChain->isValid()) {
 				dataGridJson->cell = cellChain;
@@ -868,6 +991,7 @@ namespace JSONMaker {
 				pictureBox1->Visible = true;
 				//ノード名をテキストボックスに
 				textBoxNodeName->Text = gcnew String(cellChain->key.c_str());
+				createlabels();
 			}
 			//最初のフォーム立ち上げなら
 			else {
@@ -939,7 +1063,7 @@ namespace JSONMaker {
 			}
 
 			//一列目のセルがクリックされたときのイベント
-			if (col == constants.COLUMN_ONE && cellChain->getCell(row, col)->isObject()) {
+			if (cellChain->getCell(row, col)->isObject()) {
 				//一列目のセルを取得
 				selected = cellChain->getCell(row, col);
 				//そのセルについて展開する
@@ -1096,6 +1220,11 @@ namespace JSONMaker {
 					//列削除処理を行う
 					cellChain->removeCol(col);
 				}
+				else if ("buttonParentRemove" == RemoveButton->Name) {
+					ChainData* select = cellChain->getCell(row, col);
+					select->removeParent();
+				}
+
 				//削除したので選択中のセルについてリセット
 				dataGridJson->currentCell->Reset();
 				//全体を再描画する
@@ -1204,5 +1333,5 @@ namespace JSONMaker {
 			//トップのセルのキーに代入する
 			cellChain->key = constants.StrToc_str(textBoxNodeName->Text);
 		}
-	};
+};
 };

@@ -1,21 +1,53 @@
 {
-    "node": [
-        {
-            "e": "e",
-            "a": "s"
+    "courseGuide": {
+        "class": "courseGuide guideTable",
+        "summary": {
+            "text": "コース案内"
         },
-        {
-            "f": "d",
-            "t": "s",
-            "w": "e"
+        "courseGuideHead": {
+            "class": "guideHead",
+            "stageHead": {
+                "text": "レベル"
+            },
+            "timesHead": {
+                "text": "回数"
+            },
+            "priceHead": {
+                "text": "金額"
+            }
         },
-        {
-            "a": "d",
-            "i": "a"
+        "firstStage": {
+            "stage": {
+                "text": "NFD1級"
+            },
+            "times": {
+                "text": "全40単位"
+            },
+            "price": {
+                "text": "3,000 円／回"
+            }
         },
-        {
-            "a": "f",
-            "i": "d"
+        "secondStage": {
+            "stage": {
+                "text": "NFD2級"
+            },
+            "times": {
+                "text": "全40単位"
+            },
+            "price": {
+                "text": "3,000 円／回"
+            }
+        },
+        "thirdStage": {
+            "stage": {
+                "text": "NFD3級"
+            },
+            "times": {
+                "text": "全40単位"
+            },
+            "price": {
+                "text": "3,000 円／回"
+            }
         }
-    ]
+    }
 }

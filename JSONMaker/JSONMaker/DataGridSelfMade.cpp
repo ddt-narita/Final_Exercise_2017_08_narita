@@ -188,16 +188,15 @@ Void DataGridSelfMade::drawCell(int row, int col, Brush ^ color)
 		//処理を終了する
 		return;
 	}
-
 	//セルを書くための四角形を用意
 	RectangleF^ rect;
 	String^ value;
-
+	//引数から選択されたセルを取得する
 	ChainData* selectCell = cell->getCell(row, col);
 	//引数の位置の表示部の情報を取得　なければ空文字
-	if (selectCell != nullptr) {
+	if (selectCell != nullptr && selectCell->isValid()) {
 		//データ且つ有効な値なら
-		if (!selectCell->isObject() && selectCell->isValid()) {
+		if (!selectCell->isObject()) {
 			//キーとその値を
 			value = gcnew String(("key:" + selectCell->key + "\nvalue:" + selectCell->value).c_str());
 		}

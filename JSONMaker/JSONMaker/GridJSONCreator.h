@@ -4,6 +4,7 @@
 
 #include "JSONManager.h"
 #include "ChainData.h"
+#include "CLIConstants.h"
 
 class GridJSONCreator
 {
@@ -15,10 +16,13 @@ public:
 	GridJSONCreator();
 	~GridJSONCreator();
 
-
+	//JSON作成を行う関数
 	void job(ChainData* cell);
-	
-	std::string createAcsessKey(std::vector<std::string> keyarray, int level);
+	//アクセスするためのキー文字列を作成する
+	std::string createAcsessKey(std::vector<std::string> keyarray, int level, std::string delimiter);
+	std::string createErrorMessage(ChainData* cell, std::string errorMessage);
+	//兄弟のセルをチェックする
+	void checkBroKey(ChainData* cell);
 	//配列のJSONを作成する
 	void createArrayJson(std::string acsessKey, ChainData* cellToArray, boost::property_tree::ptree& json);
 	//オブジェクト配列のJSONを作成する

@@ -52,9 +52,15 @@ public:
 	ChainData* createParent();
 	//子を作成する
 	ChainData* createChild();
+	//親を取り除いて兄弟を親の兄弟へ繰り上げ
+	void removeParent();
 
 	//行列指定してその位置のセルを取得する
 	ChainData* getCell(int row, int col);
+	//長男のセルを取得する関数
+	ChainData* getFirstBro();
+	//末の弟を取得する関数
+	ChainData* getLastBro();
 	//行と列指定したセルのキーを取得
 	std::string getKey(int row, int col);
 	//

@@ -210,6 +210,14 @@ namespace JSONMaker {
 		int FormFrom;
 
 	private:
+		/*
+		関数名:createKeyLabels
+		概要:キー配列からラベル群を作成する
+		引数:array<String^>^ path　キー群
+		返却値:無し
+		作成日:10月2日(月)
+		作成者:成田修之
+		*/
 		System::Void createKeyLabels(array<String^>^ path) {
 			//ラベル配列の長さをハイフン分を含めてキーの数×２＋１にする
 			labels = gcnew array<Label^>(path->Length * 2);
@@ -408,7 +416,7 @@ namespace JSONMaker {
 			//作成しようとしていた親が長男ではない
 			else {
 				//兄を取得
-				ChainData* bro = cell->left;
+				ChainData* bro = cell->upper;
 				//子が兄の弟になるようにする
 				bro->addUnder(child);
 				//子の作成しようとしていた親を指すポインタをナルにする

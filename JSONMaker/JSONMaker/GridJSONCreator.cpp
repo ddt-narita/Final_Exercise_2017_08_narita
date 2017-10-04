@@ -76,7 +76,7 @@ void GridJSONCreator::job(ChainData* cell) {
 作成日:9月28日(木)
 作成者:成田修之
 */
-string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level) {
+string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level, std::string delimiter) {
 	//返却するキー
 	string acsesskey;
 	//引数の値分繰り返す
@@ -84,7 +84,7 @@ string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level) {
 		//返却するキーが空でなければ(一番初めではなければ)
 		if ("" != acsesskey && "" != keyarray[i]) {
 			//アクセス可能なようにカンマで区切る
-			acsesskey += ".";
+			acsesskey += delimiter;
 		}
 		//キーを上から順に継ぎ足していく
 		acsesskey += keyarray[i];
@@ -92,6 +92,62 @@ string GridJSONCreator::createAcsessKey(vector<string> keyarray, int level) {
 	return acsesskey;
 }
 
+
+
+string GridJSONCreator::createErrorMessage(ChainData* cell, string errorMessage) {
+	//返却するエラーメッセージを格納する変数
+	string retErrorMsg;
+	//引数のセルの親群を取得
+	vector<ChainData*> parents = cell->getParents();
+	//親群のキーたちを取得する配列
+	vector<string> parentkeys(parents.size());
+	//親の数だけ繰り返す
+	for (int i = 0; i < parents.size(); i++) {
+		//キーを格納していく
+		parentkeys[i] = parents[i]->key;
+	}
+	//キーの配列でパスを作成
+	string path = createAcsessKey(parentkeys, parentkeys.size(), "-");
+	//文字列を格納していく
+	retErrorMsg = "\nパス：" + path + "\nキー：" + cell->key +"\n値：" + cell->value + "\n" + errorMessage;
+	//エラーメッセージを返却する
+	return retErrorMsg;
+}
+
+/*
+関数名:checkBroKey
+概要:引数のセルの兄弟のキーをチェックする
+引数:ChainData* cell兄弟について調べたいセル
+返却値:無し
+作成日:10月4日(水)
+作成者:成田修之
+*/
+void GridJSONCreator::checkBroKey(ChainData * cell)
+{
+	//引数のセルの長男のセルを取得する
+	ChainData* current = cell->getFirstBro();
+	//長男のセルが空なら０、空でないなら1を判定用の大元変数に保管
+	int judge = "" == current->key ? 0 : 1;
+	//カレントがナルになるまで繰り返す
+	while (nullptr != current) {
+		//カレントのセルが有効ではない
+		if (!current->isValid()) {
+			//弟へ移動する
+			current = current->under;
+			//処理を行わず、弟へ
+			continue;
+		}
+		//カレントのキーが空なら0を空でないなら1を比較用変数に格納する。
+		int comp = "" == current->key ? 0 : 1;
+		//判定用変数と比較用変数が一致しないとき
+		if (judge != comp) {
+			//例外を送出する
+			throw exception(createErrorMessage(current, constants.Message_check_bro_error).c_str());
+		}
+		//弟へ移動する
+		current = current->under;
+	}
+}
 
 /*
 関数名: createArrayJson
@@ -107,6 +163,8 @@ void GridJSONCreator::createArrayJson(std::string acsessKey, ChainData * cellToA
 {
 	//子を取得して子カレントとする
 	ChainData* childCurrent = cellToArray->right;
+	//引数のセルの兄弟をチェックする
+	checkBroKey(cellToArray);
 	//配列のJSONを格納するためのJSONオブジェクト
 	ptree arrayJson;
 	//配列の要素を格納するためのJSONオブジェクト
@@ -117,7 +175,7 @@ void GridJSONCreator::createArrayJson(std::string acsessKey, ChainData * cellToA
 		//配列の要素にキーが入力されているセルがある時
 		if ("" != childCurrent->key) {
 			//メッセージを添えて例外を送出する
-			throw exception(constants.MESSAGE_ARRAY_ERROR.c_str());
+			throw exception(createErrorMessage(childCurrent,constants.MESSAGE_ARRAY_ERROR).c_str());
 		}
 		//要素としてキーと値を格納する
 		objectEle.put(constants.SjistoUTF8(childCurrent->key), constants.SjistoUTF8(childCurrent->value));
@@ -144,6 +202,8 @@ void GridJSONCreator::createArrayJson(std::string acsessKey, ChainData * cellToA
 void GridJSONCreator::createObjectArrayJson(std::string acsessKey, ChainData* cellToObjectArray, ptree& json) {
 	//子を取得して子カレントに
 	ChainData* childCurrent = cellToObjectArray->right;
+	//子カレントをチェックする
+	checkBroKey(childCurrent);
 	//オブジェクト配列を格納するJSONオブジェクト
 	ptree objectArray;
 	//子の数だけ繰り返す
@@ -157,8 +217,8 @@ void GridJSONCreator::createObjectArrayJson(std::string acsessKey, ChainData* ce
 			//オブジェクト配列にキーのない要素が入力されたとき
 			if ("" == GchildCurrent->key) {
 				//メッセージを添えて例外を送出する
-				throw exception(constants.MESSAGE_OBJECT_ARRAY_ERROR.c_str());
-			}			
+				throw exception(createErrorMessage(GchildCurrent, constants.MESSAGE_OBJECT_ARRAY_ERROR).c_str());
+			}
 			//オブジェクト配列の要素として孫のキーと値を格納する
 			ObjectArrayEle.put(constants.SjistoUTF8(GchildCurrent->key), constants.SjistoUTF8(GchildCurrent->value));
 			//孫をその兄弟に移動
@@ -185,61 +245,55 @@ void GridJSONCreator::createObjectArrayJson(std::string acsessKey, ChainData* ce
 */
 void GridJSONCreator::CreateJSON(ChainData* cell, ptree& json)
 {
-	try {
-		//兄弟すべて走査
-		while (nullptr != cell) {
-			//階層のキーに値があり、階層が最初の時(2個目のトップノード)
-			if (keyHierarchy[0] != "" && level == 0) {
-				//処理をやめる
-				return;
-			}
-			//セルが有効でないなら
-			if (!cell->isValid()) {
-				//次の兄弟へ移動する
-				cell = cell->under;
-				//この回を飛ばして次へ
-				continue;
-			}
-			//値を階層のキーとして保管する
-			keyHierarchy[level] = constants.SjistoUTF8(cell->key);
-			//その階層までのキーからアクセスするためのキー文字列を作成する
-			string acsesskey = createAcsessKey(keyHierarchy, level + 1);
-			//オブジェクト配列への先頭のセルの時
-			if (cell->isCellToObjectArray()) {
-				//オブジェクト配列のJSONを作成する
-				createObjectArrayJson(acsesskey, cell, json);
-			}
-			//通常配列へのセルの時
-			else if (cell->isCellToArray()) {
-				//配列のJSONを作成する
-				createArrayJson(acsesskey, cell, json);
-			}
-			//配列やオブジェクト配列でない子がある時
-			else if (cell->isObject()) //子が通常通りある時
-			{
-				//子について行うので階層の値を+1
-				level++;
-				//子について再帰処理を行う
-				CreateJSON(cell->right, json);
-				//子について抜け出したので階層の値を元に戻す
-				level--;
-			}
-			//最下層の値の時
-			else {
-				//それまでのキー配下に格納する
-				json.put(acsesskey, constants.SjistoUTF8(cell->value));
-			}
+	//引数のセルの兄弟をチェックする
+	checkBroKey(cell);
+	//兄弟すべて走査
+	while (nullptr != cell) {
+		//階層のキーに値があり、階層が最初の時(2個目のトップノード)
+		if (keyHierarchy[0] != "" && level == 0) {
+			//処理をやめる
+			return;
+		}
+		//セルが有効でないなら
+		if (!cell->isValid()) {
 			//次の兄弟へ移動する
 			cell = cell->under;
+			//この回を飛ばして次へ
+			continue;
 		}
+		//値を階層のキーとして保管する
+		keyHierarchy[level] = constants.SjistoUTF8(cell->key);
+		//その階層までのキーからアクセスするためのキー文字列を作成する
+		string acsesskey = createAcsessKey(keyHierarchy, level + 1, ".");
+		//オブジェクト配列への先頭のセルの時
+		if (cell->isCellToObjectArray()) {
+			//オブジェクト配列のJSONを作成する
+			createObjectArrayJson(acsesskey, cell, json);
+		}
+		//通常配列へのセルの時
+		else if (cell->isCellToArray()) {
+			//配列のJSONを作成する
+			createArrayJson(acsesskey, cell, json);
+		}
+		//配列やオブジェクト配列でない子がある時
+		else if (cell->isObject()) //子が通常通りある時
+		{
+			//子について行うので階層の値を+1
+			level++;
+			//子について再帰処理を行う
+			CreateJSON(cell->right, json);
+			//子について抜け出したので階層の値を元に戻す
+			level--;
+		}
+		//最下層の値の時
+		else {
+			//それまでのキー配下に格納する
+			json.put(acsesskey, constants.SjistoUTF8(cell->value));
+		}
+		//次の兄弟へ移動する
+		cell = cell->under;
 	}
-	//例外が発生したとき
-	catch (std::exception& e) {
-		//その階層とそのセルの値を格納したメッセージを用意
-		string Message = "階層：" + to_string(level) + "　値：" + cell->key + "\n" + e.what();
-		//メッセージで初期化した例外を送出する
-		throw exception(Message.c_str());
-	}
+
 }
 
 
