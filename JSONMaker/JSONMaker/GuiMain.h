@@ -639,7 +639,6 @@ namespace JSONMaker {
 		   		return;
 		   	}
 		   	try {
-				cellReset();
 		   		//DBの結果読み込みを開始する
 		   		jsonDbLoader->run(cell);
 		   		//読みこんだセルで表を作成する

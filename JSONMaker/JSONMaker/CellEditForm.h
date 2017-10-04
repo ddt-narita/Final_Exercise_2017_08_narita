@@ -218,7 +218,17 @@ namespace JSONMaker {
 		作成日:10月2日(月)
 		作成者:成田修之
 		*/
-		System::Void createKeyLabels(array<String^>^ path) {
+		System::Void createKeyLabels() {
+			//親セル群を取得
+			std::vector<ChainData*> parent = cell->getParents();
+			std::vector<std::string>parentKey(parent.size());
+			for (int i = 0; i < parent.size(); i++) {
+				parentKey[i] = parent[i]->key;
+			}
+
+			//渡されたセルの一番上からそのセルまでの親キー群配列を取得する
+			array<String^>^ path = constants.vectorToArray(parentKey);
+
 			//ラベル配列の長さをハイフン分を含めてキーの数×２＋１にする
 			labels = gcnew array<Label^>(path->Length * 2);
 			//ラベル配列のインデックス
@@ -265,10 +275,10 @@ namespace JSONMaker {
 				//一番目だけでなければ
 				if (i != 0) {
 					//キー間のハイフンのラベルを削除
-					this->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 5, 35)));
+					this->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 5, 20)));
 				}
 				//キーのラベルを削除する
-				this->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 20, 35)));
+				this->Controls->Remove(this->GetChildAtPoint(Point((i * 80) + 20, 20)));
 			}
 		}
 
@@ -282,17 +292,9 @@ namespace JSONMaker {
 		*/
 		System::Void CellEditForm_Load(System::Object^  sender, System::EventArgs^  e) {
 			
-			//親セル群を取得
-			std::vector<ChainData*> parent = cell->getParents();
-			std::vector<std::string>parentKey(parent.size());
-			for (int i = 0; i < parent.size(); i++) {
-				parentKey[i] = parent[i]->key;
-			}
 
-			//渡されたセルの一番上からそのセルまでの親キー群配列を取得する
-			array<String^>^ keyPath = constants.vectorToArray(parentKey);
 			//親の階層のキーからキーの連鎖を表示
-			createKeyLabels(keyPath);
+			createKeyLabels();
 
 			//テキストボックスにキーの値を入力
 			textBoxKey->Text = gcnew String(cell->key.c_str());
@@ -385,7 +387,9 @@ namespace JSONMaker {
 			}
 			//フォームを表示する
 			Windows::Forms::DialogResult rb = subForm->ShowDialog();
-
+			ClearLabels(100);
+			createKeyLabels();
+			
 			//結果がOKできちんと親子兄弟が作れたなら
 			if (Windows::Forms::DialogResult::OK == rb) {
 				//そのセルを有効にする

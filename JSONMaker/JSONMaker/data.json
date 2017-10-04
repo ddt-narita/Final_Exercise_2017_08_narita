@@ -5,7 +5,6 @@
             "text": "コース案内"
         },
         "courseGuideHead": {
-            "class": "guideHead",
             "stageHead": {
                 "text": "レベル"
             },
@@ -18,35 +17,35 @@
         },
         "firstStage": {
             "stage": {
-                "text": "NFD1級"
+                "text": "1stステージ"
             },
             "times": {
-                "text": "全40単位"
+                "text": "全12回"
             },
             "price": {
-                "text": "3,000 円／回"
+                "text": "6,000 円／回"
             }
         },
         "secondStage": {
             "stage": {
-                "text": "NFD2級"
+                "text": "2ndステージ"
             },
             "times": {
-                "text": "全40単位"
+                "text": "全12回"
             },
             "price": {
-                "text": "3,000 円／回"
+                "text": "6,000 円／回"
             }
         },
         "thirdStage": {
             "stage": {
-                "text": "NFD3級"
+                "text": "3rdステージ"
             },
             "times": {
-                "text": "全40単位"
+                "text": "全12回"
             },
             "price": {
-                "text": "3,000 円／回"
+                "text": "6,000 円／回"
             }
         }
     }
